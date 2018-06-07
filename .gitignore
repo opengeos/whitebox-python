@@ -12,6 +12,7 @@ whitebox/testdata/flow_accum.tif
 whitebox/testdata/smoothed.tif
 whitebox/whitebox_tools
 dev/
+.vscode/
 
 # C extensions
 *.so

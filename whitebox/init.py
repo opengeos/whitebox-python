@@ -61,7 +61,7 @@ def download_wbt():
         exe_path = os.path.join(exe_dir, exe_name)
         exe_path_new = os.path.join(root_dir, exe_name)
         print(exe_path)
-        shutil.move(exe_path, exe_path_new)
+        shutil.copy(exe_path, exe_path_new)
 
         if not os.path.exists(work_dir):
             print("Downloading testdata ...")
