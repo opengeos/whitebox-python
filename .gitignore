@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea/
+whitebox/WBT/
+**/*.tar.xz
+whitebox/whitebox_tools
+whitebox/whitebox_tools_local.py
 
 # C extensions
 *.so
