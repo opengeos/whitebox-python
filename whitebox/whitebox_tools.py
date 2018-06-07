@@ -43,14 +43,11 @@ def download_wbt():
         if not os.path.exists(exe_dir):  # Download WhiteboxTools executable file if non-existent
             print("Downloading WhiteboxTools pre-compiled binary ...")
             if platform.system() == "Windows":
-                # url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_win_amd64.zip"
-                url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_win_amd64.zip"
+                url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
-                # url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
-                url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_darwin_amd64.zip"
+                url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
-                # url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
-                url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_linux_amd64.tar.xz"
+                url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
             else:
                 print("WhiteboxTools is not yet supported on {}!".format(platform.system()))
                 exit()
@@ -68,13 +65,17 @@ def download_wbt():
                     tar_ref.extractall(pkg_dir)
             print("WhiteboxTools package directory: {}".format(pkg_dir))
 
-        exe_ext = ""    # file extension for MacOS/Linux
-        if platform.system() == 'Windows':
-            exe_ext = '.exe'
-        exe_name = "whitebox_tools{}".format(exe_ext)
-        exe_path = os.path.join(exe_dir, exe_name)
-        exe_path_new = os.path.join(pkg_dir, exe_name)
-        shutil.copy(exe_path, exe_path_new)
+            exe_ext = ""    # file extension for MacOS/Linux
+            if platform.system() == 'Windows':
+                exe_ext = '.exe'
+            exe_name = "whitebox_tools{}".format(exe_ext)
+            exe_path = os.path.join(exe_dir, exe_name)
+
+            if platform.system() != "Windows":   # grant executable permission
+                os.system("chmod 755 " + exe_path)
+
+            exe_path_new = os.path.join(pkg_dir, exe_name)
+            shutil.copy(exe_path, exe_path_new)
 
         if not os.path.exists(work_dir):
             print("Downloading testdata ...")
