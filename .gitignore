@@ -5,8 +5,13 @@ __pycache__/
 .idea/
 whitebox/WBT/
 **/*.tar.xz
+*.zip
+**/*.xml
+whitebox/testdata/breached.tif
+whitebox/testdata/flow_accum.tif
+whitebox/testdata/smoothed.tif
 whitebox/whitebox_tools
-whitebox/whitebox_tools_local.py
+dev/
 
 # C extensions
 *.so

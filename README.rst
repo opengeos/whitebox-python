@@ -12,11 +12,12 @@ whitebox
 .. image:: https://readthedocs.org/projects/whitebox/badge/?version=latest
         :target: https://whitebox.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+        :target: https://opensource.org/licenses/MIT
 
 
 
-
-An advanced geospatial data analysis platform 
+An advanced geospatial data analysis platform
 
 
 * Free software: MIT license
