@@ -26,7 +26,7 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog
 from tkinter import messagebox
 import webbrowser
-from whitebox_tools import WhiteboxTools, to_camelcase
+from .whitebox_tools import WhiteboxTools, to_camelcase
 
 wbt = WhiteboxTools()
 
@@ -1068,6 +1068,15 @@ class WbRunner(tk.Frame):
 class JsonPayload(object):
     def __init__(self, j):
         self.__dict__ = json.loads(j)
+
+
+def Runner():
+    tool_name = None
+    if len(sys.argv) > 1:
+        tool_name = str(sys.argv[1])
+
+    wbr = WbRunner(tool_name)
+    wbr.mainloop()
 
 
 def main():

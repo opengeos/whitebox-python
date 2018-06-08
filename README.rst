@@ -29,7 +29,7 @@ This page is related to the **whitebox** Python package for geospatial analysis,
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 * PyPI: https://pypi.org/project/whitebox/
 * Documentation: https://whitebox.readthedocs.io
-* Free software: MIT license
+* Free software: `MIT license`_
 
 
 **Contents**
@@ -99,7 +99,15 @@ Check the example.py_ for more details.
 
 Available Tools
 ---------------
-The library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions.
+The whitebox library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions. WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools Runner**, which can be invoked using the following Python script:
+
+.. code:: python
+
+  import whitebox
+  whitebox.Runner()
+
+.. image:: https://wetlands.io/file/images/whitebox.jpg
+
 
 **Data Tools**
 
@@ -468,7 +476,7 @@ If you would like to contribute to the project as a developer, follow these inst
 License
 -------
 
-The **whitebox** package is distributed under the `MIT License`_, a permissive open-source (free software) license.
+The **whitebox** package is distributed under the `MIT license`_, a permissive open-source (free software) license.
 
 
 Reporting Bugs
@@ -496,4 +504,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`Geomorphometry and Hydrogeomatics Research Group`: http://www.uoguelph.ca/~hydrogeo/index.html
 .. _`conda user guide`: https://conda.io/docs/user-guide/install/index.html
 .. _`managing Python environment`: https://conda.io/docs/user-guide/tasks/manage-environments.html
-.. _`MIT License`: https://opensource.org/licenses/MIT
+.. _`MIT license`: https://opensource.org/licenses/MIT

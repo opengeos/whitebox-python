@@ -7,4 +7,4 @@ __email__ = 'giswqs@gmail.com'
 __version__ = '0.1.2'
 
 from .whitebox_tools import WhiteboxTools
-
+from .wb_runner import Runner
