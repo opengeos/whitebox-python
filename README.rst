@@ -64,7 +64,7 @@ If you have installed **whitebox** Python package before and want to upgrade to 
 
 .. code:: python
 
-  pip install whitebox --upgrade
+  pip install whitebox -U
 
 
 It is recommended that you use a Python virtual environment (e.g., conda) to test the whitebox package. Please follow the `conda user guide`_ to install conda if necessary. Once you have conda installed, you can use Terminal or an Anaconda Promopt to create a Python virtual environment. Check `managing Python environment`_ for more information. 
@@ -73,7 +73,6 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 
   conda create -n py36 python=3.6
   source activate py36
-  conda list
   pip install whitebox
 
 
@@ -115,7 +114,7 @@ WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools R
 
 Available Tools
 ---------------
-The whitebox library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions. 
+The whitebox library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: `Data Tools`_, `GIS Analysis`_, `Hydrological Analysis`_, `Image Analysis`_, `LiDAR Analysis`_, `Mathematical and Statistical Analysis`_, `Stream Network Analysis`_, and `Terrain Analysis`_. The following is a complete listing of available tools, with brief tool descriptions. 
 
 
 Data Tools
