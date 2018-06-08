@@ -9,5 +9,5 @@ Development Lead
 
 Contributors
 ------------
+* John Lindsay <jlindsay@uoguelph.ca>
 
-None yet. Why not be the first?

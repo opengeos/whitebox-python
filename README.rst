@@ -17,9 +17,9 @@ whitebox
 
 
 
-An advanced geospatial data analysis platform.
+A Python package for advanced geospatial data analysis.
 
-This page is related to the **whitebox** Python package for geospatial analysis, which is built on WhiteboxTools_.
+This page is related to the **whitebox** Python package for geospatial analysis, which is built on a stand-alone executable command-line program called WhiteboxTools_.
 
 
 
@@ -48,7 +48,7 @@ This page is related to the **whitebox** Python package for geospatial analysis,
 
 Description
 -----------
-The **whitebox** Python package is built on **WhiteboxTools**, an advanced geospatial data analysis platform developed by Prof. John Lindsay (webpage_; jblindsay_) at the `University of Guelph's`_ `Geomorphometry and Hydrogeomatics Research Group`_. *WhiteboxTools* can be used to perform common geographical information systems (GIS) analysis operations, such as cost-distance analysis, distance buffering, and raster reclassification. Remote sensing and image processing tasks include image enhancement (e.g. panchromatic sharpening, contrast adjustments), image mosaicing, numerous filtering operations, simple classification (k-means), and common image transformations. *WhiteboxTools* also contains advanced tooling for spatial hydrological analysis (e.g. flow-accumulation, watershed delineation, stream network analysis, sink removal), terrain analysis (e.g. common terrain indices such as slope, curvatures, wetness index, hillshading; hypsometric analysis; multi-scale topographic position analysis), and LiDAR data processing. LiDAR point clouds can be interrogated (LidarInfo, LidarHistogram), segmented, tiled and joined, analyized for outliers, interpolated to rasters (DEMs, intensity images), and ground-points can be classified or filtered. *WhiteboxTools* is not a cartographic or spatial data visualization package; instead it is meant to serve as an analytical backend for other data visualization software, mainly GIS.
+The **whitebox** Python package is built on **WhiteboxTools**, an advanced geospatial data analysis platform developed by Prof. John Lindsay (webpage_; jblindsay_) at the University of Guelph's `Geomorphometry and Hydrogeomatics Research Group`_. *WhiteboxTools* can be used to perform common geographical information systems (GIS) analysis operations, such as cost-distance analysis, distance buffering, and raster reclassification. Remote sensing and image processing tasks include image enhancement (e.g. panchromatic sharpening, contrast adjustments), image mosaicing, numerous filtering operations, simple classification (k-means), and common image transformations. *WhiteboxTools* also contains advanced tooling for spatial hydrological analysis (e.g. flow-accumulation, watershed delineation, stream network analysis, sink removal), terrain analysis (e.g. common terrain indices such as slope, curvatures, wetness index, hillshading; hypsometric analysis; multi-scale topographic position analysis), and LiDAR data processing. LiDAR point clouds can be interrogated (LidarInfo, LidarHistogram), segmented, tiled and joined, analyized for outliers, interpolated to rasters (DEMs, intensity images), and ground-points can be classified or filtered. *WhiteboxTools* is not a cartographic or spatial data visualization package; instead it is meant to serve as an analytical backend for other data visualization software, mainly GIS.
 
 
 Installation
@@ -58,6 +58,13 @@ Installation
 .. code:: python
 
   pip install whitebox
+
+
+If you have installed **whitebox** Python package before and want to upgrade to the latest version, you can use the following command:
+
+.. code:: python
+
+  pip install whitebox --upgrade
 
 
 It is recommended that you use a Python virtual environment (e.g., conda) to test the whitebox package. Please follow the `conda user guide`_ to install conda if necessary. Once you have conda installed, you can use Terminal or an Anaconda Promopt to create a Python virtual environment. Check `managing Python environment`_ for more information. 
@@ -73,6 +80,7 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 Usage
 -----
 
+Tool names in the **whitebox** Python package can be called either using the snake_case or CamelCase convention (e.g. *lidar_info* or *LidarInfo*). See below for an example Python script (example.py_). If you are interested in using the *WhiteboxTools* command-line program, check `WhiteboxTools Usage`_.
 
 .. code:: python
 
@@ -93,13 +101,8 @@ Usage
     wbt.breach_depressions("smoothed.tif", "breached.tif")
     wbt.d_inf_flow_accumulation("breached.tif", "flow_accum.tif")
 
-Check the example.py_ for more details.
 
-
-
-Available Tools
----------------
-The whitebox library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions. WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools Runner**, which can be invoked using the following Python script:
+WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools Runner**, which can be invoked using the following Python script:
 
 .. code:: python
 
@@ -109,7 +112,14 @@ The whitebox library currently contains the following 323 tools, which are group
 .. image:: https://wetlands.io/file/images/whitebox.jpg
 
 
-**Data Tools**
+
+Available Tools
+---------------
+The whitebox library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions. 
+
+
+Data Tools
+==========
 
 - **ConvertNodataToZero**: Converts nodata values in a raster to zero.
 - **ConvertRasterFormat**: Converts raster data from one format to another.
@@ -122,7 +132,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **VectorPointsToRaster**: Converts a vector containing points into a raster.
 - **VectorPolygonsToRaster**: Converts a vector containing polygons into a raster.
 
-**Geomorphometric Analysis**
+Geomorphometric Analysis
+========================
 
 - **Aspect**: Calculates an aspect raster from an input DEM.
 - **DevFromMeanElev**: Calculates deviation from mean elevation.
@@ -171,7 +182,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **VisibilityIndex**: Estimates the relative visibility of sites in a DEM.
 - **WetnessIndex**: Calculates the topographic wetness index, Ln(A / tan(slope)).
 
-**GIS Analysis**
+GIS Analysis
+============
 
 - **AggregateRaster**: Aggregates a raster to a lower resolution.
 - **AverageOverlay**: Calculates the average for each grid cell from a group of raster images.
@@ -207,7 +219,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **WeightedOverlay**: Performs a weighted sum on multiple input rasters after converting each image to a common scale. The tool performs a multi-criteria evaluation (MCE).
 - **WeightedSum**: Performs a weighted-sum overlay on multiple input raster images.
 
-**Hydrological Analysis**
+Hydrological Analysis
+=====================
 
 - **AverageFlowpathSlope**: measures the average length of all upslope flowpaths draining each grid cell.
 - **AverageUpslopeFlowpathLength**: Measures the average length of all upslope flowpaths draining each grid cell.
@@ -253,7 +266,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **UnnestBasins**: Extract whole watersheds for a set of outlet points.
 - **Watershed**: Identifies the watershed, or drainage basin, draining to a set of target cells.
 
-**Image Analysis**
+Image Analysis
+==============
 
 - **AdaptiveFilter**: Performs an adaptive filter on an image.
 - **BalanceContrastEnhancement**: Performs a balance contrast enhancement on a colour-composite image of multispectral data.
@@ -321,7 +335,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **UserDefinedWeightsFilter**: Performs a user-defined weights filter on an image.
 - **WriteFunctionMemoryInsertion**: Performs a write function memory insertion for single-band multi-date change detection.
 
-**LiDAR Analysis**
+LiDAR Analysis
+==============
 
 - **BlockMaximum**: Creates a block-maximum raster from an input LAS file.
 - **BlockMinimum**: Creates a block-minimum raster from an input LAS file.
@@ -353,7 +368,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **LidarTophatTransform**: Performs a white top-hat transform on a Lidar dataset; as an estimate of height above ground, this is useful for modelling the vegetation canopy.
 - **NormalVectors**: Calculates normal vectors for points within a LAS file and stores these data (XYZ vector components) in the RGB field.
 
-**Mathematical and Statistical Analysis**
+Mathematical and Statistical Analysis
+=====================================
 
 - **AbsoluteValue**: Calculates the absolute value of every cell in a raster.
 - **Add**: Performs an addition operation on two rasters or a raster and a constant value.
@@ -432,7 +448,8 @@ The whitebox library currently contains the following 323 tools, which are group
 - **Xor**: Performs a logical XOR operator on two Boolean raster images.
 - **ZScores**: Standardizes the values in an input raster by converting to z-scores.
 
-**Stream Network Analysis**
+Stream Network Analysis
+=======================
 
 - **DistanceToOutlet**: Calculates the distance of stream grid cells to the channel network outlet cell.
 - **ExtractStreams**: Extracts stream grid cells from a flow accumulation raster.
@@ -500,8 +517,8 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 .. _webpage: http://www.uoguelph.ca/~hydrogeo/index.html
 .. _jblindsay: https://github.com/jblindsay
-.. _`University of Guelph's`: http://www.uoguelph.ca/
 .. _`Geomorphometry and Hydrogeomatics Research Group`: http://www.uoguelph.ca/~hydrogeo/index.html
 .. _`conda user guide`: https://conda.io/docs/user-guide/install/index.html
 .. _`managing Python environment`: https://conda.io/docs/user-guide/tasks/manage-environments.html
+.. _`WhiteboxTools Usage`: https://github.com/jblindsay/whitebox-tools#3-usage
 .. _`MIT license`: https://opensource.org/licenses/MIT

@@ -13,6 +13,7 @@ whitebox/testdata/smoothed.tif
 whitebox/whitebox_tools
 dev/
 .vscode/
+_build/
 
 # C extensions
 *.so
