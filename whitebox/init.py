@@ -30,14 +30,14 @@ def download_wbt():
         if not os.path.exists(exe_dir):  # Download WhiteboxTools executable file if non-existent
             print("Downloading WhiteboxTools pre-compiled binary ...")
             if platform.system() == "Windows":
-                # url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_win_amd64.zip"
-                url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_win_amd64.zip"
+                url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_win_amd64.zip"
+                # url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
-                # url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
-                url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_darwin_amd64.zip"
+                url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
+                # url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
-                # url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
-                url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_linux_amd64.tar.xz"
+                url = "http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
+                # url = "http://spatial.binghamton.edu/download/whitebox/WhiteboxTools_linux_amd64.tar.xz"
             else:
                 print("WhiteboxTools is not yet supported on {}!".format(platform.system()))
                 exit()
