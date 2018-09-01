@@ -3,7 +3,7 @@
 # This script is part of the WhiteboxTools geospatial analysis library.
 # Authors: Dr. John Lindsay
 # Created: November 28, 2017
-# Last Modified: September 1, 2018
+# Last Modified: November 28, 2017
 # License: MIT
 
 import __future__
@@ -26,7 +26,7 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog
 from tkinter import messagebox
 import webbrowser
-from whitebox_tools import WhiteboxTools, to_camelcase
+from .whitebox_tools import WhiteboxTools, to_camelcase
 
 wbt = WhiteboxTools()
 
@@ -514,29 +514,33 @@ class OptionsInput(tk.Frame):
         self.label.columnconfigure(0, weight=1)
 
         frame2 = ttk.Frame(frame, padding='0.0i')
-        opt = ttk.Combobox(frame2, width=40)
+        opt = tk.Listbox(frame2, width=40)  # , variable=self.value)
         opt.grid(row=0, column=0, sticky=tk.NSEW)
+        s = ttk.Scrollbar(frame2, orient=tk.VERTICAL, command=opt.yview)
+        s.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        opt['yscrollcommand'] = s.set
 
         self.value = None  # initialize in event of no default and no selection
         i = 1
         default_index = -1
         list = j['parameter_type']['OptionList']
-        values = ()
         for v in list:
-            values += (v,)
-            # opt.insert(tk.END, v)
+            #opt.insert(i, v)
+            opt.insert(tk.END, v)
             if v == default_value:
                 default_index = i - 1
             i = i + 1
 
-        opt['values'] = values
+        if i - 1 < 4:
+            opt['height'] = i - 1
+        else:
+            opt['height'] = 3
 
-        # opt.bind("<<ComboboxSelect>>", self.select)
-        opt.bind("<<ComboboxSelected>>", self.select)
+        opt.bind("<<ListboxSelect>>", self.select)
         if default_index >= 0:
-            opt.current(default_index)
-            opt.event_generate("<<ComboboxSelected>>")
-            # opt.see(default_index)
+            opt.select_set(default_index)
+            opt.event_generate("<<ListboxSelect>>")
+            opt.see(default_index)
 
         frame2.grid(row=0, column=0, sticky=tk.W)
         frame.grid(row=1, column=0, sticky=tk.W)
@@ -545,62 +549,6 @@ class OptionsInput(tk.Frame):
         # self.pack(fill=tk.BOTH, expand=1)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-
-        # # first make sure that the json data has the correct fields
-        # j = json.loads(json_str)
-        # self.name = j['name']
-        # self.description = j['description']
-        # self.flag = j['flags'][len(j['flags']) - 1]
-        # self.parameter_type = j['parameter_type']
-        # self.optional = j['optional']
-        # default_value = j['default_value']
-
-        # ttk.Frame.__init__(self, master)
-        # self.grid()
-        # self['padding'] = '0.1i'
-
-        # frame = ttk.Frame(self, padding='0.0i')
-
-        # self.label = ttk.Label(self, text=self.name, justify=tk.LEFT)
-        # self.label.grid(row=0, column=0, sticky=tk.W)
-        # self.label.columnconfigure(0, weight=1)
-
-        # frame2 = ttk.Frame(frame, padding='0.0i')
-        # opt = tk.Listbox(frame2, width=40)  # , variable=self.value)
-        # opt.grid(row=0, column=0, sticky=tk.NSEW)
-        # s = ttk.Scrollbar(frame2, orient=tk.VERTICAL, command=opt.yview)
-        # s.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        # opt['yscrollcommand'] = s.set
-
-        # self.value = None  # initialize in event of no default and no selection
-        # i = 1
-        # default_index = -1
-        # list = j['parameter_type']['OptionList']
-        # for v in list:
-        #     #opt.insert(i, v)
-        #     opt.insert(tk.END, v)
-        #     if v == default_value:
-        #         default_index = i - 1
-        #     i = i + 1
-
-        # if i - 1 < 4:
-        #     opt['height'] = i - 1
-        # else:
-        #     opt['height'] = 3
-
-        # opt.bind("<<ListboxSelect>>", self.select)
-        # if default_index >= 0:
-        #     opt.select_set(default_index)
-        #     opt.event_generate("<<ListboxSelect>>")
-        #     opt.see(default_index)
-
-        # frame2.grid(row=0, column=0, sticky=tk.W)
-        # frame.grid(row=1, column=0, sticky=tk.W)
-        # frame.columnconfigure(0, weight=1)
-
-        # # self.pack(fill=tk.BOTH, expand=1)
-        # self.columnconfigure(0, weight=1)
-        # self.rowconfigure(0, weight=1)
 
     def get_value(self):
         if self.value:
@@ -614,8 +562,8 @@ class OptionsInput(tk.Frame):
 
     def select(self, event):
         widget = event.widget
-        # selection = widget.curselection()
-        self.value = widget.get()  # selection[0])
+        selection = widget.curselection()
+        self.value = widget.get(selection[0])
 
 
 class DataInput(tk.Frame):
@@ -1120,6 +1068,15 @@ class WbRunner(tk.Frame):
 class JsonPayload(object):
     def __init__(self, j):
         self.__dict__ = json.loads(j)
+
+
+def Runner():
+    tool_name = None
+    if len(sys.argv) > 1:
+        tool_name = str(sys.argv[1])
+
+    wbr = WbRunner(tool_name)
+    wbr.mainloop()
 
 
 def main():

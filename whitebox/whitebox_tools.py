@@ -7,7 +7,7 @@ See whitebox_example.py for an example of how to use it.
 # Authors: Dr. John Lindsay
 # Contributors: Dr. Qiusheng Wu
 # Created: 28/11/2017
-# Last Modified: 09/01/2018
+# Last Modified: 07/06/2018
 # License: MIT
 
 
