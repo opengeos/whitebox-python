@@ -67,13 +67,14 @@ If you have installed **whitebox** Python package before and want to upgrade to 
   pip install whitebox -U
 
 
-It is recommended that you use a Python virtual environment (e.g., conda) to test the whitebox package. Please follow the `conda user guide`_ to install conda if necessary. Once you have conda installed, you can use Terminal or an Anaconda Promopt to create a Python virtual environment. Check `managing Python environment`_ for more information. 
+It is recommended that you use a Python virtual environment (e.g., conda) to test the whitebox package. Please follow the `conda user guide`_ to install conda if necessary. Once you have conda installed, you can use Terminal or an Anaconda Prompt to create a Python virtual environment. Check `managing Python environment`_ for more information.
 
 .. code:: python
 
   conda create -n py36 python=3.6
   source activate py36
   pip install whitebox
+
 
 
 Usage
@@ -109,6 +110,21 @@ WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools R
   whitebox.Runner()
 
 .. image:: https://wetlands.io/file/images/whitebox.png
+
+
+
+
+
+Troubleshooting
+---------------
+
+Linux
+=====
+When using ``import whitebox``, if you get an error that says ``No module named '_tkinter', please install the python3-tk package``, you can try the following solution:
+
+- For Ubuntu, Linux Mint, etc: ``sudo apt-get install python3-tk``
+- For Manjaro, Arch Linux: ``sudo pacman -S tk``
+
 
 
 
