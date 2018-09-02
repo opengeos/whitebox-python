@@ -108,13 +108,13 @@ WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools R
   import whitebox
   whitebox.Runner()
 
-.. image:: https://wetlands.io/file/images/whitebox.jpg
+.. image:: https://wetlands.io/file/images/whitebox.png
 
 
 
 Available Tools
 ---------------
-The whitebox library currently contains the following 323 tools, which are grouped based on their main function into one of the following categories: `Data Tools`_, `GIS Analysis`_, `Hydrological Analysis`_, `Image Analysis`_, `LiDAR Analysis`_, `Mathematical and Statistical Analysis`_, `Stream Network Analysis`_, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions. 
+The whitebox library currently contains the following 328 tools, which are grouped based on their main function into one of the following categories: `Data Tools`_, `GIS Analysis`_, `Hydrological Analysis`_, `Image Analysis`_, `LiDAR Analysis`_, `Mathematical and Statistical Analysis`_, `Stream Network Analysis`_, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions.
 
 
 Data Tools
