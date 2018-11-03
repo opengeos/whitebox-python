@@ -14,6 +14,7 @@ whitebox/whitebox_tools
 dev/
 .vscode/
 _build/
+temp/
 
 # C extensions
 *.so
@@ -82,6 +83,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+examples/.ipynb_checkpoints
 
 # pyenv
 .python-version
