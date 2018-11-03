@@ -15,6 +15,8 @@ whitebox
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
         :target: https://opensource.org/licenses/MIT
 
+.. image:: https://mybinder.org/badge.svg 
+        :target: https://mybinder.org/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
 
 
 A Python package for advanced geospatial data analysis.
@@ -75,6 +77,14 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
   source activate py36
   pip install whitebox
 
+
+
+Test whitebox in an interactive cloud environment
+-------------------------------------------------
+Launch the whitebox tutorial notebook directly with MyBinder now:
+
+.. image:: https://mybinder.org/badge.svg 
+        :target: https://mybinder.org/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
 
 
 Usage
