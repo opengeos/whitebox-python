@@ -95,7 +95,12 @@ class FileSelector(tk.Frame):
                 result = filedialog.askdirectory()
             elif "ExistingFile" in self.parameter_type:
                 ftypes = [('All files', '*.*')]
-                if 'Raster' in self.file_type:
+                if 'RasterAndVector' in self.file_type:
+                    ftypes = [("Shapefiles", "*.shp"), ('Raster files', ('*.dep', '*.tif',
+                                                '*.tiff', '*.flt',
+                                                '*.sdat', '*.rdc',
+                                                '*.asc'))]
+                elif 'Raster' in self.file_type:
                     ftypes = [('Raster files', ('*.dep', '*.tif',
                                                 '*.tiff', '*.flt',
                                                 '*.sdat', '*.rdc',
@@ -139,7 +144,9 @@ class FileSelector(tk.Frame):
             ext = os.path.splitext(v)[-1].lower().strip()
             if not ext:
                 ext = ""
-                if 'Raster' in self.file_type:
+                if 'RasterAndVector' in self.file_type:
+                    ext = '.tif'
+                elif 'Raster' in self.file_type:
                     ext = '.tif'
                 elif 'Lidar' in self.file_type:
                     ext = '.las'
@@ -242,7 +249,12 @@ class FileOrFloat(tk.Frame):
         try:
             result = self.value.get()
             ftypes = [('All files', '*.*')]
-            if 'Raster' in self.file_type:
+            if 'RasterAndVector' in self.file_type:
+                    ftypes = [("Shapefiles", "*.shp"), ('Raster files', ('*.dep', '*.tif',
+                                                '*.tiff', '*.flt',
+                                                '*.sdat', '*.rdc',
+                                                '*.asc'))]
+            elif 'Raster' in self.file_type:
                 ftypes = [('Raster files', ('*.dep', '*.tif',
                                             '*.tiff', '*.flt',
                                             '*.sdat', '*.rdc',
@@ -290,7 +302,9 @@ class FileOrFloat(tk.Frame):
             ext = os.path.splitext(v)[-1].lower()
             if not ext:
                 ext = ""
-                if 'Raster' in self.file_type:
+                if 'RasterAndVector' in self.file_type:
+                    ext = '.tif'
+                elif 'Raster' in self.file_type:
                     ext = '.tif'
                 elif 'Lidar' in self.file_type:
                     ext = '.las'
@@ -390,7 +404,12 @@ class MultifileSelector(tk.Frame):
             #result = self.value.get()
             init_dir = self.runner.working_dir
             ftypes = [('All files', '*.*')]
-            if 'Raster' in self.file_type:
+            if 'RasterAndVector' in self.file_type:
+                    ftypes = [("Shapefiles", "*.shp"), ('Raster files', ('*.dep', '*.tif',
+                                                '*.tiff', '*.flt',
+                                                '*.sdat', '*.rdc',
+                                                '*.asc'))]
+            elif 'Raster' in self.file_type:
                 ftypes = [('Raster files', ('*.dep', '*.tif',
                                             '*.tiff', '*.flt',
                                             '*.sdat', '*.rdc',
@@ -1110,7 +1129,7 @@ class WbRunner(tk.Frame):
     def refresh_tools(self):
         (self.toolslist, selected_item) = self.get_tools_list()
         self.tools_listbox.delete(0, len(self.toolslist))
-        for item in self.toolslist:
+        for item in sorted(self.toolslist):
             self.tools_listbox.insert(len(self.toolslist), item)
 
         self.tools_frame["text"] = "{} Available Tools".format(
@@ -1128,6 +1147,7 @@ def Runner():
 
     wbr = WbRunner(tool_name)
     wbr.mainloop()
+    
 
 def main():
     tool_name = None
