@@ -16,7 +16,7 @@ whitebox
         :target: https://opensource.org/licenses/MIT
 
 .. image:: https://mybinder.org/badge.svg 
-        :target: https://mybinder.org/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
+        :target: https://gishub.org/whitebox-cloud
 
 
 A Python package for advanced geospatial data analysis.
@@ -84,7 +84,7 @@ Test whitebox in an interactive cloud environment
 Launch the whitebox tutorial notebook directly with MyBinder now:
 
 .. image:: https://mybinder.org/badge.svg 
-        :target: https://mybinder.org/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
+        :target: https://gishub.org/whitebox-cloud
 
 
 Usage
