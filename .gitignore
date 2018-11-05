@@ -5,7 +5,6 @@ __pycache__/
 .idea/
 whitebox/WBT/
 **/*.tar.xz
-*.zip
 **/*.xml
 whitebox/testdata/breached.tif
 whitebox/testdata/flow_accum.tif
