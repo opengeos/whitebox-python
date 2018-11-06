@@ -31,6 +31,7 @@ This page is related to the **whitebox** Python package for geospatial analysis,
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 * PyPI: https://pypi.org/project/whitebox/
 * Documentation: https://whitebox.readthedocs.io
+* Binder: https://gishub.org/whitebox-cloud
 * Free software: `MIT license`_
 
 
@@ -38,7 +39,8 @@ This page is related to the **whitebox** Python package for geospatial analysis,
 
 - `Description`_
 - `Installation`_
-- `Usage`_
+- `whitebox Tutorials`_
+- `whitebox GUI`_
 - `Available Tools`_
 - `Supported Data Formats`_
 - `Contributing`_
@@ -78,17 +80,17 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
   pip install whitebox
 
 
+whitebox Tutorials
+------------------
 
-Test whitebox in an interactive cloud environment
--------------------------------------------------
 Launch the whitebox tutorial notebook directly with MyBinder now:
 
 .. image:: https://mybinder.org/badge.svg 
         :target: https://gishub.org/whitebox-cloud
 
 
-Usage
------
+Quick Example
+=============
 
 Tool names in the **whitebox** Python package can be called either using the snake_case or CamelCase convention (e.g. *lidar_info* or *LidarInfo*). See below for an example Python script (example.py_). If you are interested in using the *WhiteboxTools* command-line program, check `WhiteboxTools Usage`_.
 
@@ -111,6 +113,23 @@ Tool names in the **whitebox** Python package can be called either using the sna
     wbt.breach_depressions("smoothed.tif", "breached.tif")
     wbt.d_inf_flow_accumulation("breached.tif", "flow_accum.tif")
 
+
+A Jupyter Notebook Tutorial for whitebox
+========================================
+
+This tutorial can be accessed in three ways:
+
+- HTML version: https://gishub.org/whitebox-html
+- Viewable Notebook: https://gishub.org/whitebox-notebook
+- Interactive Notebook: https://gishub.org/whitebox-cloud
+
+Launch this tutorial as an interactive Jupyter Notebook on the cloud - https://gishub.org/whitebox-cloud.
+
+.. image:: https://i.imgur.com/LF4UE1j.gif
+
+
+whitebox GUI
+------------
 
 WhiteboxTools also provides a Graphical User Interface (GUI) - **WhiteboxTools Runner**, which can be invoked using the following Python script:
 
@@ -140,7 +159,7 @@ When using ``import whitebox``, if you get an error that says ``No module named 
 
 Available Tools
 ---------------
-The whitebox library currently contains the following 328 tools, which are grouped based on their main function into one of the following categories: `Data Tools`_, `GIS Analysis`_, `Hydrological Analysis`_, `Image Analysis`_, `LiDAR Analysis`_, `Mathematical and Statistical Analysis`_, `Stream Network Analysis`_, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions.
+The whitebox library currently contains the following 372 tools, which are grouped based on their main function into one of the following categories: `Data Tools`_, `GIS Analysis`_, `Hydrological Analysis`_, `Image Analysis`_, `LiDAR Analysis`_, `Mathematical and Statistical Analysis`_, `Stream Network Analysis`_, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions.
 
 
 Data Tools
