@@ -2,6 +2,11 @@
 whitebox
 ========
 
+.. image:: https://mybinder.org/badge_logo.svg 
+        :target: https://gishub.org/whitebox-cloud
+
+.. image:: http://binder.pangeo.io/badge.svg 
+        :target: http://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
 
 .. image:: https://img.shields.io/pypi/v/whitebox.svg
         :target: https://pypi.python.org/pypi/whitebox
@@ -15,8 +20,6 @@ whitebox
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
         :target: https://opensource.org/licenses/MIT
 
-.. image:: https://mybinder.org/badge.svg 
-        :target: https://gishub.org/whitebox-cloud
 
 
 A Python package for advanced geospatial data analysis.
@@ -83,10 +86,13 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 whitebox Tutorials
 ------------------
 
-Launch the whitebox tutorial notebook directly with MyBinder now:
+Launch the whitebox tutorial notebook directly with **mybinder.org** or **binder.pangeo.io** now:
 
-.. image:: https://mybinder.org/badge.svg 
+.. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
+
+.. image:: http://binder.pangeo.io/badge.svg 
+        :target: http://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
 
 
 Quick Example
