@@ -1147,7 +1147,7 @@ def Runner():
 
     wbr = WbRunner(tool_name)
     wbr.mainloop()
-    
+
 
 def main():
     tool_name = None

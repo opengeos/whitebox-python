@@ -165,19 +165,29 @@ When using ``import whitebox``, if you get an error that says ``No module named 
 
 Available Tools
 ---------------
-The whitebox library currently contains the following 372 tools, which are grouped based on their main function into one of the following categories: `Data Tools`_, `GIS Analysis`_, `Hydrological Analysis`_, `Image Analysis`_, `LiDAR Analysis`_, `Mathematical and Statistical Analysis`_, `Stream Network Analysis`_, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions.
-
+The library currently contains 395 tools, which are each grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. The following is a complete listing of available tools, with brief tool descriptions.
 
 Data Tools
 ==========
 
+- **AddPointCoordinatesToTable**: Modifies the attribute table of a point vector by adding fields containing each point's X and Y coordinates.
 - **ConvertNodataToZero**: Converts nodata values in a raster to zero.
 - **ConvertRasterFormat**: Converts raster data from one format to another.
 - **ExportTableToCsv**: Exports an attribute table to a CSV text file.
-- **IdwInterpolation**: Interpolates vector points into a raster surface using an inverse-distance weighted scheme.
+- **JoinTables**: Merge a vector's attribute table with another table based on a common field.
+- **LinesToPolygons**: Converts vector polylines to polygons.
+- **MergeTableWithCsv**: Merge a vector's attribute table with a table contained within a CSV text file.
+- **MergeVectors**: Combines two or more input vectors of the same ShapeType creating a single, new output vector.
+- **MultiPartToSinglePart**: Converts a vector file containing multi-part features into a vector containing only single-part features.
 - **NewRasterFromBase**: Creates a new raster using a base image.
+- **PolygonsToLines**: Converts vector polygons into polylines.
 - **PrintGeoTiffTags**: Prints the tags within a GeoTIFF.
+- **RasterToVectorLines**: Converts a raster lines features into vector of the POLYLINE shapetype.
+- **RasterToVectorPoints**: Converts a raster dataset to a vector of the POINT shapetype.
+- **ReinitializeAttributeTable**: initializes a vector's attribute table deleting all fields but the feature ID (FID).
+- **RemovePolygonHoles**: Removes holes within the features of a vector polygon file.
 - **SetNodataValue**: Assign a specified value in an input image to the NoData value.
+- **SinglePartToMultiPart**: Converts a vector file containing multi-part features into a vector containing only single-part features.
 - **VectorLinesToRaster**: Converts a vector containing polylines into a raster.
 - **VectorPointsToRaster**: Converts a vector containing points into a raster.
 - **VectorPolygonsToRaster**: Converts a vector containing polygons into a raster.
@@ -189,6 +199,7 @@ Geomorphometric Analysis
 - **DevFromMeanElev**: Calculates deviation from mean elevation.
 - **DiffFromMeanElev**: Calculates difference from mean elevation (equivalent to a high-pass filter).
 - **DirectionalRelief**: Calculates relief for cells in an input DEM for a specified direction.
+- **DrainagePreservingSmoothing**: Reduces short-scale variation in an input DEM while preserving breaks-in-slope and small drainage features using a modified Sun et al. (2007) algorithm.
 - **DownslopeIndex**: Calculates the Hjerdt et al. (2004) downslope index.
 - **ElevAbovePit**: Calculate the elevation of each grid cell above the nearest downstream pit cell or grid edge cell.
 - **ElevPercentile**: Calculates the elevation percentile raster from a DEM.
@@ -199,10 +210,12 @@ Geomorphometric Analysis
 - **FillMissingData**: Fills nodata holes in a DEM.
 - **FindRidges**: Identifies potential ridge and peak grid cells.
 - **Hillshade**: Calculates a hillshade raster from an input DEM.
+- **HorizonAngle**: Calculates horizon angle (maximum upwind slope) for each grid cell in an input DEM.
 - **HypsometricAnalysis**: Calculates a hypsometric curve for one or more DEMs.
 - **MaxAnisotropyDev**: Calculates the maximum anisotropy (directionality) in elevation deviation over a range of spatial scales.
 - **MaxAnisotropyDevSignature**: Calculates the anisotropy in deviation from mean for points over a range of spatial scales.
 - **MaxBranchLength**: Lindsay and Seibert's (2013) branch length index is used to map drainage divides or ridge lines.
+- **MaxDifferenceFromMean**: Calculates the maximum difference from mean elevation over a range of spatial scales.
 - **MaxDownslopeElevChange**: Calculates the maximum downslope change in elevation between a grid cell and its eight downslope neighbors.
 - **MaxElevationDeviation**: Calculates the maximum elevation deviation over a range of spatial scales.
 - **MaxElevDevSignature**: Calculates the maximum elevation deviation over a range of spatial scales and for a set of points.
@@ -210,7 +223,6 @@ Geomorphometric Analysis
 - **MultiscaleRoughness**: Calculates surface roughness over a range of spatial scales.
 - **MultiscaleRoughnessSignature**: Calculates the surface roughness for points over a range of spatial scales.
 - **MultiscaleTopographicPositionImage**: Creates a multiscale topographic position image from three DEVmax rasters of differing spatial scale ranges.
-- **HorizonAngle**: Calculates horizon angle (maximum upwind slope) for each grid cell in an input DEM.
 - **NumDownslopeNeighbours**: Calculates the number of downslope neighbours to each grid cell in a DEM.
 - **NumUpslopeNeighbours**: Calculates the number of upslope neighbours to each grid cell in a DEM.
 - **PennockLandformClass**: Classifies hillslope zones based on slope, profile curvature, and plan curvature.
@@ -226,6 +238,7 @@ Geomorphometric Analysis
 - **SedimentTransportIndex**: Calculates the sediment transport index.
 - **Slope**: Calculates a slope raster from an input DEM.
 - **SlopeVsElevationPlot**: Creates a slope vs. elevation plot for one or more DEMs.
+- **StandardDeviationOfSlope**: Calculates the standard deviation of slope from an input DEM.
 - **TangentialCurvature**: Calculates a tangential curvature raster from an input DEM.
 - **TotalCurvature**: Calculates a total curvature raster from an input DEM.
 - **Viewshed**: Identifies the viewshed for a point or set of points.
@@ -237,35 +250,80 @@ GIS Analysis
 
 - **AggregateRaster**: Aggregates a raster to a lower resolution.
 - **AverageOverlay**: Calculates the average for each grid cell from a group of raster images.
+- **BlockMaximumGridding**: Creates a raster grid based on a set of vector points and assigns grid values using a block maximum scheme.
+- **BlockMinimumGridding**: Creates a raster grid based on a set of vector points and assigns grid values using a block minimum scheme.
 - **BufferRaster**: Maps a distance-based buffer around each non-background (non-zero/non-nodata) grid cell in an input image.
 - **Centroid**: Calculates the centroid, or average location, of raster polygon objects.
+- **CentroidVector**: Identifes the centroid point of a vector polyline or polygon feature or a group of vector points.
+- **Clip**: Extract all the features, or parts of features, that overlap with the features of the clip vector.
 - **ClipRasterToPolygon**: Clips a raster to a vector polygon.
 - **Clump**: Groups cells that form physically discrete areas, assigning them unique identifiers.
+- **CompactnessRatio**: Calculates the compactness ratio (A/P), a measure of shape complexity, for vector polygons.
+- **ConstructVectorTin**: This tool creates a vector triangular irregular network (TIN) for a set of vector points.
 - **CountIf**: Counts the number of occurrences of a specified value in a cell-stack of rasters.
 - **CostAllocation**: Identifies the source cell to which each grid cell is connected by a least-cost pathway in a cost-distance analysis.
 - **CostDistance**: Performs cost-distance accumulation on a cost surface and a group of source cells.
 - **CostPathway**: Performs cost-distance pathway analysis using a series of destination grid cells.
+- **CreateHexagonalVectorGrid**: Creates an hexagonal vector grid.
 - **CreatePlane**: Creates a raster image based on the equation for a simple plane.
+- **CreateRectangularVectorGrid**: Creates a rectangular vector grid.
+- **Dissolve**: Removes the interior, or shared, boundaries within a vector polygon coverage.
 - **EdgeProportion**: Calculate the proportion of cells in a raster polygon that are edge cells.
+- **EliminateCoincidentPoints**: Removes any coincident, or nearly coincident, points from a vector points file.
+- **ElongationRatio**: Calculates the elongation ratio for vector polygons.
+- **Erase**: Removes all the features, or parts of features, that overlap with the features of the erase vector polygon.
 - **ErasePolygonFromRaster**: Erases (cuts out) a vector polygon from a raster.
-- **EuclideanAllocation**: Assigns grid cells in the output raster the value of the nearest target cell in the input image, measured by the Shih and Wu (2004) Euclidean distance transform.
+- **EuclideanAllocation**: Assigns grid cells in the output raster the value of the nearest target cell in the input image, measured by the Shih and Wu (2004) Euclidean distance transform. 
 - **EuclideanDistance**: Calculates the Shih and Wu (2004) Euclidean distance transform.
+- **ExtendVectorLines**: Extends vector lines by a specified distance.
+- **ExtractNodes**: Converts vector lines or polygons into vertex points.
+- **ExtractRasterValuesAtPoints**: Extracts the values of raster(s) at vector point locations.
+- **FindLowestOrHighestPoints**: Locates the lowest and/or highest valued cells in a raster.
 - **FindPatchOrClassEdgeCells**: Finds all cells located on the edge of patch or class features.
 - **HighestPosition**: Identifies the stack position of the maximum value within a raster stack on a cell-by-cell basis.
+- **HoleProportion**: Calculates the proportion of the total area of a polygon's holes relative to the area of the polygon's hull.
+- **IdwInterpolation**: Interpolates vector points into a raster surface using an inverse-distance weighted scheme.
+- **Intersect**: Identifies the parts of features in common between two input vector layers.
+- **LayerFootprint**: Creates a vector polygon footprint of the area covered by a raster grid or vector layer.
+- **LinearityIndex**: Calculates the linearity index for vector polygons.
+- **LineIntersections**: Identifies points where the features of two vector line layers intersect.
 - **LowestPosition**: Identifies the stack position of the minimum value within a raster stack on a cell-by-cell basis.
 - **MaxAbsoluteOverlay**: Evaluates the maximum absolute value for each grid cell from a stack of input rasters.
 - **MaxOverlay**: Evaluates the maximum value for each grid cell from a stack of input rasters.
+- **Medoid**: Calculates the medoid for a series of vector features contained in a shapefile.
 - **MinAbsoluteOverlay**: Evaluates the minimum absolute value for each grid cell from a stack of input rasters.
+- **MinimumBoundingBox**: Creates a vector minimum bounding rectangle around vector features.
+- **MinimumBoundingCircle**: Delineates the minimum bounding circle (i.e. smallest enclosing circle) for a group of vectors.
+- **MinimumBoundingEnvelope**: Creates a vector axis-aligned minimum bounding rectangle (envelope) around vector features.
+- **MinimumConvexHull**: Creates a vector convex polygon around vector features.
 - **MinOverlay**: Evaluates the minimum value for each grid cell from a stack of input rasters.
+- **NearestNeighbourGridding**: Creates a raster grid based on a set of vector points and assigns grid values using the nearest neighbour.
+- **PatchOrientation**: Calculates the orientation of vector polygons.
 - **PercentEqualTo**: Calculates the percentage of a raster stack that have cell values equal to an input on a cell-by-cell basis.
 - **PercentGreaterThan**: Calculates the percentage of a raster stack that have cell values greater than an input on a cell-by-cell basis.
 - **PercentLessThan**: Calculates the percentage of a raster stack that have cell values less than an input on a cell-by-cell basis.
+- **PerimeterAreaRatio**: Calculates the perimeter-area ratio of vector polygons.
 - **PickFromList**: Outputs the value from a raster stack specified by a position raster.
+- **PolygonArea**: Calculates the area of vector polygons.
+- **PolygonLongAxis**: This tool can be used to map the long axis of polygon features.
+- **PolygonPerimeter**: Calculates the perimeter of vector polygons.
+- **PolygonShortAxis**: This tool can be used to map the short axis of polygon features.
+- **Polygonize**: Creates a polygon layer from two or more intersecting line features contained in one or more input vector line files.
 - **RadiusOfGyration**: Calculates the distance of cells from their polygon's centroid.
 - **RasterCellAssignment**: Assign row or column number to cells.
 - **Reclass**: Reclassifies the values in a raster image.
 - **ReclassEqualInterval**: Reclassifies the values in a raster image based on equal-ranges.
 - **ReclassFromFile**: Reclassifies the values in a raster image using reclass ranges in a text file.
+- **RelatedCircumscribingCircle**: Calculates the related circumscribing circle of vector polygons.
+- **ShapeComplexityIndex**: Calculates overall polygon shape complexity or irregularity.
+- **SmoothVectors**: Smooths a vector coverage of either a POLYLINE or POLYGON base ShapeType.
+- **SplitWithLines**: Splits the lines or polygons in one layer using the lines in another layer
+- **SumOverlay**: Calculates the sum for each grid cell from a group of raster images.
+- **SymmetricalDifference**: Outputs the features that occur in one of the two vector inputs but not both, i.e. no overlapping features.
+- **TINGridding**: Creates a raster grid based on a triangular irregular network (TIN) fitted to vector points.
+- **Union**: Splits vector layers at their overlaps, creating a layer containing all the portions from both input and overlay layers.
+- **VectorHexBinning**: Hex-bins a set of vector points.
+- **VoronoiDiagram**: s tool creates a vector Voronoi diagram for a set of vector points.
 - **WeightedOverlay**: Performs a weighted sum on multiple input rasters after converting each image to a common scale. The tool performs a multi-criteria evaluation (MCE).
 - **WeightedSum**: Performs a weighted-sum overlay on multiple input raster images.
 
@@ -304,6 +362,7 @@ Hydrological Analysis
 - **Isobasins**: Divides a landscape into nearly equal sized drainage basins (i.e. watersheds).
 - **JensonSnapPourPoints**: Moves outlet points used to specify points of interest in a watershedding operation to the nearest stream cell.
 - **MaxUpslopeFlowpathLength**: Measures the maximum length of all upslope flowpaths draining each grid cell.
+- **LongestFlowpath**: Delineates the longest flowpaths for a group of subbasins or watersheds. 
 - **NumInflowingNeighbours**: Computes the number of inflowing neighbours to each cell in an input DEM based on the D8 algorithm.
 - **RaiseWalls**: Raises walls in a DEM along a line or around a polygon, e.g. a watershed.
 - **Rho8Pointer**: Calculates a stochastic Rho8 flow pointer raster from an input DEM.
@@ -339,6 +398,7 @@ Image Analysis
 - **GaussianContrastStretch**: Performs a Gaussian contrast stretch on input images.
 - **GaussianFilter**: Performs a Gaussian filter on an image.
 - **HighPassFilter**: Performs a high-pass filter on an input image.
+- **HighPassMedianFilter**: Performs a high-pass median filter on an input image.
 - **HistogramEqualization**: Performs a histogram equalization contrast enhancement on an image.
 - **HistogramMatching**: Alters the statistical distribution of a raster image matching it to a specified PDF.
 - **HistogramMatchingTwoImages**: This tool alters the cumulative distribution function of a raster image to that of another image.
@@ -388,19 +448,24 @@ Image Analysis
 LiDAR Analysis
 ==============
 
-- **BlockMaximum**: Creates a block-maximum raster from an input LAS file.
-- **BlockMinimum**: Creates a block-minimum raster from an input LAS file.
 - **ClassifyOverlapPoints**: Classifies or filters LAS point in regions of overlapping flight lines.
 - **ClipLidarToPolygon**: Clips a LiDAR point cloud to a vector polygon or polygons.
 - **ErasePolygonFromLidar**: Erases (cuts out) a vector polygon or polygons from a LiDAR point cloud.
 - **FilterLidarScanAngles**: Removes points in a LAS file with scan angles greater than a threshold.
 - **FindFlightlineEdgePoints**: Identifies points along a flightline's edge in a LAS file.
 - **FlightlineOverlap**: Reads a LiDAR (LAS) point file and outputs a raster containing the number of overlapping flight lines in each grid cell.
-- **LidarElevationSlice**: Outputs all of the points within a LiDAR (LAS) point file that lie between a specified elevation range.
 - **LasToAscii**: Converts one or more LAS files into ASCII text files.
+- **LasToMultipointShapefile**: Converts one or more LAS files into MultipointZ vector Shapefiles.
+- **LasToShapefile**: Converts one or more LAS files into a vector Shapefile of POINT ShapeType.
+- **LidarBlockMaximum**: Creates a block-maximum raster from an input LAS file.
+- **LidarBlockMinimum**: Creates a block-minimum raster from an input LAS file.
+- **LidarClassifySubset**: Classifies the values in one LiDAR point cloud that correpond with points in a subset cloud.
 - **LidarColourize**: Adds the red-green-blue colour fields of a LiDAR (LAS) file based on an input image.
+- **LidarConstructVectorTIN**: Creates a vector triangular irregular network (TIN) fitted to LiDAR points.
+- **LidarElevationSlice**: Outputs all of the points within a LiDAR (LAS) point file that lie between a specified elevation range.
 - **LidarGroundPointFilter**: Identifies ground points within LiDAR dataset.
 - **LidarIdwInterpolation**: Interpolates LAS files using an inverse-distance weighted (IDW) scheme.
+- **LidarHexBinning**: Hex-bins a set of LiDAR points.
 - **LidarHillshade**: Calculates a hillshade value for points within a LAS file and stores these data in the RGB field.
 - **LidarHistogram**: Creates a histogram from LiDAR data.
 - **LidarInfo**: Prints information about a LiDAR (LAS) dataset, including header, point return frequency, and classification data and information about the variable length records (VLRs) and geokeys.
@@ -414,9 +479,13 @@ LiDAR Analysis
 - **LidarSegmentation**: Segments a LiDAR point cloud based on normal vectors.
 - **LidarSegmentationBasedFilter**: Identifies ground points within LiDAR point clouds using a segmentation based approach.
 - **LidarThin**: Thins a LiDAR point cloud, reducing point density.
+- **LidarThinHighDensity**: Thins points from high density areas within a LiDAR point cloud.
 - **LidarTile**: Tiles a LiDAR LAS file into multiple LAS files.
+- **LidarTileFootprint**: Creates a vector polygon of the convex hull of a LiDAR point cloud.
+- **LidarTinGridding**: Creates a raster grid based on a triangular irregular network (TIN) fitted to LiDAR points.
 - **LidarTophatTransform**: Performs a white top-hat transform on a Lidar dataset; as an estimate of height above ground, this is useful for modelling the vegetation canopy.
 - **NormalVectors**: Calculates normal vectors for points within a LAS file and stores these data (XYZ vector components) in the RGB field.
+- **SelectTilesByPolygon**: Copies LiDAR tiles overlapping with a polygon into an output directory.
 
 Mathematical and Statistical Analysis
 =====================================
@@ -512,6 +581,7 @@ Stream Network Analysis
 - **LongProfile**: Plots the stream longitudinal profiles for one or more rivers.
 - **LongProfileFromPoints**: Plots the longitudinal profiles from flow-paths initiating from a set of vector points.
 - **RasterizeStreams**: Rasterizes vector streams based on Lindsay (2016) method.
+- **RasterStreamsToVector**: Converts a raster stream file into a vector file.
 - **RemoveShortStreams**: Removes short first-order streams from a stream network.
 - **ShreveStreamMagnitude**: Assigns the Shreve stream magnitude to each link in a stream network.
 - **StrahlerStreamOrder**: Assigns the Strahler stream order to each link in a stream network.
