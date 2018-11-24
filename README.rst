@@ -5,11 +5,11 @@ whitebox
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
 
-.. image:: http://binder.pangeo.io/badge.svg 
-        :target: http://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
-
 .. image:: https://img.shields.io/pypi/v/whitebox.svg
         :target: https://pypi.python.org/pypi/whitebox
+
+.. image:: https://anaconda.org/giswqs/whitebox/badges/version.svg
+        :target: https://anaconda.org/giswqs/whitebox
 
 .. image:: https://img.shields.io/travis/giswqs/whitebox.svg
         :target: https://travis-ci.org/giswqs/whitebox
@@ -80,7 +80,7 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 
   conda create -n py36 python=3.6
   source activate py36
-  pip install whitebox
+  conda install -c giswqs whitebox 
 
 
 whitebox Tutorials
