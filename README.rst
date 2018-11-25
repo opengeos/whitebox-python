@@ -8,6 +8,9 @@ whitebox
 .. image:: https://img.shields.io/pypi/v/whitebox.svg
         :target: https://pypi.python.org/pypi/whitebox
 
+.. image:: https://pepy.tech/badge/whitebox
+        :target: https://pepy.tech/project/whitebox
+
 .. image:: https://anaconda.org/giswqs/whitebox/badges/version.svg
         :target: https://anaconda.org/giswqs/whitebox
 
