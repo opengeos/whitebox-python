@@ -5,6 +5,9 @@ whitebox
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
 
+.. image:: https://binder.pangeo.io/badge.svg 	
+        :target: https://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
+
 .. image:: https://img.shields.io/pypi/v/whitebox.svg
         :target: https://pypi.python.org/pypi/whitebox
 
@@ -94,8 +97,8 @@ Launch the whitebox tutorial notebook directly with **mybinder.org** or **binder
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
 
-.. image:: http://binder.pangeo.io/badge.svg 
-        :target: http://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
+.. image:: https://binder.pangeo.io/badge.svg 
+        :target: https://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
 
 
 Quick Example
