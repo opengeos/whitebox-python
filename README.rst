@@ -14,8 +14,8 @@ whitebox
 .. image:: https://pepy.tech/badge/whitebox
         :target: https://pepy.tech/project/whitebox
 
-.. image:: https://anaconda.org/giswqs/whitebox/badges/version.svg
-        :target: https://anaconda.org/giswqs/whitebox
+.. image:: https://anaconda.org/conda-forge/whitebox/badges/version.svg
+        :target: https://anaconda.org/conda-forge/whitebox
 
 .. image:: https://img.shields.io/travis/giswqs/whitebox.svg
         :target: https://travis-ci.org/giswqs/whitebox
@@ -39,6 +39,7 @@ This page is related to the **whitebox** Python package for geospatial analysis,
 * GitHub repo: https://github.com/giswqs/whitebox
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 * PyPI: https://pypi.org/project/whitebox/
+* conda-forge: https://anaconda.org/conda-forge/whitebox
 * Documentation: https://whitebox.readthedocs.io
 * Binder: https://gishub.org/whitebox-cloud
 * Free software: `MIT license`_
@@ -86,7 +87,8 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 
   conda create -n py36 python=3.6
   source activate py36
-  conda install -c giswqs whitebox 
+  conda config --add channels conda-forge
+  conda install whitebox 
 
 
 whitebox Tutorials
