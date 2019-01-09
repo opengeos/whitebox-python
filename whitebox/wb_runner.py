@@ -1140,6 +1140,7 @@ class JsonPayload(object):
     def __init__(self, j):
         self.__dict__ = json.loads(j)
 
+
 def Runner():
     tool_name = None
     if len(sys.argv) > 1:
@@ -1148,7 +1149,7 @@ def Runner():
     wbr = WbRunner(tool_name)
     wbr.mainloop()
 
-
+    
 def main():
     tool_name = None
     if len(sys.argv) > 1:
