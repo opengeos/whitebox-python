@@ -38,6 +38,7 @@ This page is related to the **whitebox** Python package for geospatial analysis,
 * Contributors: Dr. Qiusheng Wu (https://wetlands.io)
 * GitHub repo: https://github.com/giswqs/whitebox
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
+* User Manual: https://jblindsay.github.io/wbt_book
 * PyPI: https://pypi.org/project/whitebox/
 * conda-forge: https://anaconda.org/conda-forge/whitebox
 * Documentation: https://whitebox.readthedocs.io
