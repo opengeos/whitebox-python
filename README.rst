@@ -17,6 +17,9 @@ whitebox
 .. image:: https://img.shields.io/travis/giswqs/whitebox.svg
         :target: https://travis-ci.org/giswqs/whitebox
 
+.. image:: https://ci.appveyor.com/api/projects/status/8q9g5suubn6kqpxx?svg=true
+        :target: https://ci.appveyor.com/project/giswqs/whitebox
+
 .. image:: https://readthedocs.org/projects/whitebox/badge/?version=latest
         :target: https://whitebox.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
