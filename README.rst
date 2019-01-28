@@ -5,9 +5,6 @@ whitebox
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
 
-.. image:: https://binder.pangeo.io/badge.svg 	
-        :target: https://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
-
 .. image:: https://img.shields.io/pypi/v/whitebox.svg
         :target: https://pypi.python.org/pypi/whitebox
 
@@ -23,9 +20,12 @@ whitebox
 .. image:: https://readthedocs.org/projects/whitebox/badge/?version=latest
         :target: https://whitebox.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
         :target: https://opensource.org/licenses/MIT
 
+.. image:: https://img.shields.io/badge/Donate-Buy%20me%20a%20coffee-yellowgreen.svg
+        :target: https://www.buymeacoffee.com/giswqs
 
 
 A Python package for advanced geospatial data analysis.
