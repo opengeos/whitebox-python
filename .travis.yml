@@ -16,3 +16,6 @@ deploy:
     tags: true
     repo: giswqs/whitebox
     python: 3.6
+os:
+  - linux
+  - osx
