@@ -89,7 +89,7 @@ def download_wbt():
         print("Unexpected error:", sys.exc_info()[0])
         raise
 
-
+     
 def default_callback(value):
     ''' 
     A simple default callback that outputs using the print function. When
@@ -134,7 +134,7 @@ class WhiteboxTools(object):
         self.cancel_op = False
         self.default_callback = default_callback
         download_wbt()
-        
+
     def set_whitebox_dir(self, path_str):
         ''' 
         Sets the directory to the WhiteboxTools executable file.
@@ -427,6 +427,8 @@ class WhiteboxTools(object):
     # restrict the ability for text editors and IDEs to use autocomplete.
     ########################################################################
 
+    
+    
     
     
     
@@ -875,7 +877,7 @@ callback -- Custom function for handling tool text outputs.
         return self.run_tool('centroid_vector', args, callback) # returns 1 if error
 
     def clump(self, i, output, diag=True, zero_back=False, callback=None):
-        """Groups cells that form physically discrete areas, assigning them unique identifiers.
+        """Groups cells that form discrete areas, assigning them unique identifiers.
 
         Keyword arguments:
 
@@ -2086,6 +2088,22 @@ callback -- Custom function for handling tool text outputs.
         args.append("--zfactor={}".format(zfactor))
         return self.run_tool('aspect', args, callback) # returns 1 if error
 
+    def circular_variance_of_aspect(self, dem, output, filter=11, callback=None):
+        """Calculates the circular variance of aspect at a scale for a DEM.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster roughness scale file. 
+        filter -- Size of the filter kernel. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        args.append("--filter={}".format(filter))
+        return self.run_tool('circular_variance_of_aspect', args, callback) # returns 1 if error
+
     def dev_from_mean_elev(self, dem, output, filterx=11, filtery=11, callback=None):
         """Calculates deviation from mean elevation.
 
@@ -2185,6 +2203,26 @@ callback -- Custom function for handling tool text outputs.
         args.append("--dfm={}".format(dfm))
         args.append("--zfactor={}".format(zfactor))
         return self.run_tool('drainage_preserving_smoothing', args, callback) # returns 1 if error
+
+    def edge_density(self, dem, output, filter=11, norm_diff=5.0, zfactor=1.0, callback=None):
+        """Calculates the density of edges, or breaks-in-slope within DEMs.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        filter -- Size of the filter kernel. 
+        norm_diff -- Maximum difference in normal vectors, in degrees. 
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        args.append("--filter={}".format(filter))
+        args.append("--norm_diff={}".format(norm_diff))
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('edge_density', args, callback) # returns 1 if error
 
     def elev_above_pit(self, dem, output, callback=None):
         """Calculate the elevation of each grid cell above the nearest downstream pit cell or grid edge cell.
@@ -2293,7 +2331,7 @@ callback -- Custom function for handling tool text outputs.
         return self.run_tool('fetch_analysis', args, callback) # returns 1 if error
 
     def fill_missing_data(self, i, output, filter=11, weight=2.0, callback=None):
-        """Fills nodata holes in a DEM.
+        """Fills NoData holes in a DEM.
 
         Keyword arguments:
 
@@ -2873,6 +2911,20 @@ callback -- Custom function for handling tool text outputs.
         args.append("--filterx={}".format(filterx))
         args.append("--filtery={}".format(filtery))
         return self.run_tool('standard_deviation_of_slope', args, callback) # returns 1 if error
+
+    def surface_area_ratio(self, dem, output, callback=None):
+        """Calculates a the surface area ratio of each grid cell in an input DEM.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('surface_area_ratio', args, callback) # returns 1 if error
 
     def tangential_curvature(self, dem, output, zfactor=1.0, callback=None):
         """Calculates a tangential curvature raster from an input DEM.
@@ -5269,13 +5321,13 @@ callback -- Custom function for handling tool text outputs.
         return self.run_tool('lidar_hillshade', args, callback) # returns 1 if error
 
     def lidar_histogram(self, i, output, parameter="elevation", clip=1.0, callback=None):
-        """Creates a histogram from LiDAR data.
+        """Creates a histogram of LiDAR data.
 
         Keyword arguments:
 
         i -- Input LiDAR file. 
         output -- Output HTML file (default name will be based on input file if unspecified). 
-        parameter -- Parameter; options are 'elevation' (default), 'intensity', 'scan angle', 'class. 
+        parameter -- Parameter; options are 'elevation' (default), 'intensity', 'scan angle', 'class'. 
         clip -- Amount to clip distribution tails (in percent). 
         callback -- Custom function for handling tool text outputs.
         """
@@ -6537,7 +6589,7 @@ callback -- Custom function for handling tool text outputs.
         return self.run_tool('raster_histogram', args, callback) # returns 1 if error
 
     def raster_summary_stats(self, i, callback=None):
-        """Measures a rasters average, standard deviation, num. non-nodata cells, and total.
+        """Measures a rasters min, max, average, standard deviation, num. non-nodata cells, and total.
 
         Keyword arguments:
 
