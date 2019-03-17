@@ -1149,15 +1149,6 @@ def Runner():
     wbr = WbRunner(tool_name)
     wbr.mainloop()
 
-    
-def main():
-    tool_name = None
-    if len(sys.argv) > 1:
-        tool_name = str(sys.argv[1])
-
-    wbr = WbRunner(tool_name)
-    wbr.mainloop()
-
 
 if __name__ == '__main__':
-    main()
+    Runner()
