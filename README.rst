@@ -1,6 +1,6 @@
-========
-whitebox
-========
+===============
+whitebox-python
+===============
 
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
@@ -31,15 +31,17 @@ whitebox
         :target: https://www.buymeacoffee.com/giswqs
 
 
-A Python package for advanced geospatial data analysis.
+Important Note
+--------------
+.. image:: https://i.imgur.com/Ic8BA7C.png
 
-This page is related to the **whitebox** Python package for geospatial analysis, which is built on a stand-alone executable command-line program called WhiteboxTools_.
+This repository is related to the WhiteboxTools Python Frontend only. You can report issues to this repo if you have problems installing this Python package. If you encounter any tool functioning specific errors, please `open an issue`_ on Dr. John Lindsay's WhiteboxTools_ repo.  
 
-
+**Links**
 
 * Authors: Dr. John Lindsay (http://www.uoguelph.ca/~hydrogeo/index.html)
 * Contributors: Dr. Qiusheng Wu (https://wetlands.io)
-* GitHub repo: https://github.com/giswqs/whitebox
+* GitHub repo: https://github.com/giswqs/whitebox-python
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 * User Manual: https://jblindsay.github.io/wbt_book
 * PyPI: https://pypi.org/project/whitebox/
@@ -654,3 +656,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`managing Python environment`: https://conda.io/docs/user-guide/tasks/manage-environments.html
 .. _`WhiteboxTools Usage`: https://github.com/jblindsay/whitebox-tools#3-usage
 .. _`MIT license`: https://opensource.org/licenses/MIT
+.. _`open an issue`: https://github.com/jblindsay/whitebox-tools/issues
