@@ -11,7 +11,7 @@ WBT_dir = os.path.join(work_dir, "WBT")
 
 if not os.path.exists(tar_path):
     print("Downloading WhiteboxTools binary ...")
-    url = "https://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
+    url = "https://github.com/jblindsay/whitebox-tools/releases/download/v1.0.0/WhiteboxTools_linux_amd64.tar.xz"
     urllib.request.urlretrieve(url, tar_path)   # Download WhiteboxTools
 else:
     print("WhiteboxTools binary already exists.")

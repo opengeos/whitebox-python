@@ -2,7 +2,7 @@
 '''
 This module provides examples for calling tools/functions in WhiteboxTools library
 Only works for Python 3.x
-Source: http://www.uoguelph.ca/~hydrogeo/WhiteboxTools/
+Source: https://jblindsay.github.io/ghrg/WhiteboxTools
 GitHub: https://github.com/jblindsay/whitebox-tools
 '''
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         # you can also use snake_case here, e.g. print(wbt.tool_help("breach_depressions"))
 
         # Call some tools, do some work
-        wbt.feature_preserving_denoise("DEM.tif", "smoothed.tif", filter=9)
+        wbt.feature_preserving_smoothing("DEM.tif", "smoothed.tif", filter=9)
         wbt.breach_depressions("smoothed.tif", "breached.tif")
         wbt.d_inf_flow_accumulation("breached.tif", "flow_accum.tif")
 

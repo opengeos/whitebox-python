@@ -97,12 +97,12 @@ class FileSelector(tk.Frame):
                 ftypes = [('All files', '*.*')]
                 if 'RasterAndVector' in self.file_type:
                     ftypes = [("Shapefiles", "*.shp"), ('Raster files', ('*.dep', '*.tif',
-                                                '*.tiff', '*.flt',
+                                                '*.tiff', '*.gtif', '*.gtiff', '*.flt',
                                                 '*.sdat', '*.rdc',
                                                 '*.asc'))]
                 elif 'Raster' in self.file_type:
                     ftypes = [('Raster files', ('*.dep', '*.tif',
-                                                '*.tiff', '*.flt',
+                                                '*.tiff', '*.gtif', '*.gtiff', '*.flt',
                                                 '*.sdat', '*.rdc',
                                                 '*.asc'))]
                 elif 'Lidar' in self.file_type:
@@ -807,7 +807,7 @@ class WbRunner(tk.Frame):
         current_tool_frame.columnconfigure(0, weight=1)
         current_tool_frame.columnconfigure(1, weight=1)
 
-        tool_args_frame = ttk.Frame(overall_frame, padding='0.0i')
+        # tool_args_frame = ttk.Frame(overall_frame, padding='0.0i')
         self.tool_args_frame = ttk.Frame(overall_frame, padding='0.0i')
         self.tool_args_frame.grid(row=2, column=0, sticky=tk.NSEW)
         self.tool_args_frame.columnconfigure(0, weight=1)
@@ -996,6 +996,8 @@ class WbRunner(tk.Frame):
 
     def update_tool_help(self, event):
         selection = self.tools_listbox.curselection()
+        if(len(selection) == 0):
+            return
         self.tool_name = self.tools_listbox.get(selection[0])
         self.out_text.delete('1.0', tk.END)
         for widget in self.tool_args_frame.winfo_children():
