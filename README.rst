@@ -17,8 +17,8 @@ whitebox-python
 .. image:: https://img.shields.io/travis/giswqs/whitebox-python.svg
         :target: https://travis-ci.org/giswqs/whitebox-python
 
-.. image:: https://ci.appveyor.com/api/projects/status/8q9g5suubn6kqpxx?svg=true
-        :target: https://ci.appveyor.com/project/giswqs/whitebox
+.. image:: https://ci.appveyor.com/api/projects/status/a7r1hna30kjbsmk3?svg=true
+        :target: https://ci.appveyor.com/project/giswqs/whitebox-python
 
 .. image:: https://readthedocs.org/projects/whitebox/badge/?version=latest
         :target: https://whitebox.readthedocs.io/en/latest/?badge=latest
@@ -192,7 +192,7 @@ Contributing
 
 If you would like to contribute to the project as a developer, follow these instructions to get started:
 
-1. Fork the whitebox project (https://github.com/giswqs/whitebox)
+1. Fork the whitebox project (https://github.com/giswqs/whitebox-python)
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -206,7 +206,7 @@ The **whitebox** package is distributed under the `MIT license`_, a permissive o
 
 Reporting Bugs
 --------------
-Report bugs at https://github.com/giswqs/whitebox/issues.
+Report bugs at https://github.com/giswqs/whitebox-python/issues.
 
 If you are reporting a bug, please include:
 
