@@ -91,8 +91,8 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 
 .. code:: python
 
-  conda create -n py36 python=3.6
-  source activate py36
+  conda create -n py37 python=3.7
+  source activate py37
   conda config --add channels conda-forge
   conda install whitebox 
 
