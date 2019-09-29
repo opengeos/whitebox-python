@@ -22,11 +22,11 @@ def download_wbt():
         if not os.path.exists(exe_dir):  # Download WhiteboxTools executable file if non-existent
             print("Downloading WhiteboxTools pre-compiled binary for first time use ...")
             if platform.system() == "Windows":
-                url = "https://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_win_amd64.zip"
+                url = "https://github.com/jblindsay/whitebox-tools/releases/download/v1.0.0/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
-                url = "https://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
+                url = "https://github.com/jblindsay/whitebox-tools/releases/download/v1.0.0/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
-                url = "https://www.uoguelph.ca/~hydrogeo/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
+                url = "https://github.com/jblindsay/whitebox-tools/releases/download/v1.0.0/WhiteboxTools_linux_amd64.tar.xz"
             else:
                 print("WhiteboxTools is not yet supported on {}!".format(platform.system()))
                 exit()
