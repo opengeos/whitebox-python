@@ -447,6 +447,8 @@ class WhiteboxTools(object):
     
     
     
+    
+    
     ##############
     # Data Tools #
     ##############
@@ -2943,24 +2945,6 @@ class WhiteboxTools(object):
         args.append("--zfactor={}".format(zfactor))
         return self.run_tool('relative_aspect', args, callback) # returns 1 if error
 
-    def relative_stream_power_index(self, sca, slope, output, exponent=1.0, callback=None):
-        """Calculates the relative stream power index.
-
-        Keyword arguments:
-
-        sca -- Input raster specific contributing area (SCA) file. 
-        slope -- Input raster slope file. 
-        output -- Output raster file. 
-        exponent -- SCA exponent value. 
-        callback -- Custom function for handling tool text outputs.
-        """
-        args = []
-        args.append("--sca='{}'".format(sca))
-        args.append("--slope='{}'".format(slope))
-        args.append("--output='{}'".format(output))
-        args.append("--exponent={}".format(exponent))
-        return self.run_tool('relative_stream_power_index', args, callback) # returns 1 if error
-
     def relative_topographic_position(self, dem, output, filterx=11, filtery=11, callback=None):
         """Calculates the relative topographic position index from a DEM.
 
@@ -3100,6 +3084,24 @@ class WhiteboxTools(object):
         args.append("--filterx={}".format(filterx))
         args.append("--filtery={}".format(filtery))
         return self.run_tool('standard_deviation_of_slope', args, callback) # returns 1 if error
+
+    def stream_power_index(self, sca, slope, output, exponent=1.0, callback=None):
+        """Calculates the relative stream power index.
+
+        Keyword arguments:
+
+        sca -- Input raster specific contributing area (SCA) file. 
+        slope -- Input raster slope file. 
+        output -- Output raster file. 
+        exponent -- SCA exponent value. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--sca='{}'".format(sca))
+        args.append("--slope='{}'".format(slope))
+        args.append("--output='{}'".format(output))
+        args.append("--exponent={}".format(exponent))
+        return self.run_tool('stream_power_index', args, callback) # returns 1 if error
 
     def surface_area_ratio(self, dem, output, callback=None):
         """Calculates a the surface area ratio of each grid cell in an input DEM.
@@ -3693,7 +3695,7 @@ class WhiteboxTools(object):
         dem -- Input raster DEM file. 
         output -- Output file. 
         out_type -- Output type; one of 'depth' (default), 'volume', and 'area'. 
-        damlength -- Maximum length of thr dam. 
+        damlength -- Maximum length of the dam. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4631,7 +4633,7 @@ class WhiteboxTools(object):
         args.append("--sigma={}".format(sigma))
         return self.run_tool('laplacian_of_gaussian_filter', args, callback) # returns 1 if error
 
-    def lee_filter(self, i, output, filterx=11, filtery=11, sigma=10.0, m=5.0, callback=None):
+    def lee_sigma_filter(self, i, output, filterx=11, filtery=11, sigma=10.0, m=5.0, callback=None):
         """Performs a Lee (Sigma) smoothing filter on an image.
 
         Keyword arguments:
@@ -4651,7 +4653,7 @@ class WhiteboxTools(object):
         args.append("--filtery={}".format(filtery))
         args.append("--sigma={}".format(sigma))
         args.append("-m={}".format(m))
-        return self.run_tool('lee_filter', args, callback) # returns 1 if error
+        return self.run_tool('lee_sigma_filter', args, callback) # returns 1 if error
 
     def line_detection_filter(self, i, output, variant="vertical", absvals=False, clip=0.0, callback=None):
         """Performs a line-detection filter on an image.
@@ -5674,7 +5676,7 @@ class WhiteboxTools(object):
         output -- Output raster file (including extension). 
         returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
         resolution -- Output raster's grid resolution. 
-        radius -- Search Radius. 
+        radius -- Search radius. 
         exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
         minz -- Optional minimum elevation for inclusion in interpolation. 
         maxz -- Optional maximum elevation for inclusion in interpolation. 
@@ -6120,6 +6122,48 @@ class WhiteboxTools(object):
         args.append("--input='{}'".format(i))
         args.append("--output='{}'".format(output))
         return self.run_tool('arc_tan', args, callback) # returns 1 if error
+
+    def arcosh(self, i, output, callback=None):
+        """Returns the inverse hyperbolic cosine (arcosh) of each values in a raster.
+
+        Keyword arguments:
+
+        i -- Input raster file. 
+        output -- Output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('arcosh', args, callback) # returns 1 if error
+
+    def arsinh(self, i, output, callback=None):
+        """Returns the inverse hyperbolic sine (arsinh) of each values in a raster.
+
+        Keyword arguments:
+
+        i -- Input raster file. 
+        output -- Output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('arsinh', args, callback) # returns 1 if error
+
+    def artanh(self, i, output, callback=None):
+        """Returns the inverse hyperbolic tangent (arctanh) of each values in a raster.
+
+        Keyword arguments:
+
+        i -- Input raster file. 
+        output -- Output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('artanh', args, callback) # returns 1 if error
 
     def atan2(self, input_y, input_x, output, callback=None):
         """Returns the 2-argument inverse tangent (atan2).
@@ -6735,6 +6779,24 @@ class WhiteboxTools(object):
         args.append("--output='{}'".format(output))
         return self.run_tool('not_equal_to', args, callback) # returns 1 if error
 
+    def paired_sample_t_test(self, input1, input2, output, num_samples=None, callback=None):
+        """Performs a 2-sample K-S test for significant differences on two input rasters.
+
+        Keyword arguments:
+
+        input1 -- First input raster file. 
+        input2 -- Second input raster file. 
+        output -- Output HTML file. 
+        num_samples -- Number of samples. Leave blank to use whole image. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input1='{}'".format(input1))
+        args.append("--input2='{}'".format(input2))
+        args.append("--output='{}'".format(output))
+        if num_samples is not None: args.append("--num_samples='{}'".format(num_samples))
+        return self.run_tool('paired_sample_t_test', args, callback) # returns 1 if error
+
     def power(self, input1, input2, output, callback=None):
         """Raises the values in grid cells of one rasters, or a constant value, by values in another raster or constant value.
 
@@ -7103,6 +7165,42 @@ class WhiteboxTools(object):
         args.append("--iterations={}".format(iterations))
         return self.run_tool('turning_bands_simulation', args, callback) # returns 1 if error
 
+    def two_sample_ks_test(self, input1, input2, output, num_samples=None, callback=None):
+        """Performs a 2-sample K-S test for significant differences on two input rasters.
+
+        Keyword arguments:
+
+        input1 -- First input raster file. 
+        input2 -- Second input raster file. 
+        output -- Output HTML file. 
+        num_samples -- Number of samples. Leave blank to use whole image. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input1='{}'".format(input1))
+        args.append("--input2='{}'".format(input2))
+        args.append("--output='{}'".format(output))
+        if num_samples is not None: args.append("--num_samples='{}'".format(num_samples))
+        return self.run_tool('two_sample_ks_test', args, callback) # returns 1 if error
+
+    def wilcoxon_signed_rank_test(self, input1, input2, output, num_samples=None, callback=None):
+        """Performs a 2-sample K-S test for significant differences on two input rasters.
+
+        Keyword arguments:
+
+        input1 -- First input raster file. 
+        input2 -- Second input raster file. 
+        output -- Output HTML file. 
+        num_samples -- Number of samples. Leave blank to use whole image. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input1='{}'".format(input1))
+        args.append("--input2='{}'".format(input2))
+        args.append("--output='{}'".format(output))
+        if num_samples is not None: args.append("--num_samples='{}'".format(num_samples))
+        return self.run_tool('wilcoxon_signed_rank_test', args, callback) # returns 1 if error
+
     def xor(self, input1, input2, output, callback=None):
         """Performs a logical XOR operator on two Boolean raster images.
 
@@ -7156,6 +7254,26 @@ class WhiteboxTools(object):
     ###########################
     # Stream Network Analysis #
     ###########################
+
+    def burn_streams_at_roads(self, dem, streams, roads, output, width=None, callback=None):
+        """Rasterizes vector streams based on Lindsay (2016) method.
+
+        Keyword arguments:
+
+        dem -- Input raster digital elevation model (DEM) file. 
+        streams -- Input vector streams file. 
+        roads -- Input vector roads file. 
+        output -- Output raster file. 
+        width -- Maximum road embankment width, in map units. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--streams='{}'".format(streams))
+        args.append("--roads='{}'".format(roads))
+        args.append("--output='{}'".format(output))
+        if width is not None: args.append("--width='{}'".format(width))
+        return self.run_tool('burn_streams_at_roads', args, callback) # returns 1 if error
 
     def distance_to_outlet(self, d8_pntr, streams, output, esri_pntr=False, zero_background=False, callback=None):
         """Calculates the distance of stream grid cells to the channel network outlet cell.
