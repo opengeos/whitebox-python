@@ -7,7 +7,8 @@ linux_tar = "WhiteboxTools_linux_amd64.tar.xz"
 work_dir = os.path.dirname(__file__)
 tar_path = os.path.join(work_dir, linux_tar)
 WBT_dir = os.path.join(work_dir, "WBT")
-
+old_img_dir = os.path.join(WBT_dir, "img")
+new_img_dir = os.path.join(work_dir, "img")
 
 if not os.path.exists(tar_path):
     print("Downloading WhiteboxTools binary ...")
@@ -22,6 +23,11 @@ if os.path.exists(WBT_dir):
 print("Decompressing {} ...".format(linux_tar))
 with tarfile.open(tar_path, "r") as tar_ref:
     tar_ref.extractall(work_dir)
+
+if os.path.exists(new_img_dir):
+    shutil.rmtree(new_img_dir)
+
+shutil.copytree(old_img_dir, new_img_dir)
 
 print("Generating wb_runner.py ...")
 with open(os.path.join(WBT_dir, "wb_runner.py")) as f_runner:

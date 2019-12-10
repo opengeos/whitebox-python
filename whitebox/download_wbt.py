@@ -16,6 +16,8 @@ def download_wbt():
     pkg_dir = os.path.dirname(pkg_resources.resource_filename(package_name, 'whitebox_tools.py'))
     exe_dir = os.path.join(pkg_dir, "WBT")                 # Get directory of WhiteboxTools executable file
     work_dir = os.path.join(pkg_dir, "testdata")           # Set working directory
+    init_img_dir = os.path.join(exe_dir, "img")
+    new_img_dir = os.path.join(pkg_dir, "img")
 
     try:
 
@@ -44,6 +46,12 @@ def download_wbt():
                     tar_ref.extractall(pkg_dir)
             print("WhiteboxTools package directory: {}".format(pkg_dir))
 
+            if os.path.exists(new_img_dir):
+                shutil.rmtree(new_img_dir)
+
+            shutil.copytree(init_img_dir, new_img_dir)
+
+
             exe_ext = ""    # file extension for MacOS/Linux
             if platform.system() == 'Windows':
                 exe_ext = '.exe'
@@ -67,3 +75,7 @@ def download_wbt():
     except:
         print("Unexpected error:", sys.exc_info()[0])
         raise
+    
+
+if __name__ == "__main__":
+    download_wbt()
