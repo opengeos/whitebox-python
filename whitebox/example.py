@@ -24,18 +24,29 @@ if __name__ == '__main__':
         wbt.work_dir = os.path.join(root_dir, "testdata")
         wbt.verbose = False
 
-        # Prints the whitebox-tools help...a listing of available commands
-        print(wbt.help())
+        # Prints the whitebox-tools version
+        print("\nVersion information: {}".format(wbt.version()))
         # Prints the whitebox-tools license
         print(wbt.license())
-        # Prints the whitebox-tools version
-        print("Version information: {}".format(wbt.version()))
+        # Prints the whitebox-tools help...a listing of available commands
+        print(wbt.help())
         # List all available tools in whitebox-tools
-        print("ALl available tools: {}\n".format(wbt.list_tools()))
-        # Lists tools with 'lidar' or 'LAS' in tool name or description.
-        print("lidar tools: {}\n".format(wbt.list_tools(['lidar', 'LAS'])))
         # Print the help for a specific tool.
         print(wbt.tool_help("breach_depressions"))
+
+        # print("ALl available tools: {}\n".format(wbt.list_tools()))
+        all_tools = wbt.list_tools()
+        print("\nAll Available Tools:")
+        for index, tool in enumerate(all_tools):
+            print("{} {}: {} ...".format(str(index+1).zfill(3), tool, all_tools[tool][:45]))
+
+        # Lists tools with 'lidar' or 'LAS' in tool name or description.
+        lidar_tools = wbt.list_tools(['lidar', 'LAS'])
+        print("\nAvailable LiDAR Tools:")
+        for index, tool in enumerate(lidar_tools):
+            print("{} {}: {} ...".format(str(index+1).zfill(3), tool, all_tools[tool][:45]))
+        # print("lidar tools: {}\n".format(wbt.list_tools(['lidar', 'LAS'])))
+
         # Notice that tool names within WhiteboxTools.exe are CamelCase but
         # you can also use snake_case here, e.g. print(wbt.tool_help("breach_depressions"))
 
