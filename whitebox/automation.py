@@ -1,3 +1,16 @@
+##################################################################
+# Steps for updating the whitebox Python package
+# Step 1 - Delete the existing deveop branch: git branch -D deveop  
+# Step 2 - Create a new deveop branch: git checkout -b deveop
+# Step 3 - Delete the old WhiteboxTools_linux_amd64.tar.xz if needed
+# Step 4 - Run automation.py
+# Step 5 - Create a conda environment: conda create -n wbt python
+# Step 6 - Install dependencies: pip install -r requirements_dev.txt
+# Step 7 - Install whitebox: pip install -e .
+# Step 8 - Run example.py
+# Step 9 - Commit and push changes
+##################################################################
+
 import os
 import shutil
 import tarfile
@@ -71,6 +84,9 @@ with open(os.path.join(WBT_dir, "whitebox_tools.py")) as f_wbt:
                 f.writelines(dl_lines[1:])
         elif line.strip() == "self.default_callback = default_callback":
             f.write("        download_wbt()\n")
+
+shutil.move(os.path.join(WBT_dir, 'whitebox_tools'), os.path.join(work_dir, 'whitebox_tools'))
+
 
 f.close()
 
