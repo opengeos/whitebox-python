@@ -9,6 +9,11 @@
 # Step 7 - Install whitebox: pip install -e .
 # Step 8 - Run example.py
 # Step 9 - Commit and push changes
+# Step 10 - Merge pull request on GitHub
+# Step 11 - Switch to master branch and pull updates: git checkout master | git pull
+# Step 12 - Update version number: bumpversion patch/minor/major | git push --tags | git push
+# Step 13 - Create package: python setup.py sdist
+# Step 14 - Upload package to PyPI: twine upload dist/whitebox-*.*.*.tar.gz
 ##################################################################
 
 import os
