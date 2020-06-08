@@ -96,7 +96,7 @@ class FileSelector(tk.Frame):
         try:
             result = self.value.get()
             if self.parameter_type == "Directory":
-                result = filedialog.askdirectory()
+                result = filedialog.askdirectory(initialdir=self.runner.working_dir, title="Select directory")
             elif "ExistingFile" in self.parameter_type:
                 ftypes = [('All files', '*.*')]
                 if 'RasterAndVector' in self.file_type:
@@ -110,7 +110,7 @@ class FileSelector(tk.Frame):
                                                 '*.sdat', '*.rdc',
                                                 '*.asc'))]
                 elif 'Lidar' in self.file_type:
-                    ftypes = [("LiDAR files", ('*.las', '*.zip'))]
+                    ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.zip'))]
                 elif 'Vector' in self.file_type:
                     ftypes = [("Shapefiles", "*.shp")]
                 elif 'Text' in self.file_type:
@@ -264,7 +264,7 @@ class FileOrFloat(tk.Frame):
                                             '*.sdat', '*.rdc',
                                             '*.asc'))]
             elif 'Lidar' in self.file_type:
-                ftypes = [("LiDAR files", ('*.las', '*.zip'))]
+                ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.zip'))]
             elif 'Vector' in self.file_type:
                 ftypes = [("Shapefiles", "*.shp")]
             elif 'Text' in self.file_type:
@@ -419,7 +419,7 @@ class MultifileSelector(tk.Frame):
                                             '*.sdat', '*.rdc',
                                             '*.asc'))]
             elif 'Lidar' in self.file_type:
-                ftypes = [("LiDAR files", ('*.las', '*.zip'))]
+                ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.zip'))]
             elif 'Vector' in self.file_type:
                 ftypes = [("Shapefiles", "*.shp")]
             elif 'Text' in self.file_type:
@@ -949,13 +949,15 @@ class WbRunner(tk.Frame):
         #########################################################        
         menubar = tk.Menu(self)
 
-        filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Set Working Directory", command=self.set_directory)
-        filemenu.add_command(label="Locate WhiteboxTools exe", command=self.select_exe)
-        filemenu.add_command(label="Refresh Tools", command=self.refresh_tools)
-        filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.quit)
-        menubar.add_cascade(label="File", menu=filemenu)
+        self.filemenu = tk.Menu(menubar, tearoff=0)
+        self.filemenu.add_command(label="Set Working Directory", command=self.set_directory)
+        self.filemenu.add_command(label="Locate WhiteboxTools exe", command=self.select_exe)
+        self.filemenu.add_command(label="Refresh Tools", command=self.refresh_tools)
+        wbt.set_compress_rasters(True)
+        self.filemenu.add_command(label="Do Not Compress Output TIFFs", command=self.update_compress)
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Exit", command=self.quit)
+        menubar.add_cascade(label="File", menu=self.filemenu)
 
         editmenu = tk.Menu(menubar, tearoff=0)
         editmenu.add_command(label="Cut", command=lambda: self.focus_get().event_generate("<<Cut>>"))
@@ -970,9 +972,14 @@ class WbRunner(tk.Frame):
 
         self.master.config(menu=menubar)     
 
-    #########################################################
-    #        Functions (added/edited by Rachel)             #
-    #########################################################
+    def update_compress(self):
+        if wbt.get_compress_rasters():
+            wbt.set_compress_rasters(False)
+            self.filemenu.entryconfig(3, label = "Compress Output TIFFs")
+        else:
+            wbt.set_compress_rasters(True)
+            self.filemenu.entryconfig(3, label = "Do Not Compress Output TIFFs")
+
     def get_toolboxes(self):
         toolboxes = set()
         for item in wbt.toolbox().splitlines():  # run wbt.toolbox with no tool specified--returns all
@@ -1193,12 +1200,11 @@ class WbRunner(tk.Frame):
 
     def set_directory(self):
         try:
-            self.working_dir = filedialog.askdirectory(
-                initialdir=self.exe_path)
+            self.working_dir =filedialog.askdirectory(initialdir=self.working_dir)
             wbt.set_working_dir(self.working_dir)
         except:
             messagebox.showinfo(
-                "Warning", "Could not find WhiteboxTools executable file.")
+                "Warning", "Could not set the working directory.")
 
     def select_exe(self):
         try:

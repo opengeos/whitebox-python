@@ -1,7 +1,7 @@
 ##################################################################
 # Steps for updating the whitebox Python package
-# Step 1 - Delete the existing deveop branch: git branch -D deveop  
-# Step 2 - Create a new deveop branch: git checkout -b deveop
+# Step 1 - Delete the existing develop branch: git branch -D develop  
+# Step 2 - Create a new develop branch: git checkout -b develop
 # Step 3 - Delete the old WhiteboxTools_linux_amd64.tar.xz if needed
 # Step 4 - Run automation.py
 # Step 5 - Create a conda environment: conda create -n wbt python
@@ -83,7 +83,7 @@ with open(os.path.join(WBT_dir, "whitebox_tools.py")) as f_wbt:
     lines = f_wbt.readlines()
     for index, line in enumerate(lines):
         f.write(line)
-        if line.strip() == "from subprocess import CalledProcessError, Popen, PIPE, STDOUT":
+        if line.strip() == "from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW":
             with open(os.path.join(work_dir, "download_wbt.py")) as f_dl:
                 dl_lines = f_dl.readlines()
                 f.writelines(dl_lines[1:])

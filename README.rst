@@ -27,6 +27,9 @@ whitebox-python
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
         :target: https://opensource.org/licenses/MIT
 
+.. image:: https://img.shields.io/twitter/follow/giswqs?style=social   
+        :target: https://twitter.com/giswqs
+
 .. image:: https://img.shields.io/badge/Donate-Buy%20me%20a%20coffee-yellowgreen.svg
         :target: https://www.buymeacoffee.com/giswqs
 
@@ -179,7 +182,7 @@ When using ``import whitebox``, if you get an error that says ``No module named 
 
 Available Tools
 ---------------
-The library currently contains **435** tools, which are each grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. For a listing of available tools, complete with documentation and usage details, please see the `WhiteboxTools User Manual`_.
+The library currently contains **440** tools, which are each grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. For a listing of available tools, complete with documentation and usage details, please see the `WhiteboxTools User Manual`_.
 
 
 Supported Data Formats
