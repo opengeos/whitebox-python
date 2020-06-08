@@ -1,15 +1,17 @@
-import os, sys, platform
-import zipfile
-import tarfile
-import shutil
-import urllib.request
-import pkg_resources
+
 
 
 def download_wbt():
     '''
     Download WhiteboxTools pre-complied binary for first-time use
     '''
+    import os, sys, platform
+    import zipfile
+    import tarfile
+    import shutil
+    import urllib.request
+    import pkg_resources
+
     # print("Your operating system: {}".format(platform.system()))
     package_name = "whitebox"
     # Get package directory
@@ -79,3 +81,4 @@ def download_wbt():
 
 if __name__ == "__main__":
     download_wbt()
+
