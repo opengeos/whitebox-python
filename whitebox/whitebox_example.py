@@ -35,7 +35,8 @@ def main():
         if os.path.isfile(wbt_win_bin) or os.path.isfile(wbt_linux_bin):
             wbt.set_whitebox_dir(root_dir)
         else:
-            wbt.set_whitebox_dir(root_dir + "/target/release/")  # or simply wbt.exe_path = ...
+            # or simply wbt.exe_path = ...
+            wbt.set_whitebox_dir(root_dir + "/target/release/")
 
         # Set the working directory. This is the path to the folder containing the data,
         # i.e. files sent to tools as input/output parameters. You don't need to set
@@ -130,7 +131,7 @@ def my_callback(out_str):
             print("Elapsed time: {0}{1}".format(elapsed_time, units))
             my_callback.prev_line_progress = False
         else:
-            if callback.prev_line_progress:
+            if my_callback.prev_line_progress:
                 print('\n{0}'.format(out_str))
                 my_callback.prev_line_progress = False
             else:

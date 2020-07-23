@@ -182,7 +182,7 @@ When using ``import whitebox``, if you get an error that says ``No module named 
 
 Available Tools
 ---------------
-The library currently contains **440** tools, which are each grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. For a listing of available tools, complete with documentation and usage details, please see the `WhiteboxTools User Manual`_.
+The library currently contains **443** tools, which are each grouped based on their main function into one of the following categories: Data Tools, GIS Analysis, Hydrological Analysis, Image Analysis, LiDAR Analysis, Mathematical and Statistical Analysis, Stream Network Analysis, and Terrain Analysis. For a listing of available tools, complete with documentation and usage details, please see the `WhiteboxTools User Manual`_.
 
 
 Supported Data Formats
