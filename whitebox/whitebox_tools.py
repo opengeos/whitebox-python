@@ -53,7 +53,8 @@ def download_wbt():
             elif platform.system() == "Darwin":
                 url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
-                url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
+                # url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
+                url = "https://spatial.utk.edu/download/software/WhiteboxTools_linux_amd64.tar.xz"
             else:
                 print("WhiteboxTools is not yet supported on {}!".format(platform.system()))
                 exit()
