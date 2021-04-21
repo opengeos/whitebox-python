@@ -92,8 +92,8 @@ def download_wbt():
         if not os.path.exists(work_dir):
             print("Downloading testdata ...")
             os.mkdir(work_dir)
-            dem_url = "https://github.com/jblindsay/whitebox-tools/raw/master/testdata/DEM.tif"
-            dep_url = "https://github.com/jblindsay/whitebox-tools/raw/master/testdata/DEM.dep"
+            dem_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif"
+            dep_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep"
             urllib.request.urlretrieve(dem_url, os.path.join(work_dir, "DEM.tif"))
             urllib.request.urlretrieve(dep_url, os.path.join(work_dir, "DEM.dep"))
 
