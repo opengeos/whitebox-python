@@ -6,6 +6,8 @@ __pycache__/
 whitebox/WBT/
 **/*.tar.xz
 **/*.xml
+whitebox/img/.DS_Store
+whitebox/plugins
 whitebox/testdata/breached.tif
 whitebox/testdata/flow_accum.tif
 whitebox/testdata/smoothed.tif
@@ -113,3 +115,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+whitebox/WhiteboxTools_linux_amd64.zip
+whitebox/img/._WhiteboxToolsLogo_box_only.png
+whitebox/img/.DS_Store
