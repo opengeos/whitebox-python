@@ -18,34 +18,40 @@
 
 import os
 import shutil
-import tarfile
+import zipfile
 import urllib.request
 
-linux_tar = "WhiteboxTools_linux_amd64.tar.xz"
+linux_zip = "WhiteboxTools_linux_amd64.zip"
 work_dir = os.path.dirname(__file__)
-tar_path = os.path.join(work_dir, linux_tar)
+zip_path = os.path.join(work_dir, linux_zip)
 WBT_dir = os.path.join(work_dir, "WBT")
-old_img_dir = os.path.join(WBT_dir, "img")
+init_img_dir = os.path.join(WBT_dir, "img") 
 new_img_dir = os.path.join(work_dir, "img")
+init_plugin_dir = os.path.join(WBT_dir, "plugins") 
+new_plugin_dir = os.path.join(work_dir, "plugins")
 
-if not os.path.exists(tar_path):
+if not os.path.exists(zip_path):
     print("Downloading WhiteboxTools binary ...")
-    url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
-    urllib.request.urlretrieve(url, tar_path)   # Download WhiteboxTools
+    url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip"
+    urllib.request.urlretrieve(url, zip_path)   # Download WhiteboxTools
 else:
     print("WhiteboxTools binary already exists.")
 
 if os.path.exists(WBT_dir):
     shutil.rmtree(WBT_dir)
 
-print("Decompressing {} ...".format(linux_tar))
-with tarfile.open(tar_path, "r") as tar_ref:
+print("Decompressing {} ...".format(linux_zip))
+with zipfile.ZipFile(zip_path, "r") as tar_ref:
     tar_ref.extractall(work_dir)
 
 if os.path.exists(new_img_dir):
     shutil.rmtree(new_img_dir)
 
-shutil.copytree(old_img_dir, new_img_dir)
+if os.path.exists(new_plugin_dir):
+    shutil.rmtree(new_plugin_dir)
+
+shutil.copytree(init_img_dir, new_img_dir)
+shutil.copytree(init_plugin_dir, new_plugin_dir)
 
 print("Generating wb_runner.py ...")
 with open(os.path.join(WBT_dir, "wb_runner.py")) as f_runner:

@@ -20,17 +20,19 @@ def download_wbt():
     work_dir = os.path.join(pkg_dir, "testdata")           # Set working directory
     init_img_dir = os.path.join(exe_dir, "img")
     new_img_dir = os.path.join(pkg_dir, "img")
+    init_plugin_dir = os.path.join(exe_dir, "plugins")
+    new_plugin_dir = os.path.join(pkg_dir, "plugins")    
 
     try:
 
         if not os.path.exists(exe_dir):  # Download WhiteboxTools executable file if non-existent
             print("Downloading WhiteboxTools pre-compiled binary for first time use ...")
             if platform.system() == "Windows":
-                url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_win_amd64.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
-                url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_darwin_amd64.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
-                url = "https://jblindsay.github.io/ghrg/WhiteboxTools/WhiteboxTools_linux_amd64.tar.xz"
+                url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip"
             else:
                 print("WhiteboxTools is not yet supported on {}!".format(platform.system()))
                 exit()
@@ -50,8 +52,11 @@ def download_wbt():
 
             if os.path.exists(new_img_dir):
                 shutil.rmtree(new_img_dir)
+            if os.path.exists(new_plugin_dir):
+                shutil.rmtree(new_plugin_dir)
 
             shutil.copytree(init_img_dir, new_img_dir)
+            shutil.copytree(init_plugin_dir, new_plugin_dir)
 
 
             exe_ext = ""    # file extension for MacOS/Linux
@@ -69,8 +74,8 @@ def download_wbt():
         if not os.path.exists(work_dir):
             print("Downloading testdata ...")
             os.mkdir(work_dir)
-            dem_url = "https://github.com/jblindsay/whitebox-tools/raw/master/testdata/DEM.tif"
-            dep_url = "https://github.com/jblindsay/whitebox-tools/raw/master/testdata/DEM.dep"
+            dem_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif"
+            dep_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep"
             urllib.request.urlretrieve(dem_url, os.path.join(work_dir, "DEM.tif"))
             urllib.request.urlretrieve(dep_url, os.path.join(work_dir, "DEM.dep"))
 
