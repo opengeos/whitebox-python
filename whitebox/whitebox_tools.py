@@ -24,7 +24,7 @@ if running_windows:
     from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW
 
 
-def download_wbt():
+def download_wbt(verbose=False):
     '''
     Download WhiteboxTools pre-complied binary for first-time use
     '''
@@ -49,7 +49,8 @@ def download_wbt():
     try:
 
         if not os.path.exists(exe_dir):  # Download WhiteboxTools executable file if non-existent
-            print("Downloading WhiteboxTools pre-compiled binary for first time use ...")
+            if verbose:
+                print("Downloading WhiteboxTools pre-compiled binary for first time use ...")
             if platform.system() == "Windows":
                 url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
@@ -64,14 +65,16 @@ def download_wbt():
             urllib.request.urlretrieve(url, zip_name)   # Download WhiteboxTools
             zip_ext = os.path.splitext(zip_name)[1]     # Get downloaded zip file extension
 
-            print("Decompressing {} ...".format(os.path.basename(url)))
+            if verbose:
+                print("Decompressing {} ...".format(os.path.basename(url)))
             if zip_ext == ".zip":       # Decompress Windows/Mac OS zip file
                 with zipfile.ZipFile(zip_name, "r") as zip_ref:
                     zip_ref.extractall(pkg_dir)
             else:                       # Decompress Linux tar file
                 with tarfile.open(zip_name, "r") as tar_ref:
                     tar_ref.extractall(pkg_dir)
-            print("WhiteboxTools package directory: {}".format(pkg_dir))
+            if verbose:
+                print("WhiteboxTools package directory: {}".format(pkg_dir))
 
             if os.path.exists(new_img_dir):
                 shutil.rmtree(new_img_dir)
@@ -95,7 +98,8 @@ def download_wbt():
             shutil.copy(exe_path, exe_path_new)
 
         if not os.path.exists(work_dir):
-            print("Downloading testdata ...")
+            if verbose:
+                print("Downloading testdata ...")
             os.mkdir(work_dir)
             dem_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif"
             dep_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep"
