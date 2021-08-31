@@ -46,7 +46,7 @@ This repository is related to the WhiteboxTools Python Frontend only. You can re
 * Contributors: Dr. Qiusheng Wu (https://wetlands.io)
 * GitHub repo: https://github.com/giswqs/whitebox-python
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
-* User Manual: https://jblindsay.github.io/wbt_book
+* User Manual: https://www.whiteboxgeo.com/manual/wbt_book/intro.html
 * PyPI: https://pypi.org/project/whitebox/
 * conda-forge: https://anaconda.org/conda-forge/whitebox
 * Documentation: https://whitebox.readthedocs.io
@@ -94,10 +94,9 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
 
 .. code:: python
 
-  conda create -n py37 python=3.7
-  source activate py37
-  conda config --add channels conda-forge
-  conda install whitebox 
+  conda create -n wbt python
+  source activate wbt
+  conda install whitebox -c conda-forge
 
 
 whitebox Tutorials
@@ -234,4 +233,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`WhiteboxTools Usage`: https://github.com/jblindsay/whitebox-tools#3-usage
 .. _`MIT license`: https://opensource.org/licenses/MIT
 .. _`open an issue`: https://github.com/jblindsay/whitebox-tools/issues
-.. _`WhiteboxTools User Manual`: https://jblindsay.github.io/wbt_book/available_tools/index.html
+.. _`WhiteboxTools User Manual`: https://www.whiteboxgeo.com/manual/wbt_book/intro.html
