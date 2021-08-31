@@ -32,7 +32,7 @@ new_plugin_dir = os.path.join(work_dir, "plugins")
 
 if not os.path.exists(zip_path):
     print("Downloading WhiteboxTools binary ...")
-    url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip"
+    url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_linux_amd64.zip"
     urllib.request.urlretrieve(url, zip_path)   # Download WhiteboxTools
 else:
     print("WhiteboxTools binary already exists.")
