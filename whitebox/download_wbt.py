@@ -29,11 +29,11 @@ def download_wbt(verbose=False):
             if verbose:
                 print("Downloading WhiteboxTools pre-compiled binary for first time use ...")
             if platform.system() == "Windows":
-                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_win_amd64.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
-                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_darwin_amd64.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
-                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_linux_amd64.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip"
             else:
                 print("WhiteboxTools is not yet supported on {}!".format(platform.system()))
                 exit()
