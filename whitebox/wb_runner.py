@@ -110,7 +110,7 @@ class FileSelector(tk.Frame):
                                                 '*.sdat', '*.rdc',
                                                 '*.asc'))]
                 elif 'Lidar' in self.file_type:
-                    ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.zip'))]
+                    ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.laz', '*.zip'))]
                 elif 'Vector' in self.file_type:
                     ftypes = [("Shapefiles", "*.shp")]
                 elif 'Text' in self.file_type:
@@ -264,7 +264,7 @@ class FileOrFloat(tk.Frame):
                                             '*.sdat', '*.rdc',
                                             '*.asc'))]
             elif 'Lidar' in self.file_type:
-                ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.zip'))]
+                ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.laz', '*.zip'))]
             elif 'Vector' in self.file_type:
                 ftypes = [("Shapefiles", "*.shp")]
             elif 'Text' in self.file_type:
@@ -419,7 +419,7 @@ class MultifileSelector(tk.Frame):
                                             '*.sdat', '*.rdc',
                                             '*.asc'))]
             elif 'Lidar' in self.file_type:
-                ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.zip'))]
+                ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.laz', '*.zip'))]
             elif 'Vector' in self.file_type:
                 ftypes = [("Shapefiles", "*.shp")]
             elif 'Text' in self.file_type:
@@ -467,7 +467,7 @@ class MultifileSelector(tk.Frame):
 
         except:
             messagebox.showinfo(
-                "Error", "Error formating files for parameter {}".format(self.flag))
+                "Error", "Error formatting files for parameter {}".format(self.flag))
 
         return None
 
@@ -909,7 +909,7 @@ class WbRunner(tk.Frame):
         self.out_text = ScrolledText(output_frame, width=63, height=15, wrap=tk.NONE, padx=7, pady=7, exportselection = 0)
         output_scrollbar = ttk.Scrollbar(output_frame, orient=tk.HORIZONTAL, command = self.out_text.xview)
         self.out_text['xscrollcommand'] = output_scrollbar.set
-        #Retreive and insert the text for the current tool
+        #Retrieve and insert the text for the current tool
         k = wbt.tool_help(self.tool_name)   
         self.out_text.insert(tk.END, k)
         #Define layout of the frame
@@ -1045,7 +1045,7 @@ class WbRunner(tk.Frame):
 
         k = wbt.tool_help(self.tool_name)
         self.print_to_output(k)
-
+        # print(wbt.license(self.tool_name).lower())
         if "proprietary" in wbt.license(self.tool_name).lower():
             self.view_code_button["state"] = "disabled"
         else:
@@ -1091,9 +1091,9 @@ class WbRunner(tk.Frame):
 
     def update_toolbox_icon(self, event):
         curItem = self.tool_tree.focus()
-        dict = self.tool_tree.item(curItem)    #retreive the toolbox name
+        dict = self.tool_tree.item(curItem)    #retrieve the toolbox name
         self.toolbox_name = dict.get('text'). replace("  ", "")    #delete the space between the icon and text
-        self.toolbox_open = dict.get('open')    #retreive whether the toolbox is open or not
+        self.toolbox_open = dict.get('open')    #retrieve whether the toolbox is open or not
         if self.toolbox_open == True:    #set image accordingly
             self.tool_tree.item(self.toolbox_name, image = self.open_toolbox_icon)
         else:
@@ -1164,7 +1164,7 @@ class WbRunner(tk.Frame):
         #format subtoolboxes as for URLs
         self.toolbox_name = self.camel_to_snake(self.toolbox_name).replace('/', '').replace(' ', '') 
         #open the user manual section for the current tool
-        webbrowser.open_new_tab("https://jblindsay.github.io/wbt_book/available_tools/" + self.toolbox_name + ".html#" + self.tool_name)    
+        webbrowser.open_new_tab("https://www.whiteboxgeo.com/manual/wbt_book/available_tools/" + self.toolbox_name + ".html#" + self.tool_name)    
     
     def camel_to_snake(self, s):    # taken from tools_info.py
         _underscorer1 = re.compile(r'(.)([A-Z][a-z]+)')
