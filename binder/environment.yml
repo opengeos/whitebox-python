@@ -1,14 +1,13 @@
-name: whitebox-environment
+name: wbt
 channels:
   - conda-forge
 dependencies:
-  - python=3.6
+  - python
   - numpy
   - matplotlib
   - imageio
-  - pip:
-    - whitebox
-    - tifffile
-    - requests
-    - googledrivedownloader
+  - whitebox
+  - tifffile
+  - requests
+  - googledrivedownloader
 
