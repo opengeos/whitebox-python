@@ -2,7 +2,7 @@
 # Steps for updating the whitebox Python package
 # Step 1 - Delete the existing develop branch: git branch -D develop  
 # Step 2 - Create a new develop branch: git checkout -b develop
-# Step 3 - Delete the old WhiteboxTools_linux_amd64.tar.xz if needed
+# Step 3 - Delete the old WhiteboxTools_linux_amd64.zip if needed
 # Step 4 - Run automation.py
 # Step 5 - Create a conda environment: conda create -n wbt python
 # Step 6 - Install dependencies: pip install -r requirements_dev.txt
@@ -93,7 +93,7 @@ with open(os.path.join(WBT_dir, "whitebox_tools.py")) as f_wbt:
             with open(os.path.join(work_dir, "download_wbt.py")) as f_dl:
                 dl_lines = f_dl.readlines()
                 f.writelines(dl_lines[1:])
-        elif line.strip() == "self.default_callback = default_callback":
+        elif line.strip() == "self.__compress_rasters = False":
             f.write("        download_wbt()\n")
 
 shutil.move(os.path.join(WBT_dir, 'whitebox_tools'), os.path.join(work_dir, 'whitebox_tools'))

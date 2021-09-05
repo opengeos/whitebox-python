@@ -39,8 +39,11 @@ def download_wbt(verbose=False):
                 exit()
 
             zip_name = os.path.join(pkg_dir, os.path.basename(url))         # Get WhiteboxTools zip file name
-            urllib.request.urlretrieve(url, zip_name)   # Download WhiteboxTools
             zip_ext = os.path.splitext(zip_name)[1]     # Get downloaded zip file extension
+            # urllib.request.urlretrieve(url, zip_name)   # Download WhiteboxTools
+            request = urllib.request.urlopen(url, timeout=500)
+            with open(zip_name, "wb") as f:
+                f.write(request.read())
 
             if verbose:
                 print("Decompressing {} ...".format(os.path.basename(url)))
