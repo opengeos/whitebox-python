@@ -16,6 +16,8 @@ class TestWhitebox(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
+        wbt = whitebox.WhiteboxTools()
+        print(wbt.version)
 
     def tearDown(self):
         """Tear down test fixtures, if any."""

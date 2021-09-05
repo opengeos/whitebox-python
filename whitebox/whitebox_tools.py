@@ -52,7 +52,7 @@ def download_wbt(verbose=False):
             if verbose:
                 print("Downloading WhiteboxTools pre-compiled binary for first time use ...")
             if platform.system() == "Windows":
-                url = "hhttps://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip"
             elif platform.system() == "Darwin":
                 url = "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip"
             elif platform.system() == "Linux":
