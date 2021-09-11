@@ -1,6 +1,6 @@
 ##################################################################
 # Steps for updating the whitebox Python package
-# Step 1 - Delete the existing develop branch: git branch -D develop  
+# Step 1 - Delete the existing develop branch: git branch -D develop
 # Step 2 - Create a new develop branch: git checkout -b develop
 # Step 3 - Delete the old WhiteboxTools_linux_amd64.zip if needed
 # Step 4 - Run automation.py
@@ -25,15 +25,15 @@ linux_zip = "WhiteboxTools_linux_amd64.zip"
 work_dir = os.path.dirname(__file__)
 zip_path = os.path.join(work_dir, linux_zip)
 WBT_dir = os.path.join(work_dir, "WBT")
-init_img_dir = os.path.join(WBT_dir, "img") 
+init_img_dir = os.path.join(WBT_dir, "img")
 new_img_dir = os.path.join(work_dir, "img")
-init_plugin_dir = os.path.join(WBT_dir, "plugins") 
+init_plugin_dir = os.path.join(WBT_dir, "plugins")
 new_plugin_dir = os.path.join(work_dir, "plugins")
 
 if not os.path.exists(zip_path):
     print("Downloading WhiteboxTools binary ...")
     url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_linux_amd64.zip"
-    urllib.request.urlretrieve(url, zip_path)   # Download WhiteboxTools
+    urllib.request.urlretrieve(url, zip_path)  # Download WhiteboxTools
 else:
     print("WhiteboxTools binary already exists.")
 
@@ -66,7 +66,7 @@ with open(os.path.join(WBT_dir, "wb_runner.py")) as f_runner:
             lines[index] = line
             # print("{}: {}".format(index, line))
         elif line.strip() == "main()":
-            line = "    Runner()\n" 
+            line = "    Runner()\n"
             lines[index] = line
             # print("{}: {}".format(index, line))
 
@@ -92,13 +92,14 @@ with open(os.path.join(WBT_dir, "whitebox_tools.py")) as f_wbt:
         if line.strip() == "from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW":
             with open(os.path.join(work_dir, "download_wbt.py")) as f_dl:
                 dl_lines = f_dl.readlines()
-                f.writelines(dl_lines[1:])
+                f.write("\n")
+                f.writelines(dl_lines)
         elif line.strip() == "self.__compress_rasters = False":
             f.write("        download_wbt()\n")
 
-shutil.move(os.path.join(WBT_dir, 'whitebox_tools'), os.path.join(work_dir, 'whitebox_tools'))
+shutil.move(
+    os.path.join(WBT_dir, "whitebox_tools"), os.path.join(work_dir, "whitebox_tools")
+)
 
 
 f.close()
-
-        
