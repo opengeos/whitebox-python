@@ -118,3 +118,4 @@ ENV/
 whitebox/WhiteboxTools_linux_amd64.zip
 whitebox/img/._WhiteboxToolsLogo_box_only.png
 whitebox/img/.DS_Store
+whitebox/GeneralToolsetExtension_linux.zip
