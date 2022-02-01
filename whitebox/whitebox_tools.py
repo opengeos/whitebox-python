@@ -10,6 +10,9 @@ See whitebox_example.py for an example of how to use it.
 # License: MIT
 
 from __future__ import print_function
+import urllib.request
+import zipfile
+import shutil
 import os
 from os import path
 import sys
@@ -551,6 +554,127 @@ class WhiteboxTools(object):
         except (OSError, ValueError, CalledProcessError) as err:
             return err
 
+    def install_wbt_extension(self, ext_name=""):
+        try:
+            if len(ext_name) == 0:
+                ext_name = input(
+'''Which extension would you like to install? (gte/lidar/dem/agri) ''')
+
+            # Figure out the appropriate URL to download the extension binary from.
+            url = "https://www.whiteboxgeo.com/GTE_Windows/GeneralToolsetExtension_win.zip" # default
+            unzipped_dir_name = "GeneralToolsetExtension"
+            if "agri" in ext_name.lower():
+                if platform.system() == 'Windows':
+                    url = "https://www.whiteboxgeo.com/AgricultureToolset/AgricultureToolset_win.zip"
+                elif platform.system() == 'Darwin':
+                    url = "https://www.whiteboxgeo.com/AgricultureToolset/AgricultureToolset_MacOS_Intel.zip"
+                elif platform.system() == 'Linux':
+                    url = "https://www.whiteboxgeo.com/AgricultureToolset/AgricultureToolset_linux.zip"
+                
+                unzipped_dir_name = "AgricultureToolset"
+            elif "dem" in ext_name.lower():
+                if platform.system() == 'Windows':
+                    url = "https://www.whiteboxgeo.com/DemAndSpatialHydrologyToolset/DemAndSpatialHydrologyToolset_win.zip"
+                elif platform.system() == 'Darwin':
+                    url = "https://www.whiteboxgeo.com/DemAndSpatialHydrologyToolset/DemAndSpatialHydrologyToolset_MacOS_Intel.zip"
+                elif platform.system() == 'Linux':
+                    url = "https://www.whiteboxgeo.com/DemAndSpatialHydrologyToolset/DemAndSpatialHydrologyToolset_linux.zip"
+
+                unzipped_dir_name = "DemAndSpatialHydrologyToolset"
+            elif "lidar" in ext_name.lower():
+                if platform.system() == 'Windows':
+                    url = "https://www.whiteboxgeo.com/LidarAndRemoteSensingToolset/LidarAndRemoteSensingToolset_win.zip"
+                elif platform.system() == 'Darwin':
+                    url = "https://www.whiteboxgeo.com/LidarAndRemoteSensingToolset/LidarAndRemoteSensingToolset_MacOS_Intel.zip"
+                elif platform.system() == 'Linux':
+                    url = "https://www.whiteboxgeo.com/LidarAndRemoteSensingToolset/LidarAndRemoteSensingToolset_linux.zip"
+                
+                unzipped_dir_name = "LidarAndRemoteSensingToolset"
+            else: # default to the general toolset
+                if "gte" not in ext_name.lower():
+                    print(f"Warning: Unrecognized extension ext_name {ext_name}. Installing the GTE instead...")
+
+                if platform.system() == 'Darwin':
+                    url = "https://www.whiteboxgeo.com/GTE_Darwin/GeneralToolsetExtension_MacOS_Intel.zip"
+                elif platform.system() == 'Linux':
+                    url = "https://www.whiteboxgeo.com/GTE_Linux/GeneralToolsetExtension_linux.zip"
+
+            # Download the extension binary
+            print("Downloading extension plugins...")
+            compressed_plugins_file = urllib.request.urlopen(url)
+
+            # Save it to a zip then decompress it and move the files to the plugins folder.
+            print("Installing extension plugins...")
+            with open('./compressed_plugins.zip','wb') as output:
+                output.write(compressed_plugins_file.read())
+
+            if not os.path.exists('./plugins'):
+                os.makedirs('./plugins')
+
+            with zipfile.ZipFile('./compressed_plugins.zip', 'r') as zip_ref:
+                zip_ref.extractall('./')
+
+            for entry in os.scandir(f'./{unzipped_dir_name}'):
+                new_path = entry.path.replace(f'{unzipped_dir_name}', 'plugins')
+                os.replace(entry.path, new_path)
+                if ".json" not in new_path and platform.system() != "Windows":
+                    os.system("chmod 755 " + new_path) # grant executable permission
+
+            # Remove the unzipped directory, which isn't needed anymore.
+            if os.path.exists(f'./{unzipped_dir_name}'):
+                shutil.rmtree(f'./{unzipped_dir_name}')
+
+            # Get the updated Python API, so that they can use any new extension tools that
+            # have been released since the last open-core release from Python.
+            print("Updating WBT Python API...")
+            
+            url = "https://raw.githubusercontent.com/jblindsay/whitebox-tools/master/whitebox_tools.py"
+            with urllib.request.urlopen(url) as f:
+                api_text = f.read().decode('utf-8')
+                with open('./whitebox_tools.py', 'w') as output:
+                    output.write(api_text)
+
+            if "agri" in ext_name.lower():
+                print("The Whitebox Agriculture Toolset Extension has been installed!")
+            elif "dem" in ext_name.lower():
+                print("The Whitebox DEM and Spatial Hydrology Toolset Extension has been installed!")
+            elif "lidar" in ext_name.lower():
+                print("The Whitebox DEM and LiDAR and Remote Sensing Toolset Extension has been installed!")
+            else:
+                print("The Whitebox General Toolset Extension (GTE) has been installed!")
+
+            print(
+'''
+You will need to activate a license before using this extension. If you do 
+not currently have a valid activation key, you may purchase one by visiting 
+https://www.whiteboxgeo.com/extension-pricing/''')
+            # Does the user want to register an activation key for this extension?
+            reply = input("\nWould you like to activate a license key for the extension now? (Y/n) ")
+
+            if "y" in reply.lower():
+                self.activate_license()
+            else:
+                print(
+'''
+Okay, that's it for now.
+''')
+
+        except Exception as e:
+            print("Unexpected error:", e)
+            print("Please contact support@whiteboxgeo.com if you continue to experience issues.")
+            raise
+
+    def activate_license(self):
+        try:
+            if platform.system() == 'Windows':
+                os.system("./plugins/register_license.exe")
+            else:
+                os.system("./plugins/register_license")
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            print("Please contact support@whiteboxgeo.com if you continue to experience issues.")
+            raise
+
     ########################################################################
     # The following methods are convenience methods for each available tool.
     # This needs updating whenever new tools are added to the WhiteboxTools
@@ -561,6 +685,12 @@ class WhiteboxTools(object):
     # restrict the ability for text editors and IDEs to use autocomplete.
     ########################################################################
 
+    
+    
+    
+    
+    
+    
     
     
     
@@ -1103,7 +1233,7 @@ class WhiteboxTools(object):
         return self.run_tool('centroid', args, callback) # returns 1 if error
 
     def centroid_vector(self, i, output, callback=None):
-        """Identifes the centroid point of a vector polyline or polygon feature or a group of vector points.
+        """Identifies the centroid point of a vector polyline or polygon feature or a group of vector points.
 
         Keyword arguments:
 
@@ -1711,7 +1841,7 @@ class WhiteboxTools(object):
         return self.run_tool('smooth_vectors', args, callback) # returns 1 if error
 
     def split_vector_lines(self, i, output, length=None, callback=None):
-        """This tool can be used to approximate the harvester pass lines from yield points.
+        """This tool can be used to split a vector line coverage into even-lengthed segments.
 
         Keyword arguments:
 
@@ -2524,6 +2654,24 @@ class WhiteboxTools(object):
     # Geomorphometric Analysis #
     ############################
 
+    def accumulation_curvature(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates accumulation curvature from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('accumulation_curvature', args, callback) # returns 1 if error
+
     def aspect(self, dem, output, zfactor=None, callback=None):
         """Calculates an aspect raster from an input DEM.
 
@@ -2640,6 +2788,24 @@ class WhiteboxTools(object):
         args.append("--tolerance={}".format(tolerance))
         return self.run_tool('contours_from_raster', args, callback) # returns 1 if error
 
+    def curvedness(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates curvedness from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('curvedness', args, callback) # returns 1 if error
+
     def dev_from_mean_elev(self, dem, output, filterx=11, filtery=11, callback=None):
         """Calculates deviation from mean elevation.
 
@@ -2675,6 +2841,24 @@ class WhiteboxTools(object):
         args.append("--filterx={}".format(filterx))
         args.append("--filtery={}".format(filtery))
         return self.run_tool('diff_from_mean_elev', args, callback) # returns 1 if error
+
+    def difference_curvature(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates difference curvature from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('difference_curvature', args, callback) # returns 1 if error
 
     def directional_relief(self, dem, output, azimuth=0.0, max_dist=None, callback=None):
         """Calculates relief for cells in an input DEM for a specified direction.
@@ -2926,6 +3110,94 @@ class WhiteboxTools(object):
         if line_thin: args.append("--line_thin")
         return self.run_tool('find_ridges', args, callback) # returns 1 if error
 
+    def gaussian_curvature(self, dem, output, log=False, zfactor=None, callback=None):
+        """Calculates a mean curvature raster from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
+        return self.run_tool('gaussian_curvature', args, callback) # returns 1 if error
+
+    def gaussian_scale_space(self, dem, output, output_zscore, output_scale, points=None, sigma=0.5, step=0.5, num_steps=10, lsp="Slope", z_factor=None, callback=None):
+        """This tool uses the fast Gaussian approximation algorithm to produce scaled land-surface parameter measurements from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input DEM raster file. 
+        points -- Name of the input vector points shapefile. 
+        output -- Name of the output land-surface parameter raster file. 
+        output_zscore -- Name of the output z-score raster file. 
+        output_scale -- Name of the output scale raster file. 
+        sigma -- Initial sigma value (cells). 
+        step -- Step size as any positive non-zero integer. 
+        num_steps -- Number of steps. 
+        lsp -- Output land-surface parameter; one of 'AnisotropyLTP', 'Aspect', 'DiffMeanElev', 'Eastness', 'Elevation', 'Hillshade', 'MeanCurvature', 'Northness', 'PlanCurvature', 'ProfileCurvature', 'Ruggedness', 'Slope', 'TanCurvature', 'TotalCurvature'. 
+        z_factor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        if points is not None: args.append("--points='{}'".format(points))
+        args.append("--output='{}'".format(output))
+        args.append("--output_zscore='{}'".format(output_zscore))
+        args.append("--output_scale='{}'".format(output_scale))
+        args.append("--sigma={}".format(sigma))
+        args.append("--step={}".format(step))
+        args.append("--num_steps={}".format(num_steps))
+        args.append("--lsp={}".format(lsp))
+        if z_factor is not None: args.append("--z_factor='{}'".format(z_factor))
+        return self.run_tool('gaussian_scale_space', args, callback) # returns 1 if error
+
+    def generating_function(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates generating function from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('generating_function', args, callback) # returns 1 if error
+
+    def geomorphons(self, dem, output, search=50, threshold=0.0, tdist=0, forms=True, callback=None):
+        """Computes geomorphon patterns.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        search -- Look up distance. 
+        threshold -- Flatness threshold for the classification function (in degrees). 
+        tdist -- Distance (in cells) to begin reducing the flatness threshold to avoid problems with pseudo-flat lines-of-sight. 
+        forms -- Classify geomorphons into 10 common land morphologies, else, output ternary code. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        args.append("--search={}".format(search))
+        args.append("--threshold={}".format(threshold))
+        args.append("--tdist={}".format(tdist))
+        if forms: args.append("--forms")
+        return self.run_tool('geomorphons', args, callback) # returns 1 if error
+
     def hillshade(self, dem, output, azimuth=315.0, altitude=30.0, zfactor=None, callback=None):
         """Calculates a hillshade raster from an input DEM.
 
@@ -2963,6 +3235,24 @@ class WhiteboxTools(object):
         args.append("--azimuth={}".format(azimuth))
         args.append("--max_dist={}".format(max_dist))
         return self.run_tool('horizon_angle', args, callback) # returns 1 if error
+
+    def horizontal_excess_curvature(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates horizontal excess curvature from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('horizontal_excess_curvature', args, callback) # returns 1 if error
 
     def hypsometric_analysis(self, inputs, output, watershed=None, callback=None):
         """Calculates a hypsometric curve for one or more DEMs.
@@ -3009,6 +3299,46 @@ class WhiteboxTools(object):
         if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         if full_mode: args.append("--full_mode")
         return self.run_tool('hypsometrically_tinted_hillshade', args, callback) # returns 1 if error
+
+    def local_hypsometric_analysis(self, i, out_mag, out_scale, min_scale=4, step=1, num_steps=10, step_nonlinearity=1.0, callback=None):
+        """This tool calculates a local, neighbourhood-based hypsometric integral raster.
+
+        Keyword arguments:
+
+        i -- Name of the input raster DEM file. 
+        out_mag -- Name of the openness output raster file. 
+        out_scale -- Name of the openness output raster file. 
+        min_scale -- Minimum search neighbourhood radius in grid cells. 
+        step -- Step size as any positive non-zero integer. 
+        num_steps -- Number of steps. 
+        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical). 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--out_mag='{}'".format(out_mag))
+        args.append("--out_scale='{}'".format(out_scale))
+        args.append("--min_scale={}".format(min_scale))
+        args.append("--step={}".format(step))
+        args.append("--num_steps={}".format(num_steps))
+        args.append("--step_nonlinearity={}".format(step_nonlinearity))
+        return self.run_tool('local_hypsometric_analysis', args, callback) # returns 1 if error
+
+    def local_quadratic_regression(self, dem, output, filter=3, callback=None):
+        """This tool is an implementation of the constrained quadratic regression algorithm using a flexible window size described in Wood (1996).
+
+        Keyword arguments:
+
+        dem -- Name of the input DEM raster file. 
+        output -- Name of the output raster file. 
+        filter -- Edge length of the filter kernel. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        args.append("--filter={}".format(filter))
+        return self.run_tool('local_quadratic_regression', args, callback) # returns 1 if error
 
     def map_off_terrain_objects(self, dem, output, max_slope=40.0, min_size=1, callback=None):
         """Maps off-terrain objects in a digital elevation model (DEM).
@@ -3168,6 +3498,56 @@ class WhiteboxTools(object):
         args.append("--step={}".format(step))
         return self.run_tool('max_elevation_deviation', args, callback) # returns 1 if error
 
+    def max_upslope_elev_change(self, dem, output, callback=None):
+        """Calculates the maximum upslope change in elevation between a grid cell and its eight downslope neighbors.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('max_upslope_elev_change', args, callback) # returns 1 if error
+
+    def maximal_curvature(self, dem, output, log=False, zfactor=None, callback=None):
+        """Calculates a mean curvature raster from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
+        return self.run_tool('maximal_curvature', args, callback) # returns 1 if error
+
+    def mean_curvature(self, dem, output, log=False, zfactor=None, callback=None):
+        """Calculates a mean curvature raster from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
+        return self.run_tool('mean_curvature', args, callback) # returns 1 if error
+
     def min_downslope_elev_change(self, dem, output, callback=None):
         """Calculates the minimum downslope change in elevation between a grid cell and its eight downslope neighbors.
 
@@ -3181,6 +3561,24 @@ class WhiteboxTools(object):
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
         return self.run_tool('min_downslope_elev_change', args, callback) # returns 1 if error
+
+    def minimal_curvature(self, dem, output, log=False, zfactor=None, callback=None):
+        """Calculates a mean curvature raster from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Input raster DEM file. 
+        output -- Output raster file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
+        return self.run_tool('minimal_curvature', args, callback) # returns 1 if error
 
     def multidirectional_hillshade(self, dem, output, altitude=45.0, zfactor=None, full_mode=False, callback=None):
         """Calculates a multi-direction hillshade raster from an input DEM.
@@ -3373,9 +3771,9 @@ class WhiteboxTools(object):
 
         Keyword arguments:
 
-        i -- Name of the input raster image file. 
-        pos_output -- Name of the positive openenness output raster file. 
-        neg_output -- Name of the negative openenness output raster file. 
+        i -- Name of the input raster DEM file. 
+        pos_output -- Name of the positive openness output raster file. 
+        neg_output -- Name of the negative openness output raster file. 
         dist -- Search distance, in grid cells. 
         callback -- Custom function for handling tool text outputs.
         """
@@ -3426,19 +3824,21 @@ class WhiteboxTools(object):
         args.append("--filtery={}".format(filtery))
         return self.run_tool('percent_elev_range', args, callback) # returns 1 if error
 
-    def plan_curvature(self, dem, output, zfactor=None, callback=None):
+    def plan_curvature(self, dem, output, log=False, zfactor=None, callback=None):
         """Calculates a plan (contour) curvature raster from an input DEM.
 
         Keyword arguments:
 
         dem -- Input raster DEM file. 
         output -- Output raster file. 
+        log -- Display output values using a log-scale. 
         zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
+        if log: args.append("--log")
         if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         return self.run_tool('plan_curvature', args, callback) # returns 1 if error
 
@@ -3458,19 +3858,21 @@ class WhiteboxTools(object):
         args.append("--output='{}'".format(output))
         return self.run_tool('profile', args, callback) # returns 1 if error
 
-    def profile_curvature(self, dem, output, zfactor=None, callback=None):
+    def profile_curvature(self, dem, output, log=False, zfactor=None, callback=None):
         """Calculates a profile curvature raster from an input DEM.
 
         Keyword arguments:
 
         dem -- Input raster DEM file. 
         output -- Output raster file. 
+        log -- Display output values using a log-scale. 
         zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
+        if log: args.append("--log")
         if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         return self.run_tool('profile_curvature', args, callback) # returns 1 if error
 
@@ -3527,6 +3929,42 @@ class WhiteboxTools(object):
         args.append("--filter={}".format(filter))
         args.append("--slope={}".format(slope))
         return self.run_tool('remove_off_terrain_objects', args, callback) # returns 1 if error
+
+    def ring_curvature(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates ring curvature from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('ring_curvature', args, callback) # returns 1 if error
+
+    def rotor(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates rotor from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('rotor', args, callback) # returns 1 if error
 
     def ruggedness_index(self, dem, output, zfactor=None, callback=None):
         """Calculates the Riley et al.'s (1999) terrain ruggedness index from an input DEM.
@@ -3618,6 +4056,22 @@ class WhiteboxTools(object):
         args.append("--location={}".format(location))
         return self.run_tool('shadow_image', args, callback) # returns 1 if error
 
+    def shape_index(self, dem, output, zfactor=1.0, callback=None):
+        """This tool calculates the shape index from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('shape_index', args, callback) # returns 1 if error
+
     def slope(self, dem, output, zfactor=None, units="degrees", callback=None):
         """Calculates a slope raster from an input DEM.
 
@@ -3635,6 +4089,26 @@ class WhiteboxTools(object):
         if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         args.append("--units={}".format(units))
         return self.run_tool('slope', args, callback) # returns 1 if error
+
+    def slope_vs_aspect_plot(self, i, output, bin_size=2.0, min_slope=0.1, zfactor=1.0, callback=None):
+        """This tool creates a slope-aspect relation plot from an input DEM.
+
+        Keyword arguments:
+
+        i -- Name of the input raster image file. 
+        output -- Name of the output report file (*.html). 
+        bin_size -- Aspect bin size, in degrees. 
+        min_slope -- Minimum slope, in degrees. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--bin_size={}".format(bin_size))
+        args.append("--min_slope={}".format(min_slope))
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('slope_vs_aspect_plot', args, callback) # returns 1 if error
 
     def slope_vs_elevation_plot(self, inputs, output, watershed=None, callback=None):
         """Creates a slope vs. elevation plot for one or more DEMs.
@@ -3740,19 +4214,21 @@ class WhiteboxTools(object):
         args.append("--output='{}'".format(output))
         return self.run_tool('surface_area_ratio', args, callback) # returns 1 if error
 
-    def tangential_curvature(self, dem, output, zfactor=None, callback=None):
+    def tangential_curvature(self, dem, output, log=False, zfactor=None, callback=None):
         """Calculates a tangential curvature raster from an input DEM.
 
         Keyword arguments:
 
         dem -- Input raster DEM file. 
         output -- Output raster file. 
+        log -- Display output values using a log-scale. 
         zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
+        if log: args.append("--log")
         if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         return self.run_tool('tangential_curvature', args, callback) # returns 1 if error
 
@@ -3818,21 +4294,59 @@ class WhiteboxTools(object):
         if dev_max: args.append("--dev_max")
         return self.run_tool('topographic_position_animation', args, callback) # returns 1 if error
 
-    def total_curvature(self, dem, output, zfactor=None, callback=None):
+    def total_curvature(self, dem, output, log=False, zfactor=None, callback=None):
         """Calculates a total curvature raster from an input DEM.
 
         Keyword arguments:
 
         dem -- Input raster DEM file. 
         output -- Output raster file. 
+        log -- Display output values using a log-scale. 
         zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
+        if log: args.append("--log")
         if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         return self.run_tool('total_curvature', args, callback) # returns 1 if error
+
+    def unsphericity(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates the unsphericity curvature from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('unsphericity', args, callback) # returns 1 if error
+
+    def vertical_excess_curvature(self, dem, output, log=False, zfactor=1.0, callback=None):
+        """This tool calculates vertical excess curvature from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        output -- Name of the output raster image file. 
+        log -- Display output values using a log-scale. 
+        zfactor -- Z conversion factor. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        if log: args.append("--log")
+        args.append("--zfactor={}".format(zfactor))
+        return self.run_tool('vertical_excess_curvature', args, callback) # returns 1 if error
 
     def viewshed(self, dem, stations, output, height=2.0, callback=None):
         """Identifies the viewshed for a point or set of points.
@@ -4014,26 +4528,6 @@ class WhiteboxTools(object):
         if width is not None: args.append("--width='{}'".format(width))
         return self.run_tool('burn_streams_at_roads', args, callback) # returns 1 if error
 
-    def change_in_contributing_area(self, dem, output, exponent=1.0, threshold=None, log=False, callback=None):
-        """This tool calculates the downslope rate of change in specific contributing area (SCA).
-
-        Keyword arguments:
-
-        dem -- Name of the input DEM raster file; must be depressionless. 
-        output -- Name of the output raster file. 
-        exponent -- Optional exponent parameter; default is 1.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
-        log -- Log-transform the output values?. 
-        callback -- Custom function for handling tool text outputs.
-        """
-        args = []
-        args.append("--dem='{}'".format(dem))
-        args.append("--output='{}'".format(output))
-        args.append("--exponent={}".format(exponent))
-        if threshold is not None: args.append("--threshold='{}'".format(threshold))
-        if log: args.append("--log")
-        return self.run_tool('change_in_contributing_area', args, callback) # returns 1 if error
-
     def d8_flow_accumulation(self, i, output, out_type="cells", log=False, clip=False, pntr=False, esri_pntr=False, callback=None):
         """Calculates a D8 flow accumulation raster from an input DEM or flow pointer.
 
@@ -4102,7 +4596,7 @@ class WhiteboxTools(object):
         i -- Input raster DEM or D-infinity pointer file. 
         output -- Output raster file. 
         out_type -- Output type; one of 'cells', 'sca' (default), and 'ca'. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
         log -- Optional flag to request the output be log-transformed. 
         clip -- Optional flag to request clipping the display max by 1%. 
         pntr -- Is the input raster a D-infinity flow pointer rather than a DEM?. 
@@ -4265,7 +4759,7 @@ class WhiteboxTools(object):
         output -- Output raster file. 
         out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
         exponent -- Optional exponent parameter; default is 1.1. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
         log -- Optional flag to request the output be log-transformed. 
         clip -- Optional flag to request clipping the display max by 1%. 
         callback -- Custom function for handling tool text outputs.
@@ -4509,7 +5003,7 @@ class WhiteboxTools(object):
         output1 -- Name of the output downslope unsaturated length (DUL) file. 
         output2 -- Name of the output upslope disconnected saturated area (UDSA) file. 
         exponent -- Optional exponent parameter; default is 1.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4653,7 +5147,7 @@ class WhiteboxTools(object):
         output -- Output raster file. 
         out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
         exponent -- Optional exponent parameter; default is 1.1. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
         log -- Optional flag to request the output be log-transformed. 
         clip -- Optional flag to request clipping the display max by 1%. 
         callback -- Custom function for handling tool text outputs.
@@ -4688,11 +5182,11 @@ class WhiteboxTools(object):
         Keyword arguments:
 
         dem -- Name of the input DEM raster file; must be depressionless. 
-        output -- Name of the output upslope saturated area file. 
+        output -- Name of the output raster file. 
         out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
         exponent -- Optional upper-bound exponent parameter; default is 10.0. 
         max_slope -- Optional upper-bound slope parameter, in degrees (0-90); default is 45.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
         log -- Log-transform the output values?. 
         clip -- Optional flag to request clipping the display max by 1%. 
         callback -- Custom function for handling tool text outputs.
@@ -4717,7 +5211,7 @@ class WhiteboxTools(object):
         output -- Name of the output raster file. 
         out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
         exponent -- Optional exponent parameter; default is 1.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is inifinity. 
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
         log -- Log-transform the output values?. 
         clip -- Optional flag to request clipping the display max by 1%. 
         callback -- Custom function for handling tool text outputs.
@@ -5356,6 +5850,42 @@ class WhiteboxTools(object):
         args.append("--output='{}'".format(output))
         return self.run_tool('evaluate_training_sites', args, callback) # returns 1 if error
 
+    def generalize_classified_raster(self, i, output, min_size=4, method="longest", callback=None):
+        """Generalizes a raster containing class or object features by removing small features.
+
+        Keyword arguments:
+
+        i -- Name of the input raster image file. 
+        output -- Name of the output raster file. 
+        min_size -- Minimum feature size, in grid cells. 
+        method -- Grouping method; one of 'longest' (default), 'largest', and 'nearest'. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--min_size={}".format(min_size))
+        args.append("--method={}".format(method))
+        return self.run_tool('generalize_classified_raster', args, callback) # returns 1 if error
+
+    def generalize_with_similarity(self, i, similarity, output, min_size=4, callback=None):
+        """Generalizes a raster containing class or object features by removing small features using similarity criteria of neighbouring features.
+
+        Keyword arguments:
+
+        i -- Name of the input raster image file. 
+        similarity -- Names of the input similarity images. 
+        output -- Name of the output raster file. 
+        min_size -- Minimum feature size, in grid cells. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--similarity='{}'".format(similarity))
+        args.append("--output='{}'".format(output))
+        args.append("--min_size={}".format(min_size))
+        return self.run_tool('generalize_with_similarity', args, callback) # returns 1 if error
+
     def image_segmentation(self, inputs, output, threshold=0.5, steps=10, min_area=4, callback=None):
         """Performs a region-growing based segmentation on a set of multi-spectral images.
 
@@ -5376,32 +5906,6 @@ class WhiteboxTools(object):
         args.append("--min_area={}".format(min_area))
         return self.run_tool('image_segmentation', args, callback) # returns 1 if error
 
-    def k_means_clustering(self, inputs, output, classes, out_html=None, max_iterations=10, class_change=2.0, initialize="diagonal", min_class_size=10, callback=None):
-        """Performs a k-means clustering operation on a multi-spectral dataset.
-
-        Keyword arguments:
-
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        out_html -- Output HTML report file. 
-        classes -- Number of classes. 
-        max_iterations -- Maximum number of iterations. 
-        class_change -- Minimum percent of cells changed between iterations before completion. 
-        initialize -- How to initialize cluster centres?. 
-        min_class_size -- Minimum class size, in pixels. 
-        callback -- Custom function for handling tool text outputs.
-        """
-        args = []
-        args.append("--inputs='{}'".format(inputs))
-        args.append("--output='{}'".format(output))
-        if out_html is not None: args.append("--out_html='{}'".format(out_html))
-        args.append("--classes='{}'".format(classes))
-        args.append("--max_iterations={}".format(max_iterations))
-        args.append("--class_change={}".format(class_change))
-        args.append("--initialize={}".format(initialize))
-        args.append("--min_class_size={}".format(min_class_size))
-        return self.run_tool('k_means_clustering', args, callback) # returns 1 if error
-
     def min_dist_classification(self, inputs, polys, field, output, threshold=None, callback=None):
         """Performs a supervised minimum-distance classification using training site polygons and multi-spectral images.
 
@@ -5421,30 +5925,6 @@ class WhiteboxTools(object):
         args.append("--output='{}'".format(output))
         if threshold is not None: args.append("--threshold='{}'".format(threshold))
         return self.run_tool('min_dist_classification', args, callback) # returns 1 if error
-
-    def modified_k_means_clustering(self, inputs, output, out_html=None, start_clusters=1000, merge_dist=None, max_iterations=10, class_change=2.0, callback=None):
-        """Performs a modified k-means clustering operation on a multi-spectral dataset.
-
-        Keyword arguments:
-
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        out_html -- Output HTML report file. 
-        start_clusters -- Initial number of clusters. 
-        merge_dist -- Cluster merger distance. 
-        max_iterations -- Maximum number of iterations. 
-        class_change -- Minimum percent of cells changed between iterations before completion. 
-        callback -- Custom function for handling tool text outputs.
-        """
-        args = []
-        args.append("--inputs='{}'".format(inputs))
-        args.append("--output='{}'".format(output))
-        if out_html is not None: args.append("--out_html='{}'".format(out_html))
-        args.append("--start_clusters={}".format(start_clusters))
-        if merge_dist is not None: args.append("--merge_dist='{}'".format(merge_dist))
-        args.append("--max_iterations={}".format(max_iterations))
-        args.append("--class_change={}".format(class_change))
-        return self.run_tool('modified_k_means_clustering', args, callback) # returns 1 if error
 
     def parallelepiped_classification(self, inputs, polys, field, output, callback=None):
         """Performs a supervised parallelepiped classification using training site polygons and multi-spectral images.
@@ -6607,7 +7087,7 @@ class WhiteboxTools(object):
         return self.run_tool('lidar_block_minimum', args, callback) # returns 1 if error
 
     def lidar_classify_subset(self, base, subset, output, subset_class, nonsubset_class=None, callback=None):
-        """Classifies the values in one LiDAR point cloud that correpond with points in a subset cloud.
+        """Classifies the values in one LiDAR point cloud that correspond with points in a subset cloud.
 
         Keyword arguments:
 
@@ -6728,7 +7208,7 @@ class WhiteboxTools(object):
         i -- Input LiDAR file. 
         output -- Output LiDAR file. 
         radius -- Search Radius. 
-        min_neighbours -- The minimum number of neighbouring points within search areas. If fewer points than this threshold are idenfied during the fixed-radius search, a subsequent kNN search is performed to identify the k number of neighbours. 
+        min_neighbours -- The minimum number of neighbouring points within search areas. If fewer points than this threshold are identified during the fixed-radius search, a subsequent kNN search is performed to identify the k number of neighbours. 
         slope_threshold -- Maximum inter-point slope to be considered an off-terrain point. 
         height_threshold -- Inter-point height difference to be considered an off-terrain point. 
         classify -- Classify points as ground (2) or off-ground (1). 
@@ -7172,6 +7652,26 @@ class WhiteboxTools(object):
         if classify: args.append("--classify")
         return self.run_tool('lidar_segmentation_based_filter', args, callback) # returns 1 if error
 
+    def lidar_shift(self, i, output, x_shift="", y_shift="", z_shift="", callback=None):
+        """Shifts the x,y,z coordinates of a LiDAR file.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        x_shift -- x-shift value, blank for none. 
+        y_shift -- y-shift value, blank for none. 
+        z_shift -- z-shift value, blank for none. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--x_shift={}".format(x_shift))
+        args.append("--y_shift={}".format(y_shift))
+        args.append("--z_shift={}".format(z_shift))
+        return self.run_tool('lidar_shift', args, callback) # returns 1 if error
+
     def lidar_sibson_interpolation(self, i=None, output=None, parameter="elevation", returns="all", resolution=1.0, exclude_cls=None, minz=None, maxz=None, callback=None):
         """This tool interpolates one or more LiDAR tiles using Sibson's natural neighbour method.
 
@@ -7379,6 +7879,264 @@ class WhiteboxTools(object):
         if inputs is not None: args.append("--inputs='{}'".format(inputs))
         if outdir is not None: args.append("--outdir='{}'".format(outdir))
         return self.run_tool('zlidar_to_las', args, callback) # returns 1 if error
+
+    ####################
+    # Machine Learning #
+    ####################
+
+    def dbscan(self, inputs, output, scaling="Normalize", search_dist=0.01, min_points=5, callback=None):
+        """Performs a DBSCAN-based unsupervised clustering operation.
+
+        Keyword arguments:
+
+        inputs -- Names of the input rasters. 
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
+        output -- Name of the output raster file. 
+        search_dist -- Search-distance parameter. 
+        min_points -- Minimum point density needed to define 'core' point in cluster. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--scaling={}".format(scaling))
+        args.append("--output='{}'".format(output))
+        args.append("--search_dist={}".format(search_dist))
+        args.append("--min_points={}".format(min_points))
+        return self.run_tool('dbscan', args, callback) # returns 1 if error
+
+    def k_means_clustering(self, inputs, output, classes, out_html=None, max_iterations=10, class_change=2.0, initialize="diagonal", min_class_size=10, callback=None):
+        """Performs a k-means clustering operation on a multi-spectral dataset.
+
+        Keyword arguments:
+
+        inputs -- Input raster files. 
+        output -- Output raster file. 
+        out_html -- Output HTML report file. 
+        classes -- Number of classes. 
+        max_iterations -- Maximum number of iterations. 
+        class_change -- Minimum percent of cells changed between iterations before completion. 
+        initialize -- How to initialize cluster centres?. 
+        min_class_size -- Minimum class size, in pixels. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--output='{}'".format(output))
+        if out_html is not None: args.append("--out_html='{}'".format(out_html))
+        args.append("--classes='{}'".format(classes))
+        args.append("--max_iterations={}".format(max_iterations))
+        args.append("--class_change={}".format(class_change))
+        args.append("--initialize={}".format(initialize))
+        args.append("--min_class_size={}".format(min_class_size))
+        return self.run_tool('k_means_clustering', args, callback) # returns 1 if error
+
+    def knn_classification(self, inputs, training, field, output, scaling="Normalize", k=5, clip=True, test_proportion=0.2, callback=None):
+        """Performs a supervised k-nearest neighbour classification using training site polygons/points and predictor rasters.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
+        training -- Name of the input training site polygons/points shapefile. 
+        field -- Name of the attribute containing class name data. 
+        output -- Name of the output raster file. 
+        k -- k-parameter, which determines the number of nearest neighbours used. 
+        clip -- Perform training data clipping to remove outlier pixels?. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--scaling={}".format(scaling))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        args.append("--output='{}'".format(output))
+        args.append("-k={}".format(k))
+        if clip: args.append("--clip")
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('knn_classification', args, callback) # returns 1 if error
+
+    def knn_regression(self, inputs, training, field, scaling="Normalize", output=None, k=5, weight=True, test_proportion=0.2, callback=None):
+        """Performs a supervised k-nearest neighbour regression using training site points and predictor rasters.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
+        training -- Name of the input training site points Shapefile. 
+        field -- Name of the attribute containing response variable name data. 
+        output -- Name of the output raster file. 
+        k -- k-parameter, which determines the number of nearest neighbours used. 
+        weight -- Use distance weighting?. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--scaling={}".format(scaling))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("-k={}".format(k))
+        if weight: args.append("--weight")
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('knn_regression', args, callback) # returns 1 if error
+
+    def logistic_regression(self, inputs, training, field, scaling="Normalize", output=None, test_proportion=0.2, callback=None):
+        """Performs a logistic regression analysis using training site polygons/points and predictor rasters.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
+        training -- Name of the input training site polygons/points shapefile. 
+        field -- Name of the attribute containing class data. 
+        output -- Name of the output raster file. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--scaling={}".format(scaling))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('logistic_regression', args, callback) # returns 1 if error
+
+    def modified_k_means_clustering(self, inputs, output, out_html=None, start_clusters=1000, merge_dist=None, max_iterations=10, class_change=2.0, callback=None):
+        """Performs a modified k-means clustering operation on a multi-spectral dataset.
+
+        Keyword arguments:
+
+        inputs -- Input raster files. 
+        output -- Output raster file. 
+        out_html -- Output HTML report file. 
+        start_clusters -- Initial number of clusters. 
+        merge_dist -- Cluster merger distance. 
+        max_iterations -- Maximum number of iterations. 
+        class_change -- Minimum percent of cells changed between iterations before completion. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--output='{}'".format(output))
+        if out_html is not None: args.append("--out_html='{}'".format(out_html))
+        args.append("--start_clusters={}".format(start_clusters))
+        if merge_dist is not None: args.append("--merge_dist='{}'".format(merge_dist))
+        args.append("--max_iterations={}".format(max_iterations))
+        args.append("--class_change={}".format(class_change))
+        return self.run_tool('modified_k_means_clustering', args, callback) # returns 1 if error
+
+    def random_forest_classification(self, inputs, training, field, output=None, split_criterion="Gini", n_trees=500, min_samples_leaf=1, min_samples_split=2, test_proportion=0.2, callback=None):
+        """Performs a supervised random forest classification using training site polygons/points and predictor rasters.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        training -- Name of the input training site polygons/points shapefile. 
+        field -- Name of the attribute containing class data. 
+        output -- Name of the output raster file. 
+        split_criterion -- Split criterion to use when building a tree. Options include 'Gini', 'Entropy', and 'ClassificationError'. 
+        n_trees -- The number of trees in the forest. 
+        min_samples_leaf -- The minimum number of samples required to be at a leaf node. 
+        min_samples_split -- The minimum number of samples required to split an internal node. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--split_criterion={}".format(split_criterion))
+        args.append("--n_trees={}".format(n_trees))
+        args.append("--min_samples_leaf={}".format(min_samples_leaf))
+        args.append("--min_samples_split={}".format(min_samples_split))
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('random_forest_classification', args, callback) # returns 1 if error
+
+    def random_forest_regression(self, inputs, training, field, output=None, n_trees=100, min_samples_leaf=1, min_samples_split=2, test_proportion=0.2, callback=None):
+        """Performs a random forest regression analysis using training site data and predictor rasters.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        training -- Name of the input training site points shapefile. 
+        field -- Name of the attribute containing response variable name data. 
+        output -- Name of the output raster file. This parameter is optional. When unspecified, the tool will only build the model. When specified, the tool will use the built model and predictor rasters to perform a spatial prediction. 
+        n_trees -- The number of trees in the forest. 
+        min_samples_leaf -- The minimum number of samples required to be at a leaf node. 
+        min_samples_split -- The minimum number of samples required to split an internal node. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--n_trees={}".format(n_trees))
+        args.append("--min_samples_leaf={}".format(min_samples_leaf))
+        args.append("--min_samples_split={}".format(min_samples_split))
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('random_forest_regression', args, callback) # returns 1 if error
+
+    def svm_classification(self, inputs, training, field, scaling="Normalize", output=None, c=200.0, gamma=50.0, tolerance=0.1, test_proportion=0.2, callback=None):
+        """Performs an SVM binary classification using training site polygons/points and multiple input images.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
+        training -- Name of the input training site polygons/points Shapefile. 
+        field -- Name of the attribute containing class data. 
+        output -- Name of the output raster file. 
+        c -- c-value, the regularization parameter. 
+        gamma -- Gamma parameter used in setting the RBF (Gaussian) kernel function. 
+        tolerance -- The tolerance parameter used in determining the stopping condition. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--scaling={}".format(scaling))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("-c={}".format(c))
+        args.append("--gamma={}".format(gamma))
+        args.append("--tolerance={}".format(tolerance))
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('svm_classification', args, callback) # returns 1 if error
+
+    def svm_regression(self, inputs, training, field, scaling="Normalize", output=None, c=50.0, eps=10.0, gamma=0.5, test_proportion=0.2, callback=None):
+        """Performs a supervised SVM regression analysis using training site points and predictor rasters.
+
+        Keyword arguments:
+
+        inputs -- Names of the input predictor rasters. 
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
+        training -- Name of the input training site points Shapefile. 
+        field -- Name of the attribute containing class data. 
+        output -- Name of the output raster file. 
+        c -- c-value, the regularization parameter. 
+        eps -- Epsilon in the epsilon-SVR model. 
+        gamma -- Gamma parameter used in setting the RBF (Gaussian) kernel function. 
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--scaling={}".format(scaling))
+        args.append("--training='{}'".format(training))
+        args.append("--field='{}'".format(field))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("-c={}".format(c))
+        args.append("--eps={}".format(eps))
+        args.append("--gamma={}".format(gamma))
+        args.append("--test_proportion={}".format(test_proportion))
+        return self.run_tool('svm_regression', args, callback) # returns 1 if error
 
     ########################
     # Math and Stats Tools #
@@ -7665,14 +8423,14 @@ class WhiteboxTools(object):
         return self.run_tool('ceil', args, callback) # returns 1 if error
 
     def conditional_evaluation(self, i, output, statement="", true=None, false=None, callback=None):
-        """This tool performs a conditional evaluaton (if-then-else) operation on a raster.
+        """This tool performs a conditional evaluation (if-then-else) operation on a raster.
 
         Keyword arguments:
 
-        i -- Name of the input DEM raster file; must be depressionless. 
+        i -- Name of the input raster file. 
         statement -- Conditional statement e.g. value > 35.0. This statement must be a valid Rust statement. 
-        true -- Value  where TRUE (input raster or constant value). 
-        false -- Value  where FALSE (input raster or constant value). 
+        true -- Value where condition evaluates TRUE (input raster or constant value). 
+        false -- Value where condition evaluates FALSE (input raster or constant value). 
         output -- Name of the output raster file. 
         callback -- Custom function for handling tool text outputs.
         """
@@ -7922,7 +8680,7 @@ class WhiteboxTools(object):
         input1 -- Input raster file (independent variable, X). 
         input2 -- Input raster file (dependent variable, Y). 
         output -- Output HTML file for regression summary report. 
-        out_residuals -- Output raster regression resdidual file. 
+        out_residuals -- Output raster regression residual file. 
         standardize -- Optional flag indicating whether to standardize the residuals map. 
         scattergram -- Optional flag indicating whether to output a scattergram. 
         num_samples -- Number of samples used to create scattergram. 
@@ -8369,7 +9127,7 @@ class WhiteboxTools(object):
         return self.run_tool('random_sample', args, callback) # returns 1 if error
 
     def raster_calculator(self, output, statement="", callback=None):
-        """This tool performs a conditional evaluaton (if-then-else) operation on a raster.
+        """This tool performs a complex mathematical operations on one or more input raster images on a cell-to-cell basis.
 
         Keyword arguments:
 
@@ -8761,7 +9519,7 @@ class WhiteboxTools(object):
     #########################
 
     def reconcile_multiple_headers(self, i, region_field, yield_field, output, radius=None, min_yield=None, max_yield=None, mean_tonnage=None, callback=None):
-        """This tool can be used to normalize the yield points for a field.
+        """This tool adjusts the crop yield values for data sets collected with multiple headers or combines.
 
         Keyword arguments:
 
@@ -8809,7 +9567,7 @@ class WhiteboxTools(object):
         return self.run_tool('recreate_pass_lines', args, callback) # returns 1 if error
 
     def remove_field_edge_points(self, i, output, dist=None, max_change_in_heading=25.0, flag_edges=False, callback=None):
-        """This tool can be used to remove most of the points along the edges from a crop yield data set.
+        """This tool can be used to remove, or flag, most of the points along the edges from a crop yield data set.
 
         Keyword arguments:
 
@@ -9146,7 +9904,7 @@ class WhiteboxTools(object):
         d8_pntr -- Input raster D8 pointer file. 
         streams -- Input raster streams file. 
         output -- Output raster file. 
-        min_length -- Minimum tributary length (in map units) used for network prunning. 
+        min_length -- Minimum tributary length (in map units) used for network pruning. 
         esri_pntr -- D8 pointer uses the ESRI style scheme. 
         callback -- Custom function for handling tool text outputs.
         """
@@ -9159,7 +9917,7 @@ class WhiteboxTools(object):
         return self.run_tool('remove_short_streams', args, callback) # returns 1 if error
 
     def repair_stream_vector_topology(self, i, output, dist="", callback=None):
-        """This tool resolve topological errors and inconsistencies associated with digitized vector streams.
+        """This tool resolves topological errors and inconsistencies associated with digitized vector streams.
 
         Keyword arguments:
 
@@ -9363,7 +10121,7 @@ class WhiteboxTools(object):
 
         Keyword arguments:
 
-        streams -- Name of the input routes vector file. 
+        streams -- Name of the input streams vector file. 
         dem -- Name of the input DEM raster file. 
         output -- Name of the output lines shapefile. 
         cutting_height -- Maximum ridge-cutting height (z units). 

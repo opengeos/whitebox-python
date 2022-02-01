@@ -103,12 +103,12 @@ class FileSelector(tk.Frame):
                     ftypes = [("Shapefiles", "*.shp"), ('Raster files', ('*.dep', '*.tif',
                                                 '*.tiff', '*.bil', '*.flt',
                                                 '*.sdat', '*.rdc',
-                                                '*.asc'))]
+                                                '*.asc', '*grd'))]
                 elif 'Raster' in self.file_type:
                     ftypes = [('Raster files', ('*.dep', '*.tif',
                                                 '*.tiff', '*.bil', '*.flt',
                                                 '*.sdat', '*.rdc',
-                                                '*.asc'))]
+                                                '*.asc', '*.grd'))]
                 elif 'Lidar' in self.file_type:
                     ftypes = [("LiDAR files", ('*.las', '*.zlidar', '*.laz', '*.zip'))]
                 elif 'Vector' in self.file_type:
@@ -956,6 +956,8 @@ class WbRunner(tk.Frame):
         wbt.set_compress_rasters(True)
         self.filemenu.add_command(label="Do Not Compress Output TIFFs", command=self.update_compress)
         self.filemenu.add_separator()
+        self.filemenu.add_command(label="Install a Whitebox Extension", command=self.install_extension)
+        self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="File", menu=self.filemenu)
 
@@ -979,6 +981,10 @@ class WbRunner(tk.Frame):
         else:
             wbt.set_compress_rasters(True)
             self.filemenu.entryconfig(3, label = "Do Not Compress Output TIFFs")
+
+    def install_extension(self):
+        wbt.install_wbt_extension()
+        self.refresh_tools()
 
     def get_toolboxes(self):
         toolboxes = set()
