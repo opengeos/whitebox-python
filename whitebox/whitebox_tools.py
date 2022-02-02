@@ -26,7 +26,7 @@ running_windows = platform.system() == 'Windows'
 if running_windows:
     from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW
 
-def download_wbt(verbose=False):
+def download_wbt(verbose=True):
     """
     Download WhiteboxTools pre-complied binary for first-time use
     """
