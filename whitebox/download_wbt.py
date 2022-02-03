@@ -1,8 +1,10 @@
-def download_wbt(verbose=False):
+def download_wbt(verbose=True):
     """
     Download WhiteboxTools pre-complied binary for first-time use
     """
-    import os, sys, platform
+    import os
+    import sys
+    import platform
     import zipfile
     import tarfile
     import shutil
@@ -60,8 +62,9 @@ def download_wbt(verbose=False):
             zip_name = os.path.join(
                 pkg_dir, os.path.basename(url)
             )  # Get WhiteboxTools zip file name
-            zip_ext = os.path.splitext(zip_name)[1]  # Get downloaded zip file extension
-            # urllib.request.urlretrieve(url, zip_name)   # Download WhiteboxTools
+            # Get downloaded zip file extension
+            zip_ext = os.path.splitext(zip_name)[1]
+            # Download WhiteboxTools
             try:
                 request = urllib.request.urlopen(url, timeout=500)
             except urllib.error.URLError as e:
@@ -104,14 +107,38 @@ def download_wbt(verbose=False):
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
 
+            try:
+                os.remove(zip_name)
+            except:
+                pass
+
+            # The official WhiteboxTools Linux binary from whiteboxgeo.com requires GLIBC 2.29,
+            # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
+            # downloads the binary that is compatible with Google Colab.
+            if "google.colab" in sys.modules:
+                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
+                zip_name = os.path.join(pkg_dir, os.path.basename(url))
+                try:
+                    request = urllib.request.urlopen(url, timeout=500)
+                    with open(zip_name, "wb") as f:
+                        f.write(request.read())
+                    os.remove(exe_path)
+                    with zipfile.ZipFile(zip_name, "r") as zip_ref:
+                        zip_ref.extractall(pkg_dir)
+                    os.system("chmod 755 " + exe_path)
+                except Exception as e:
+                    print(e)
+
         if not os.path.exists(work_dir):
             if verbose:
                 print("Downloading testdata ...")
             os.mkdir(work_dir)
             dem_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif"
             dep_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep"
-            urllib.request.urlretrieve(dem_url, os.path.join(work_dir, "DEM.tif"))
-            urllib.request.urlretrieve(dep_url, os.path.join(work_dir, "DEM.dep"))
+            urllib.request.urlretrieve(
+                dem_url, os.path.join(work_dir, "DEM.tif"))
+            urllib.request.urlretrieve(
+                dep_url, os.path.join(work_dir, "DEM.dep"))
 
     except:
         print("Unexpected error:", sys.exc_info()[0])
