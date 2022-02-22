@@ -30,6 +30,7 @@ def download_wbt(verbose=True):
     """
     Download WhiteboxTools pre-complied binary for first-time use
     """
+    import glob
     import os
     import sys
     import platform
@@ -129,8 +130,14 @@ def download_wbt(verbose=True):
             exe_name = "whitebox_tools{}".format(exe_ext)
             exe_path = os.path.join(exe_dir, exe_name)
 
-            if platform.system() != "Windows":  # grant executable permission
-                os.system("chmod 755 " + exe_path)
+            # grant executable permission
+            os.system("chmod 755 " + exe_path)
+            plugins = list(
+                set(glob.glob(os.path.join(new_plugin_dir, "*")))
+                - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
+            )
+            for plugin in plugins:
+                os.system("chmod 755 " + plugin)
 
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
@@ -154,6 +161,12 @@ def download_wbt(verbose=True):
                     with zipfile.ZipFile(zip_name, "r") as zip_ref:
                         zip_ref.extractall(pkg_dir)
                     os.system("chmod 755 " + exe_path)
+                    plugins = list(
+                        set(glob.glob(os.path.join(new_plugin_dir, "*")))
+                        - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
+                    )
+                    for plugin in plugins:
+                        os.system("chmod 755 " + plugin)
                 except Exception as e:
                     print(e)
 
@@ -163,10 +176,8 @@ def download_wbt(verbose=True):
             os.mkdir(work_dir)
             dem_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif"
             dep_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep"
-            urllib.request.urlretrieve(
-                dem_url, os.path.join(work_dir, "DEM.tif"))
-            urllib.request.urlretrieve(
-                dep_url, os.path.join(work_dir, "DEM.dep"))
+            urllib.request.urlretrieve(dem_url, os.path.join(work_dir, "DEM.tif"))
+            urllib.request.urlretrieve(dep_url, os.path.join(work_dir, "DEM.dep"))
 
     except:
         print("Unexpected error:", sys.exc_info()[0])
