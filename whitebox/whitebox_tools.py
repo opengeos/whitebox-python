@@ -188,7 +188,7 @@ if __name__ == "__main__":
     download_wbt()
 
 def default_callback(value):
-    ''' 
+    '''
     A simple default callback that outputs using the print function. When
     tools are called without providing a custom callback, this function
     will be used to print to standard output.
@@ -198,21 +198,21 @@ def default_callback(value):
 
 def to_camelcase(name):
     '''
-    Convert snake_case name to CamelCase name 
+    Convert snake_case name to CamelCase name
     '''
     return ''.join(x.title() for x in name.split('_'))
 
 
 def to_snakecase(name):
     '''
-    Convert CamelCase name to snake_case name 
+    Convert CamelCase name to snake_case name
     '''
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 class WhiteboxTools(object):
-    ''' 
+    '''
     An object for interfacing with the WhiteboxTools executable.
     '''
 
@@ -235,25 +235,25 @@ class WhiteboxTools(object):
         download_wbt()
 
     def set_whitebox_dir(self, path_str):
-        ''' 
+        '''
         Sets the directory to the WhiteboxTools executable file.
         '''
         self.exe_path = path_str
 
     def set_working_dir(self, path_str):
-        ''' 
+        '''
         Sets the working directory, i.e. the directory in which
-        the data files are located. By setting the working 
+        the data files are located. By setting the working
         directory, tool input parameters that are files need only
         specify the file name rather than the complete file path.
         '''
         self.work_dir = path.normpath(path_str)
 
     def set_verbose_mode(self, val=True):
-        ''' 
+        '''
         Sets verbose mode. If verbose mode is False, tools will not
         print output messages. Tools will frequently provide substantial
-        feedback while they are operating, e.g. updating progress for 
+        feedback while they are operating, e.g. updating progress for
         various sub-routines. When the user has scripted a workflow
         that ties many tools in sequence, this level of tool output
         can be problematic. By setting verbose mode to False, these
@@ -264,10 +264,11 @@ class WhiteboxTools(object):
         try:
             callback = self.default_callback
 
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args2 = []
             args2.append("." + path.sep + self.exe_name)
-            
+
             if self.verbose:
                 args2.append("-v")
             else:
@@ -306,6 +307,8 @@ class WhiteboxTools(object):
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
+        finally:
+            os.chdir(work_dir)
 
     def set_default_callback(self, callback_func):
         '''
@@ -314,16 +317,16 @@ class WhiteboxTools(object):
         self.default_callback = callback_func
 
     def set_compress_rasters(self, compress_rasters):
-        ''' 
+        '''
         Sets the flag used by WhiteboxTools to determine whether to use compression for output rasters.
         '''
         self.__compress_rasters = compress_rasters
-    
+
     def get_compress_rasters(self):
         return self.__compress_rasters
-        
+
     def run_tool(self, tool_name, args, callback=None):
-        ''' 
+        '''
         Runs a tool and specifies tool arguments.
         Returns 0 if completes without error.
         Returns 1 if error encountered (details are sent to callback).
@@ -333,6 +336,7 @@ class WhiteboxTools(object):
             if callback is None:
                 callback = self.default_callback
 
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args2 = []
             args2.append("." + path.sep + self.exe_name)
@@ -390,12 +394,15 @@ class WhiteboxTools(object):
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
+        finally:
+            os.chdir(work_dir)
 
     def help(self):
-        ''' 
+        '''
         Retrieves the help description for WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -414,12 +421,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def license(self, toolname=None):
-        ''' 
+        '''
         Retrieves the license information for WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -440,12 +450,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def version(self):
-        ''' 
+        '''
         Retrieves the version information for WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -464,12 +477,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def tool_help(self, tool_name=''):
-        ''' 
+        '''
         Retrieves the help description for a specific tool.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -488,12 +504,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def tool_parameters(self, tool_name):
-        ''' 
+        '''
         Retrieves the tool parameter descriptions for a specific tool.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -512,12 +531,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def toolbox(self, tool_name=''):
-        ''' 
+        '''
         Retrieve the toolbox for a specific tool.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -536,13 +558,16 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def view_code(self, tool_name):
-        ''' 
+        '''
         Opens a web browser to view the source code for a specific tool
         on the projects source code repository.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -561,12 +586,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def list_tools(self, keywords=[]):
-        ''' 
+        '''
         Lists all available tools in WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -591,6 +619,8 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def install_wbt_extension(self, ext_name=""):
         try:
@@ -608,7 +638,7 @@ class WhiteboxTools(object):
                     url = "https://www.whiteboxgeo.com/AgricultureToolset/AgricultureToolset_MacOS_Intel.zip"
                 elif platform.system() == 'Linux':
                     url = "https://www.whiteboxgeo.com/AgricultureToolset/AgricultureToolset_linux.zip"
-                
+
                 unzipped_dir_name = "AgricultureToolset"
             elif "dem" in ext_name.lower():
                 if platform.system() == 'Windows':
@@ -626,7 +656,7 @@ class WhiteboxTools(object):
                     url = "https://www.whiteboxgeo.com/LidarAndRemoteSensingToolset/LidarAndRemoteSensingToolset_MacOS_Intel.zip"
                 elif platform.system() == 'Linux':
                     url = "https://www.whiteboxgeo.com/LidarAndRemoteSensingToolset/LidarAndRemoteSensingToolset_linux.zip"
-                
+
                 unzipped_dir_name = "LidarAndRemoteSensingToolset"
             else: # default to the general toolset
                 if "gte" not in ext_name.lower():
@@ -665,7 +695,7 @@ class WhiteboxTools(object):
             # Get the updated Python API, so that they can use any new extension tools that
             # have been released since the last open-core release from Python.
             print("Updating WBT Python API...")
-            
+
             url = "https://raw.githubusercontent.com/jblindsay/whitebox-tools/master/whitebox_tools.py"
             with urllib.request.urlopen(url) as f:
                 api_text = f.read().decode('utf-8')
@@ -683,8 +713,8 @@ class WhiteboxTools(object):
 
             print(
 '''
-You will need to activate a license before using this extension. If you do 
-not currently have a valid activation key, you may purchase one by visiting 
+You will need to activate a license before using this extension. If you do
+not currently have a valid activation key, you may purchase one by visiting
 https://www.whiteboxgeo.com/extension-pricing/''')
             # Does the user want to register an activation key for this extension?
             reply = input("\nWould you like to activate a license key for the extension now? (Y/n) ")
@@ -723,49 +753,49 @@ Okay, that's it for now.
     # restrict the ability for text editors and IDEs to use autocomplete.
     ########################################################################
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     ##############
     # Data Tools #
     ##############
@@ -775,7 +805,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
+        i -- Input vector Points file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -787,8 +817,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector file. 
+        i -- Input vector file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -801,8 +831,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -815,8 +845,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -829,11 +859,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input CSV file (i.e. source of data to be imported). 
-        output -- Output vector file. 
-        xfield -- X field number (e.g. 0 for first field). 
-        yfield -- Y field number (e.g. 1 for second field). 
-        epsg -- EPSG projection (e.g. 2958). 
+        i -- Input CSV file (i.e. source of data to be imported).
+        output -- Output vector file.
+        xfield -- X field number (e.g. 0 for first field).
+        yfield -- Y field number (e.g. 1 for second field).
+        epsg -- EPSG projection (e.g. 2958).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -849,9 +879,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output csv file. 
-        headers -- Export field names as file header?. 
+        i -- Input vector file.
+        output -- Output csv file.
+        headers -- Export field names as file header?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -865,9 +895,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input lines vector file. 
-        output -- Name of the output lines vector file. 
-        dist -- Snap distance, in xy units (metres). 
+        i -- Name of the input lines vector file.
+        output -- Name of the output lines vector file.
+        dist -- Snap distance, in xy units (metres).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -881,11 +911,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input primary vector file (i.e. the table to be modified). 
-        pkey -- Primary key field. 
-        input2 -- Input foreign vector file (i.e. source of data to be imported). 
-        fkey -- Foreign key field. 
-        import_field -- Imported field (all fields will be imported if not specified). 
+        input1 -- Input primary vector file (i.e. the table to be modified).
+        pkey -- Primary key field.
+        input2 -- Input foreign vector file (i.e. source of data to be imported).
+        fkey -- Foreign key field.
+        import_field -- Imported field (all fields will be imported if not specified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -901,8 +931,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector line file. 
-        output -- Output vector polygon file. 
+        i -- Input vector line file.
+        output -- Output vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -915,11 +945,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input primary vector file (i.e. the table to be modified). 
-        pkey -- Primary key field. 
-        csv -- Input CSV file (i.e. source of data to be imported). 
-        fkey -- Foreign key field. 
-        import_field -- Imported field (all fields will be imported if not specified). 
+        i -- Input primary vector file (i.e. the table to be modified).
+        pkey -- Primary key field.
+        csv -- Input CSV file (i.e. source of data to be imported).
+        fkey -- Foreign key field.
+        import_field -- Imported field (all fields will be imported if not specified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -935,8 +965,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input vector files. 
-        output -- Output vector file. 
+        inputs -- Input vector files.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -949,8 +979,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        new_value -- New NoData value. 
+        i -- Input raster file.
+        new_value -- New NoData value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -963,9 +993,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector line or polygon file. 
-        output -- Output vector line or polygon file. 
-        exclude_holes -- Exclude hole parts from the feature splitting? (holes will continue to belong to their features in output.). 
+        i -- Input vector line or polygon file.
+        output -- Output vector line or polygon file.
+        exclude_holes -- Exclude hole parts from the feature splitting? (holes will continue to belong to their features in output.).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -979,11 +1009,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        base -- Input base raster file. 
-        output -- Output raster file. 
-        value -- Constant value to fill raster with; either 'nodata' or numeric value. 
-        data_type -- Output raster data type; options include 'double' (64-bit), 'float' (32-bit), and 'integer' (signed 16-bit) (default is 'float'). 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
+        base -- Input base raster file.
+        output -- Output raster file.
+        value -- Constant value to fill raster with; either 'nodata' or numeric value.
+        data_type -- Output raster data type; options include 'double' (64-bit), 'float' (32-bit), and 'integer' (signed 16-bit) (default is 'float').
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -999,8 +1029,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
-        output -- Output vector lines file. 
+        i -- Input vector polygon file.
+        output -- Output vector lines file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1013,7 +1043,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input GeoTIFF file. 
+        i -- Input GeoTIFF file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1025,8 +1055,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster lines file. 
-        output -- Output raster file. 
+        i -- Input raster lines file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1039,8 +1069,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output vector points file. 
+        i -- Input raster file.
+        output -- Output vector points file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1053,8 +1083,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output vector polygons file. 
+        i -- Input raster file.
+        output -- Output vector polygons file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1067,7 +1097,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
+        i -- Input vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1079,8 +1109,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
-        output -- Output vector polygon file. 
+        i -- Input vector polygon file.
+        output -- Output vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1093,9 +1123,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        back_value -- Background value to set to nodata. 
+        i -- Input raster file.
+        output -- Output raster file.
+        back_value -- Background value to set to nodata.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1109,9 +1139,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector line or polygon file. 
-        field -- Grouping ID field name in attribute table. 
-        output -- Output vector line or polygon file. 
+        i -- Input vector line or polygon file.
+        field -- Grouping ID field name in attribute table.
+        output -- Output vector line or polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1125,12 +1155,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector lines file. 
-        field -- Input field name in attribute table. 
-        output -- Output raster file. 
-        nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector lines file.
+        field -- Input field name in attribute table.
+        output -- Output raster file.
+        nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1147,13 +1177,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
-        field -- Input field name in attribute table. 
-        output -- Output raster file. 
-        assign -- Assignment operation, where multiple points are in the same grid cell; options include 'first', 'last' (default), 'min', 'max', 'sum'. 
-        nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector Points file.
+        field -- Input field name in attribute table.
+        output -- Output raster file.
+        assign -- Assignment operation, where multiple points are in the same grid cell; options include 'first', 'last' (default), 'min', 'max', 'sum'.
+        nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1171,12 +1201,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygons file. 
-        field -- Input field name in attribute table. 
-        output -- Output raster file. 
-        nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector polygons file.
+        field -- Input field name in attribute table.
+        output -- Output raster file.
+        nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1197,10 +1227,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        agg_factor -- Aggregation factor, in pixels. 
-        type -- Statistic used to fill output pixels. 
+        i -- Input raster file.
+        output -- Output raster file.
+        agg_factor -- Aggregation factor, in pixels.
+        type -- Statistic used to fill output pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1215,12 +1245,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use z-coordinate instead of field?. 
-        output -- Output raster file. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector Points file.
+        field -- Input field name in attribute table.
+        use_z -- Use z-coordinate instead of field?.
+        output -- Output raster file.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1237,12 +1267,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use z-coordinate instead of field?. 
-        output -- Output raster file. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector Points file.
+        field -- Input field name in attribute table.
+        use_z -- Use z-coordinate instead of field?.
+        output -- Output raster file.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1259,9 +1289,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        text_output -- Optional text output. 
+        i -- Input raster file.
+        output -- Output raster file.
+        text_output -- Optional text output.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1275,8 +1305,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector file. 
+        i -- Input vector file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1289,10 +1319,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        diag -- Flag indicating whether diagonal connections should be considered. 
-        zero_back -- Flag indicating whether zero values should be treated as a background. 
+        i -- Input raster file.
+        output -- Output raster file.
+        diag -- Flag indicating whether diagonal connections should be considered.
+        zero_back -- Flag indicating whether zero values should be treated as a background.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1307,11 +1337,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?. 
-        output -- Output vector polygon file. 
-        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded. 
+        i -- Input vector points file.
+        field -- Input field name in attribute table.
+        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?.
+        output -- Output vector polygon file.
+        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1327,10 +1357,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input base file. 
-        output -- Output vector polygon file. 
-        width -- The grid cell width. 
-        orientation -- Grid Orientation, 'horizontal' or 'vertical'. 
+        i -- Input base file.
+        output -- Output vector polygon file.
+        width -- The grid cell width.
+        orientation -- Grid Orientation, 'horizontal' or 'vertical'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1345,11 +1375,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        base -- Input base raster file. 
-        output -- Output raster file. 
-        gradient -- Slope gradient in degrees (-85.0 to 85.0). 
-        aspect -- Aspect (direction) in degrees clockwise from north (0.0-360.0). 
-        constant -- Constant value. 
+        base -- Input base raster file.
+        output -- Output raster file.
+        gradient -- Slope gradient in degrees (-85.0 to 85.0).
+        aspect -- Aspect (direction) in degrees clockwise from north (0.0-360.0).
+        constant -- Constant value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1365,12 +1395,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input base file. 
-        output -- Output vector polygon file. 
-        width -- The grid cell width. 
-        height -- The grid cell height. 
-        xorig -- The grid origin x-coordinate. 
-        yorig -- The grid origin y-coordinate. 
+        i -- Input base file.
+        output -- Output vector polygon file.
+        width -- The grid cell width.
+        height -- The grid cell height.
+        xorig -- The grid origin x-coordinate.
+        yorig -- The grid origin y-coordinate.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1387,10 +1417,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        field -- Dissolve field attribute (optional). 
-        output -- Output vector file. 
-        snap -- Snap tolerance. 
+        i -- Input vector file.
+        field -- Dissolve field attribute (optional).
+        output -- Output vector file.
+        snap -- Snap tolerance.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1405,9 +1435,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector polygon file. 
-        tolerance -- The distance tolerance for points. 
+        i -- Input vector file.
+        output -- Output vector polygon file.
+        tolerance -- The distance tolerance for points.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1421,10 +1451,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polyline file. 
-        output -- Output vector polyline file. 
-        dist -- The distance to extend. 
-        extend -- Extend direction, 'both ends' (default), 'line start', 'line end'. 
+        i -- Input vector polyline file.
+        output -- Output vector polyline file.
+        dist -- The distance to extend.
+        extend -- Extend direction, 'both ends' (default), 'line start', 'line end'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1439,8 +1469,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector lines or polygon file. 
-        output -- Output vector points file. 
+        i -- Input vector lines or polygon file.
+        output -- Output vector points file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1453,9 +1483,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        points -- Input vector points file. 
-        out_text -- Output point values as text? Otherwise, the only output is to to the points file's attribute table. 
+        inputs -- Input raster files.
+        points -- Input vector points file.
+        out_text -- Output point values as text? Otherwise, the only output is to to the points file's attribute table.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1469,10 +1499,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        threshold -- Remove features with fewer grid cells than this threshold value. 
-        background -- Background value. 
+        i -- Input raster file.
+        output -- Output raster file.
+        threshold -- Remove features with fewer grid cells than this threshold value.
+        background -- Background value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1487,9 +1517,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output vector points file. 
-        out_type -- Output type; one of 'area' (default) and 'volume'. 
+        i -- Input raster file.
+        output -- Output vector points file.
+        out_type -- Output type; one of 'area' (default) and 'volume'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1503,15 +1533,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use z-coordinate instead of field?. 
-        output -- Output raster file. 
-        weight -- IDW weight value. 
-        radius -- Search Radius in map units. 
-        min_points -- Minimum number of points. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector Points file.
+        field -- Input field name in attribute table.
+        use_z -- Use z-coordinate instead of field?.
+        output -- Output raster file.
+        weight -- IDW weight value.
+        radius -- Search Radius in map units.
+        min_points -- Minimum number of points.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1531,8 +1561,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster or vector file. 
-        output -- Output vector polygon file. 
+        i -- Input raster or vector file.
+        output -- Output vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1545,8 +1575,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector file. 
+        i -- Input vector file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1559,10 +1589,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector polygon file. 
-        criterion -- Minimization criterion; options include 'area' (default), 'length', 'width', and 'perimeter'. 
-        features -- Find the minimum bounding rectangles around each individual vector feature. 
+        i -- Input vector file.
+        output -- Output vector polygon file.
+        criterion -- Minimization criterion; options include 'area' (default), 'length', 'width', and 'perimeter'.
+        features -- Find the minimum bounding rectangles around each individual vector feature.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1577,9 +1607,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector polygon file. 
-        features -- Find the minimum bounding circle around each individual vector feature. 
+        i -- Input vector file.
+        output -- Output vector polygon file.
+        features -- Find the minimum bounding circle around each individual vector feature.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1593,9 +1623,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector polygon file. 
-        features -- Find the minimum bounding envelop around each individual vector feature. 
+        i -- Input vector file.
+        output -- Output vector polygon file.
+        features -- Find the minimum bounding envelop around each individual vector feature.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1609,9 +1639,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector polygon file. 
-        features -- Find the hulls around each vector feature. 
+        i -- Input vector file.
+        output -- Output vector polygon file.
+        features -- Find the hulls around each vector feature.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1625,13 +1655,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?. 
-        output -- Output raster file. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
-        clip -- Clip the data to the convex hull of the points?. 
+        i -- Input vector points file.
+        field -- Input field name in attribute table.
+        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?.
+        output -- Output raster file.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
+        clip -- Clip the data to the convex hull of the points?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1649,13 +1679,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use z-coordinate instead of field?. 
-        output -- Output raster file. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
-        max_dist -- Maximum search distance (optional). 
+        i -- Input vector Points file.
+        field -- Input field name in attribute table.
+        use_z -- Use z-coordinate instead of field?.
+        output -- Output raster file.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
+        max_dist -- Maximum search distance (optional).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1673,7 +1703,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1685,8 +1715,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygons file. 
-        output -- Output vector polyline file. 
+        i -- Input vector polygons file.
+        output -- Output vector polyline file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1699,7 +1729,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1711,8 +1741,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygons file. 
-        output -- Output vector polyline file. 
+        i -- Input vector polygons file.
+        output -- Output vector polyline file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1725,17 +1755,17 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use z-coordinate instead of field?. 
-        output -- Output raster file. 
-        radius -- Search Radius (in map units). 
-        min_points -- Minimum number of points. 
-        func_type -- Radial basis function type; options are 'ThinPlateSpline' (default), 'PolyHarmonic', 'Gaussian', 'MultiQuadric', 'InverseMultiQuadric'. 
-        poly_order -- Polynomial order; options are 'none' (default), 'constant', 'affine'. 
-        weight -- Weight parameter used in basis function. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        i -- Input vector points file.
+        field -- Input field name in attribute table.
+        use_z -- Use z-coordinate instead of field?.
+        output -- Output raster file.
+        radius -- Search Radius (in map units).
+        min_points -- Minimum number of points.
+        func_type -- Radial basis function type; options are 'ThinPlateSpline' (default), 'PolyHarmonic', 'Gaussian', 'MultiQuadric', 'InverseMultiQuadric'.
+        poly_order -- Polynomial order; options are 'none' (default), 'constant', 'affine'.
+        weight -- Weight parameter used in basis function.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1757,11 +1787,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        out_text -- Would you like to output polygon areas to text?. 
-        units -- Area units; options include 'grid cells' and 'map units'. 
-        zero_back -- Flag indicating whether zero values should be treated as a background. 
+        i -- Input raster file.
+        output -- Output raster file.
+        out_text -- Would you like to output polygon areas to text?.
+        units -- Area units; options include 'grid cells' and 'map units'.
+        zero_back -- Flag indicating whether zero values should be treated as a background.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1777,9 +1807,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        assign -- Which variable would you like to assign to grid cells? Options include 'column', 'row', 'x', and 'y'. 
+        i -- Input raster file.
+        output -- Output raster file.
+        assign -- Which variable would you like to assign to grid cells? Options include 'column', 'row', 'x', and 'y'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1793,11 +1823,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        out_text -- Would you like to output polygon areas to text?. 
-        units -- Area units; options include 'grid cells' and 'map units'. 
-        zero_back -- Flag indicating whether zero values should be treated as a background. 
+        i -- Input raster file.
+        output -- Output raster file.
+        out_text -- Would you like to output polygon areas to text?.
+        units -- Area units; options include 'grid cells' and 'map units'.
+        zero_back -- Flag indicating whether zero values should be treated as a background.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1813,10 +1843,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        reclass_vals -- Reclassification triplet values (new value; from value; to less than), e.g. '0.0;0.0;1.0;1.0;1.0;2.0'. 
-        assign_mode -- Optional Boolean flag indicating whether to operate in assign mode, reclass_vals values are interpreted as new value; old value pairs. 
+        i -- Input raster file.
+        output -- Output raster file.
+        reclass_vals -- Reclassification triplet values (new value; from value; to less than), e.g. '0.0;0.0;1.0;1.0;1.0;2.0'.
+        assign_mode -- Optional Boolean flag indicating whether to operate in assign mode, reclass_vals values are interpreted as new value; old value pairs.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1831,11 +1861,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        interval -- Class interval size. 
-        start_val -- Optional starting value (default is input minimum value). 
-        end_val -- Optional ending value (default is input maximum value). 
+        i -- Input raster file.
+        output -- Output raster file.
+        interval -- Class interval size.
+        start_val -- Optional starting value (default is input minimum value).
+        end_val -- Optional ending value (default is input maximum value).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1851,9 +1881,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        reclass_file -- Input text file containing reclass ranges. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        reclass_file -- Input text file containing reclass ranges.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1867,9 +1897,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector POLYLINE or POLYGON file. 
-        output -- Output vector file. 
-        filter -- The filter size, any odd integer greater than or equal to 3; default is 3. 
+        i -- Input vector POLYLINE or POLYGON file.
+        output -- Output vector file.
+        filter -- The filter size, any odd integer greater than or equal to 3; default is 3.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1883,9 +1913,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input lines shapefile. 
-        output -- Name of the output lines shapefile. 
-        length -- Maximum segment length (m). 
+        i -- Name of the input lines shapefile.
+        output -- Name of the output lines shapefile.
+        length -- Maximum segment length (m).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1899,13 +1929,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?. 
-        output -- Output raster file. 
-        resolution -- Output raster's grid resolution. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
-        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded. 
+        i -- Input vector points file.
+        field -- Input field name in attribute table.
+        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?.
+        output -- Output raster file.
+        resolution -- Output raster's grid resolution.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
+        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1923,10 +1953,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input base file. 
-        output -- Output vector polygon file. 
-        width -- The grid cell width. 
-        orientation -- Grid Orientation, 'horizontal' or 'vertical'. 
+        i -- Input base file.
+        output -- Output vector polygon file.
+        width -- The grid cell width.
+        orientation -- Grid Orientation, 'horizontal' or 'vertical'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1941,8 +1971,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector points file. 
-        output -- Output vector polygon file. 
+        i -- Input vector points file.
+        output -- Output vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1959,10 +1989,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        size -- Buffer size. 
-        gridcells -- Optional flag to indicate that the 'size' threshold should be measured in grid cells instead of the default map units. 
+        i -- Input raster file.
+        output -- Output raster file.
+        size -- Buffer size.
+        gridcells -- Optional flag to indicate that the 'size' threshold should be measured in grid cells instead of the default map units.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1977,9 +2007,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        source -- Input source raster file. 
-        backlink -- Input backlink raster file generated by the cost-distance tool. 
-        output -- Output raster file. 
+        source -- Input source raster file.
+        backlink -- Input backlink raster file generated by the cost-distance tool.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -1993,10 +2023,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        source -- Input source raster file. 
-        cost -- Input cost (friction) raster file. 
-        out_accum -- Output cost accumulation raster file. 
-        out_backlink -- Output backlink raster file. 
+        source -- Input source raster file.
+        cost -- Input cost (friction) raster file.
+        out_accum -- Output cost accumulation raster file.
+        out_backlink -- Output backlink raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2011,10 +2041,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        destination -- Input destination raster file. 
-        backlink -- Input backlink raster file generated by the cost-distance tool. 
-        output -- Output cost pathway raster file. 
-        zero_background -- Flag indicating whether zero values should be treated as a background. 
+        destination -- Input destination raster file.
+        backlink -- Input backlink raster file generated by the cost-distance tool.
+        output -- Output cost pathway raster file.
+        zero_background -- Flag indicating whether zero values should be treated as a background.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2029,8 +2059,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2043,8 +2073,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2061,8 +2091,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2075,9 +2105,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        clip -- Input clip polygon vector file. 
-        output -- Output vector file. 
+        i -- Input vector file.
+        clip -- Input clip polygon vector file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2091,10 +2121,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        polygons -- Input vector polygons file. 
-        output -- Output raster file. 
-        maintain_dimensions -- Maintain input raster dimensions?. 
+        i -- Input raster file.
+        polygons -- Input vector polygons file.
+        output -- Output raster file.
+        maintain_dimensions -- Maintain input raster dimensions?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2109,9 +2139,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        value -- Search value (e.g. countif value = 5.0). 
+        inputs -- Input raster files.
+        output -- Output raster file.
+        value -- Search value (e.g. countif value = 5.0).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2125,9 +2155,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        overlay -- Input overlay vector file. 
-        output -- Output vector file. 
+        i -- Input vector file.
+        overlay -- Input overlay vector file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2141,9 +2171,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        erase -- Input erase polygon vector file. 
-        output -- Output vector file. 
+        i -- Input vector file.
+        erase -- Input erase polygon vector file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2157,9 +2187,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        polygons -- Input vector polygons file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        polygons -- Input vector polygons file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2173,8 +2203,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2187,10 +2217,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        overlay -- Input overlay vector file. 
-        output -- Output vector file. 
-        snap -- Snap tolerance. 
+        i -- Input vector file.
+        overlay -- Input overlay vector file.
+        output -- Output vector file.
+        snap -- Snap tolerance.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2205,9 +2235,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input vector polyline file. 
-        input2 -- Input vector polyline file. 
-        output -- Output vector point file. 
+        input1 -- Input vector polyline file.
+        input2 -- Input vector polyline file.
+        output -- Output vector point file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2221,8 +2251,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2235,8 +2265,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2249,8 +2279,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2263,9 +2293,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output vector file. 
-        snap -- Snap tolerance. 
+        i -- Input vector file.
+        output -- Output vector file.
+        snap -- Snap tolerance.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2279,8 +2309,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2293,8 +2323,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2307,9 +2337,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        comparison -- Input comparison raster file. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        comparison -- Input comparison raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2323,9 +2353,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        comparison -- Input comparison raster file. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        comparison -- Input comparison raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2339,9 +2369,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        comparison -- Input comparison raster file. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        comparison -- Input comparison raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2355,9 +2385,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        pos_input -- Input position raster file. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        pos_input -- Input position raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2371,8 +2401,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input vector polyline file. 
-        output -- Output vector polygon file. 
+        inputs -- Input vector polyline file.
+        output -- Output vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2385,9 +2415,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector line or polygon file. 
-        split -- Input vector polyline file. 
-        output -- Output vector file. 
+        i -- Input vector line or polygon file.
+        split -- Input vector polyline file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2401,8 +2431,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2415,10 +2445,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        overlay -- Input overlay vector file. 
-        output -- Output vector file. 
-        snap -- Snap tolerance. 
+        i -- Input vector file.
+        overlay -- Input overlay vector file.
+        output -- Output vector file.
+        snap -- Snap tolerance.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2433,10 +2463,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        overlay -- Input overlay vector file. 
-        output -- Output vector file. 
-        snap -- Snap tolerance. 
+        i -- Input vector file.
+        overlay -- Input overlay vector file.
+        output -- Output vector file.
+        snap -- Snap tolerance.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2451,9 +2481,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file 1. 
-        input2 -- Input raster file 2; update layer. 
-        output -- Output raster file. 
+        input1 -- Input raster file 1.
+        input2 -- Input raster file 2; update layer.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2467,12 +2497,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        factors -- Input factor raster files. 
-        weights -- Weight values, contained in quotes and separated by commas or semicolons. Must have the same number as factors. 
-        cost -- Weight values, contained in quotes and separated by commas or semicolons. Must have the same number as factors. 
-        constraints -- Input constraints raster files. 
-        output -- Output raster file. 
-        scale_max -- Suitability scale maximum value (common values are 1.0, 100.0, and 255.0). 
+        factors -- Input factor raster files.
+        weights -- Weight values, contained in quotes and separated by commas or semicolons. Must have the same number as factors.
+        cost -- Weight values, contained in quotes and separated by commas or semicolons. Must have the same number as factors.
+        constraints -- Input constraints raster files.
+        output -- Output raster file.
+        scale_max -- Suitability scale maximum value (common values are 1.0, 100.0, and 255.0).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2489,9 +2519,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        weights -- Weight values, contained in quotes and separated by commas or semicolons. 
-        output -- Output raster file. 
+        inputs -- Input raster files.
+        weights -- Weight values, contained in quotes and separated by commas or semicolons.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2509,8 +2539,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2523,7 +2553,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2535,9 +2565,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        output_text -- flag indicating whether a text report should also be output. 
+        i -- Input raster file.
+        output -- Output raster file.
+        output_text -- flag indicating whether a text report should also be output.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2551,7 +2581,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2563,8 +2593,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2577,7 +2607,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2589,7 +2619,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2601,8 +2631,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2615,7 +2645,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2627,7 +2657,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2639,9 +2669,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        text_output -- Optional text output. 
+        i -- Input raster file.
+        output -- Output raster file.
+        text_output -- Optional text output.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2655,7 +2685,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2667,7 +2697,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector polygon file. 
+        i -- Input vector polygon file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2679,8 +2709,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2697,10 +2727,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2715,9 +2745,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2731,11 +2761,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        routes -- Name of the input routes vector file. 
-        dem -- Name of the input DEM raster file. 
-        output -- Name of the output lines shapefile. 
-        length -- Maximum segment length (m). 
-        dist -- Search distance, in grid cells, used in visibility analysis. 
+        routes -- Name of the input routes vector file.
+        dem -- Name of the input DEM raster file.
+        output -- Name of the output lines shapefile.
+        length -- Maximum segment length (m).
+        dist -- Search distance, in grid cells, used in visibility analysis.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2751,9 +2781,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filter -- Size of the filter kernel. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filter -- Size of the filter kernel.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2767,9 +2797,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filter -- Size of the filter kernel. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filter -- Size of the filter kernel.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2783,14 +2813,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector points file. 
-        field -- Input field name in attribute table. 
-        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?. 
-        output -- Output vector lines file. 
-        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded. 
-        interval -- Contour interval. 
-        base -- Base contour height. 
-        smooth -- Smoothing filter size (in num. points), e.g. 3, 5, 7, 9, 11. 
+        i -- Input vector points file.
+        field -- Input field name in attribute table.
+        use_z -- Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?.
+        output -- Output vector lines file.
+        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded.
+        interval -- Contour interval.
+        base -- Base contour height.
+        smooth -- Smoothing filter size (in num. points), e.g. 3, 5, 7, 9, 11.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2809,12 +2839,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input surface raster file. 
-        output -- Output vector contour file. 
-        interval -- Contour interval. 
-        base -- Base contour height. 
-        smooth -- Smoothing filter size (in num. points), e.g. 3, 5, 7, 9, 11. 
-        tolerance -- Tolerance factor, in degrees (0-45); determines generalization level. 
+        i -- Input surface raster file.
+        output -- Output vector contour file.
+        interval -- Contour interval.
+        base -- Base contour height.
+        smooth -- Smoothing filter size (in num. points), e.g. 3, 5, 7, 9, 11.
+        tolerance -- Tolerance factor, in degrees (0-45); determines generalization level.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2831,10 +2861,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2849,10 +2879,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2867,10 +2897,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2885,10 +2915,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2903,10 +2933,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        azimuth -- Wind azimuth in degrees. 
-        max_dist -- Optional maximum search distance (unspecified if none; in xy units). 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        azimuth -- Wind azimuth in degrees.
+        max_dist -- Optional maximum search distance (unspecified if none; in xy units).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2921,10 +2951,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        drop -- Vertical drop value (default is 2.0). 
-        out_type -- Output type, options include 'tangent', 'degrees', 'radians', 'distance' (default is 'tangent'). 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        drop -- Vertical drop value (default is 2.0).
+        out_type -- Output type, options include 'tangent', 'degrees', 'radians', 'distance' (default is 'tangent').
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2939,11 +2969,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filter -- Size of the filter kernel. 
-        norm_diff -- Maximum difference in normal vectors, in degrees. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filter -- Size of the filter kernel.
+        norm_diff -- Maximum difference in normal vectors, in degrees.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2959,8 +2989,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2973,11 +3003,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        sig_digits -- Number of significant digits. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        sig_digits -- Number of significant digits.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -2993,8 +3023,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3007,9 +3037,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        watersheds -- Input raster watersheds file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        watersheds -- Input raster watersheds file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3023,17 +3053,17 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        road_vec -- Input vector polygons file. 
-        output -- Output raster file. 
-        search_dist -- Search distance used to reposition transportation vectors onto road embankments (in map units). 
-        min_road_width -- Minimum road width; this is the width of the paved road surface (in map units). 
-        typical_width -- Typical embankment width; this is the maximum width of an embankment with roadside ditches (in map units). 
-        max_height -- Typical embankment maximum height; this is the height a typical embankment with roadside ditches (in map units). 
-        max_width -- Maximum embankment width, typically where embankments traverse steep-sided valleys (in map units). 
-        max_increment -- Maximum upwards increment between neighbouring cells on an embankment (in elevation units). 
-        spillout_slope -- Spillout slope (in degrees). 
-        remove_embankments -- Optional flag indicating whether to output a DEM with embankments removed (true) or an embankment raster map (false). 
+        dem -- Input raster DEM file.
+        road_vec -- Input vector polygons file.
+        output -- Output raster file.
+        search_dist -- Search distance used to reposition transportation vectors onto road embankments (in map units).
+        min_road_width -- Minimum road width; this is the width of the paved road surface (in map units).
+        typical_width -- Typical embankment width; this is the maximum width of an embankment with roadside ditches (in map units).
+        max_height -- Typical embankment maximum height; this is the height a typical embankment with roadside ditches (in map units).
+        max_width -- Maximum embankment width, typically where embankments traverse steep-sided valleys (in map units).
+        max_increment -- Maximum upwards increment between neighbouring cells on an embankment (in elevation units).
+        spillout_slope -- Spillout slope (in degrees).
+        remove_embankments -- Optional flag indicating whether to output a DEM with embankments removed (true) or an embankment raster map (false).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3055,11 +3085,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file. 
-        output -- Name of the output raster file. 
-        azimuth -- Wind azimuth, in degrees. 
-        max_dist -- Optional maximum search distance. Minimum value is 5 x cell size. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Name of the input DEM raster file.
+        output -- Name of the output raster file.
+        azimuth -- Wind azimuth, in degrees.
+        max_dist -- Optional maximum search distance. Minimum value is 5 x cell size.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3075,13 +3105,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filter -- Size of the filter kernel. 
-        norm_diff -- Maximum difference in normal vectors, in degrees. 
-        num_iter -- Number of iterations. 
-        max_diff -- Maximum allowable absolute elevation change (optional). 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filter -- Size of the filter kernel.
+        norm_diff -- Maximum difference in normal vectors, in degrees.
+        num_iter -- Number of iterations.
+        max_diff -- Maximum allowable absolute elevation change (optional).
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3099,10 +3129,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        azimuth -- Wind azimuth in degrees in degrees. 
-        hgt_inc -- Height increment value. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        azimuth -- Wind azimuth in degrees in degrees.
+        hgt_inc -- Height increment value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3117,11 +3147,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filter -- Filter size (cells). 
-        weight -- IDW weight value. 
-        no_edges -- Optional flag indicating whether to exclude NoData cells in edge regions. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filter -- Filter size (cells).
+        weight -- IDW weight value.
+        no_edges -- Optional flag indicating whether to exclude NoData cells in edge regions.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3137,9 +3167,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        line_thin -- Optional flag indicating whether post-processing line-thinning should be performed. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        line_thin -- Optional flag indicating whether post-processing line-thinning should be performed.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3153,10 +3183,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3171,16 +3201,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file. 
-        points -- Name of the input vector points shapefile. 
-        output -- Name of the output land-surface parameter raster file. 
-        output_zscore -- Name of the output z-score raster file. 
-        output_scale -- Name of the output scale raster file. 
-        sigma -- Initial sigma value (cells). 
-        step -- Step size as any positive non-zero integer. 
-        num_steps -- Number of steps. 
-        lsp -- Output land-surface parameter; one of 'AnisotropyLTP', 'Aspect', 'DiffMeanElev', 'Eastness', 'Elevation', 'Hillshade', 'MeanCurvature', 'Northness', 'PlanCurvature', 'ProfileCurvature', 'Ruggedness', 'Slope', 'TanCurvature', 'TotalCurvature'. 
-        z_factor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Name of the input DEM raster file.
+        points -- Name of the input vector points shapefile.
+        output -- Name of the output land-surface parameter raster file.
+        output_zscore -- Name of the output z-score raster file.
+        output_scale -- Name of the output scale raster file.
+        sigma -- Initial sigma value (cells).
+        step -- Step size as any positive non-zero integer.
+        num_steps -- Number of steps.
+        lsp -- Output land-surface parameter; one of 'AnisotropyLTP', 'Aspect', 'DiffMeanElev', 'Eastness', 'Elevation', 'Hillshade', 'MeanCurvature', 'Northness', 'PlanCurvature', 'ProfileCurvature', 'Ruggedness', 'Slope', 'TanCurvature', 'TotalCurvature'.
+        z_factor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3201,10 +3231,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3219,12 +3249,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        search -- Look up distance. 
-        threshold -- Flatness threshold for the classification function (in degrees). 
-        tdist -- Distance (in cells) to begin reducing the flatness threshold to avoid problems with pseudo-flat lines-of-sight. 
-        forms -- Classify geomorphons into 10 common land morphologies, else, output ternary code. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        search -- Look up distance.
+        threshold -- Flatness threshold for the classification function (in degrees).
+        tdist -- Distance (in cells) to begin reducing the flatness threshold to avoid problems with pseudo-flat lines-of-sight.
+        forms -- Classify geomorphons into 10 common land morphologies, else, output ternary code.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3241,11 +3271,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        azimuth -- Illumination source azimuth in degrees. 
-        altitude -- Illumination source altitude in degrees. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        azimuth -- Illumination source azimuth in degrees.
+        altitude -- Illumination source altitude in degrees.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3261,10 +3291,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        azimuth -- Azimuth, in degrees. 
-        max_dist -- Optional maximum search distance (unspecified if none; in xy units). Minimum value is 5 x cell size. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        azimuth -- Azimuth, in degrees.
+        max_dist -- Optional maximum search distance (unspecified if none; in xy units). Minimum value is 5 x cell size.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3279,10 +3309,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3297,9 +3327,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input DEM files. 
-        watershed -- Input watershed files (optional). 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        inputs -- Input DEM files.
+        watershed -- Input watershed files (optional).
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3313,16 +3343,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        altitude -- Illumination source altitude in degrees. 
-        hs_weight -- Weight given to hillshade relative to relief (0.0-1.0). 
-        brightness -- Brightness factor (0.0-1.0). 
-        atmospheric -- Atmospheric effects weight (0.0-1.0). 
-        palette -- Options include 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', and 'deep'. 
-        reverse -- Optional flag indicating whether to use reverse the palette. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
-        full_mode -- Optional flag indicating whether to use full 360-degrees of illumination sources. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        altitude -- Illumination source altitude in degrees.
+        hs_weight -- Weight given to hillshade relative to relief (0.0-1.0).
+        brightness -- Brightness factor (0.0-1.0).
+        atmospheric -- Atmospheric effects weight (0.0-1.0).
+        palette -- Options include 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', and 'deep'.
+        reverse -- Optional flag indicating whether to use reverse the palette.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
+        full_mode -- Optional flag indicating whether to use full 360-degrees of illumination sources.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3343,13 +3373,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster DEM file. 
-        out_mag -- Name of the openness output raster file. 
-        out_scale -- Name of the openness output raster file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
-        num_steps -- Number of steps. 
-        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical). 
+        i -- Name of the input raster DEM file.
+        out_mag -- Name of the openness output raster file.
+        out_scale -- Name of the openness output raster file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
+        num_steps -- Number of steps.
+        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3367,9 +3397,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file. 
-        output -- Name of the output raster file. 
-        filter -- Edge length of the filter kernel. 
+        dem -- Name of the input DEM raster file.
+        output -- Name of the output raster file.
+        filter -- Edge length of the filter kernel.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3383,10 +3413,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        max_slope -- Maximum inter-cell absolute slope. 
-        min_size -- Minimum feature size, in grid cells. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        max_slope -- Maximum inter-cell absolute slope.
+        min_size -- Minimum feature size, in grid cells.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3401,12 +3431,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mag -- Output raster DEVmax magnitude file. 
-        out_scale -- Output raster DEVmax scale file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        out_mag -- Output raster DEVmax magnitude file.
+        out_scale -- Output raster DEVmax scale file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3423,12 +3453,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        points -- Input vector points file. 
-        output -- Output HTML file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        points -- Input vector points file.
+        output -- Output HTML file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3445,9 +3475,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Optional flag to request the output be log-transformed. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Optional flag to request the output be log-transformed.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3461,12 +3491,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mag -- Output raster DIFFmax magnitude file. 
-        out_scale -- Output raster DIFFmax scale file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        out_mag -- Output raster DIFFmax magnitude file.
+        out_scale -- Output raster DIFFmax scale file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3483,8 +3513,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3497,12 +3527,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        points -- Input vector points file. 
-        output -- Output HTML file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        points -- Input vector points file.
+        output -- Output HTML file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3519,12 +3549,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mag -- Output raster DEVmax magnitude file. 
-        out_scale -- Output raster DEVmax scale file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        out_mag -- Output raster DEVmax magnitude file.
+        out_scale -- Output raster DEVmax scale file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3541,8 +3571,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3555,10 +3585,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3573,10 +3603,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3591,8 +3621,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3605,10 +3635,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3623,11 +3653,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        altitude -- Illumination source altitude in degrees. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
-        full_mode -- Optional flag indicating whether to use full 360-degrees of illumination sources. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        altitude -- Illumination source altitude in degrees.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
+        full_mode -- Optional flag indicating whether to use full 360-degrees of illumination sources.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3643,14 +3673,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mag -- Output raster roughness magnitude file. 
-        out_scale -- Output raster roughness scale file. 
-        sig_digits -- Number of significant digits. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
-        num_steps -- Number of steps. 
-        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical). 
+        dem -- Input raster DEM file.
+        out_mag -- Output raster roughness magnitude file.
+        out_scale -- Output raster roughness scale file.
+        sig_digits -- Number of significant digits.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
+        num_steps -- Number of steps.
+        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3669,12 +3699,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mag -- Output raster roughness magnitude file. 
-        out_scale -- Output raster roughness scale file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        out_mag -- Output raster roughness magnitude file.
+        out_scale -- Output raster roughness scale file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3691,12 +3721,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        points -- Input vector points file. 
-        output -- Output HTML file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
+        dem -- Input raster DEM file.
+        points -- Input vector points file.
+        output -- Output HTML file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3713,13 +3743,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mag -- Output raster roughness magnitude file. 
-        out_scale -- Output raster roughness scale file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
-        num_steps -- Number of steps. 
-        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical). 
+        dem -- Input raster DEM file.
+        out_mag -- Output raster roughness magnitude file.
+        out_scale -- Output raster roughness scale file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
+        num_steps -- Number of steps.
+        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3737,13 +3767,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        points -- Input vector points file. 
-        output -- Output HTML file. 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        step -- Step size as any positive non-zero integer. 
-        num_steps -- Number of steps. 
-        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical). 
+        dem -- Input raster DEM file.
+        points -- Input vector points file.
+        output -- Output HTML file.
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        step -- Step size as any positive non-zero integer.
+        num_steps -- Number of steps.
+        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3761,11 +3791,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        local -- Input local-scale topographic position (DEVmax) raster file. 
-        meso -- Input meso-scale topographic position (DEVmax) raster file. 
-        broad -- Input broad-scale topographic position (DEVmax) raster file. 
-        output -- Output raster file. 
-        lightness -- Image lightness value (default is 1.2). 
+        local -- Input local-scale topographic position (DEVmax) raster file.
+        meso -- Input meso-scale topographic position (DEVmax) raster file.
+        broad -- Input broad-scale topographic position (DEVmax) raster file.
+        output -- Output raster file.
+        lightness -- Image lightness value (default is 1.2).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3781,8 +3811,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3795,8 +3825,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3809,10 +3839,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster DEM file. 
-        pos_output -- Name of the positive openness output raster file. 
-        neg_output -- Name of the negative openness output raster file. 
-        dist -- Search distance, in grid cells. 
+        i -- Name of the input raster DEM file.
+        pos_output -- Name of the positive openness output raster file.
+        neg_output -- Name of the negative openness output raster file.
+        dist -- Search distance, in grid cells.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3827,12 +3857,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        slope -- Slope threshold value, in degrees (default is 3.0). 
-        prof -- Profile curvature threshold value (default is 0.1). 
-        plan -- Plan curvature threshold value (default is 0.0). 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        slope -- Slope threshold value, in degrees (default is 3.0).
+        prof -- Profile curvature threshold value (default is 0.1).
+        plan -- Plan curvature threshold value (default is 0.0).
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3849,10 +3879,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3867,10 +3897,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3885,9 +3915,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        lines -- Input vector line file. 
-        surface -- Input raster surface file. 
-        output -- Output HTML file. 
+        lines -- Input vector line file.
+        surface -- Input raster surface file.
+        output -- Output HTML file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3901,10 +3931,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3919,10 +3949,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        azimuth -- Illumination source azimuth. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        azimuth -- Illumination source azimuth.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3937,10 +3967,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3955,10 +3985,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filter -- Filter size (cells). 
-        slope -- Slope threshold value. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filter -- Filter size (cells).
+        slope -- Slope threshold value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3973,10 +4003,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3991,10 +4021,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4009,9 +4039,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4025,11 +4055,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        sca -- Input raster specific contributing area (SCA) file. 
-        slope -- Input raster slope file. 
-        output -- Output raster file. 
-        sca_exponent -- SCA exponent value. 
-        slope_exponent -- Slope exponent value. 
+        sca -- Input raster specific contributing area (SCA) file.
+        slope -- Input raster slope file.
+        output -- Output raster file.
+        sca_exponent -- SCA exponent value.
+        slope_exponent -- Slope exponent value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4045,16 +4075,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input digital surface model (DSM) raster file. 
-        palette -- DSM image palette; options are 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'light_quant', 'purple', 'viridis', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'none'. 
-        output -- Name of the output HTML file (*.html). 
-        max_dist -- Optional maximum search distance, in xy units. Minimum value is 5 x cell size. 
-        date -- Date in format DD/MM/YYYY. 
-        interval -- Time interval, in minutes (1-60). 
-        location -- Location, defined as Lat/Long/UTC-offset (e.g. 43.5448/-80.2482/-4). 
-        height -- Image height, in pixels. 
-        delay -- GIF time delay in milliseconds. 
-        label -- Label text (leave blank for none). 
+        i -- Name of the input digital surface model (DSM) raster file.
+        palette -- DSM image palette; options are 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'light_quant', 'purple', 'viridis', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'none'.
+        output -- Name of the output HTML file (*.html).
+        max_dist -- Optional maximum search distance, in xy units. Minimum value is 5 x cell size.
+        date -- Date in format DD/MM/YYYY.
+        interval -- Time interval, in minutes (1-60).
+        location -- Location, defined as Lat/Long/UTC-offset (e.g. 43.5448/-80.2482/-4).
+        height -- Image height, in pixels.
+        delay -- GIF time delay in milliseconds.
+        label -- Label text (leave blank for none).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4075,13 +4105,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input digital surface model (DSM) raster file. 
-        palette -- DSM image palette; options are 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'light_quant', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'none'. 
-        output -- Name of the output raster file. 
-        max_dist -- Optional maximum search distance, in xy unites. Minimum value is 5 x cell size. 
-        date -- Date in format DD/MM/YYYY. 
-        time -- Time in format HH::MM, e.g. 03:15AM or 14:30. 
-        location -- Location, defined as Lat/Long/UTC-offset (e.g. 43.5448/-80.2482/-4). 
+        i -- Name of the input digital surface model (DSM) raster file.
+        palette -- DSM image palette; options are 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'light_quant', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'none'.
+        output -- Name of the output raster file.
+        max_dist -- Optional maximum search distance, in xy unites. Minimum value is 5 x cell size.
+        date -- Date in format DD/MM/YYYY.
+        time -- Time in format HH::MM, e.g. 03:15AM or 14:30.
+        location -- Location, defined as Lat/Long/UTC-offset (e.g. 43.5448/-80.2482/-4).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4099,9 +4129,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4115,10 +4145,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
-        units -- Units of output raster; options include 'degrees', 'radians', 'percent'. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
+        units -- Units of output raster; options include 'degrees', 'radians', 'percent'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4133,11 +4163,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster image file. 
-        output -- Name of the output report file (*.html). 
-        bin_size -- Aspect bin size, in degrees. 
-        min_slope -- Minimum slope, in degrees. 
-        zfactor -- Z conversion factor. 
+        i -- Name of the input raster image file.
+        output -- Name of the output report file (*.html).
+        bin_size -- Aspect bin size, in degrees.
+        min_slope -- Minimum slope, in degrees.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4153,9 +4183,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input DEM files. 
-        watershed -- Input watershed files (optional). 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        inputs -- Input DEM files.
+        watershed -- Input watershed files (optional).
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4169,11 +4199,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input digital elevation model (DEM) raster file. 
-        output -- Name of the output raster file. 
-        max_scale -- Maximum search neighbourhood radius in grid cells. 
-        dev_threshold -- DEVmax Threshold. 
-        scale_threshold -- DEVmax scale threshold. 
+        i -- Name of the input digital elevation model (DEM) raster file.
+        output -- Name of the output raster file.
+        max_scale -- Maximum search neighbourhood radius in grid cells.
+        dev_threshold -- DEVmax Threshold.
+        scale_threshold -- DEVmax scale threshold.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4189,9 +4219,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        filter -- Size of the filter kernel. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        filter -- Size of the filter kernel.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4205,11 +4235,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster DEM file. 
-        output -- Output raster DEM file. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster DEM file.
+        output -- Output raster DEM file.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4225,10 +4255,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        sca -- Input raster specific contributing area (SCA) file. 
-        slope -- Input raster slope file. 
-        output -- Output raster file. 
-        exponent -- SCA exponent value. 
+        sca -- Input raster specific contributing area (SCA) file.
+        slope -- Input raster slope file.
+        output -- Output raster file.
+        exponent -- SCA exponent value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4243,8 +4273,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4257,10 +4287,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4275,17 +4305,17 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        az_fraction -- Azimuth fraction in degrees. 
-        max_dist -- Optional maximum search distance. Minimum value is 5 x cell size. 
-        lat -- Centre point latitude. 
-        long -- Centre point longitude. 
-        utc_offset -- UTC time offset, in hours (e.g. -04:00, +06:00). 
-        start_day -- Start day of the year (1-365). 
-        end_day -- End day of the year (1-365). 
-        start_time -- Starting hour to track shadows (e.g. 5, 5:00, 05:00:00). Assumes 24-hour time: HH:MM:SS. 'sunrise' is also a valid time. 
-        end_time -- Starting hour to track shadows (e.g. 21, 21:00, 21:00:00). Assumes 24-hour time: HH:MM:SS. 'sunset' is also a valid time. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        az_fraction -- Azimuth fraction in degrees.
+        max_dist -- Optional maximum search distance. Minimum value is 5 x cell size.
+        lat -- Centre point latitude.
+        long -- Centre point longitude.
+        utc_offset -- UTC time offset, in hours (e.g. -04:00, +06:00).
+        start_day -- Start day of the year (1-365).
+        end_day -- End day of the year (1-365).
+        start_time -- Starting hour to track shadows (e.g. 5, 5:00, 05:00:00). Assumes 24-hour time: HH:MM:SS. 'sunrise' is also a valid time.
+        end_time -- Starting hour to track shadows (e.g. 21, 21:00, 21:00:00). Assumes 24-hour time: HH:MM:SS. 'sunset' is also a valid time.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4307,16 +4337,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input digital elevation model (DEM) raster file. 
-        palette -- Image palette; options are 'bl_yl_rd', 'bl_w_rd', 'purple', 'gn_yl', 'pi_y_g', and 'viridis'. 
-        output -- Name of the output HTML file (*.html). 
-        min_scale -- Minimum search neighbourhood radius in grid cells. 
-        num_steps -- Number of steps. 
-        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical). 
-        height -- Image height, in pixels. 
-        delay -- GIF time delay in milliseconds. 
-        label -- Label text (leave blank for none). 
-        dev_max -- Do you want to use DEVmax instead of DEV for measuring local topographic position?. 
+        i -- Name of the input digital elevation model (DEM) raster file.
+        palette -- Image palette; options are 'bl_yl_rd', 'bl_w_rd', 'purple', 'gn_yl', 'pi_y_g', and 'viridis'.
+        output -- Name of the output HTML file (*.html).
+        min_scale -- Minimum search neighbourhood radius in grid cells.
+        num_steps -- Number of steps.
+        step_nonlinearity -- Step nonlinearity factor (1.0-2.0 is typical).
+        height -- Image height, in pixels.
+        delay -- GIF time delay in milliseconds.
+        label -- Label text (leave blank for none).
+        dev_max -- Do you want to use DEVmax instead of DEV for measuring local topographic position?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4337,10 +4367,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        log -- Display output values using a log-scale.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4355,10 +4385,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4373,10 +4403,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input raster DEM file. 
-        output -- Name of the output raster image file. 
-        log -- Display output values using a log-scale. 
-        zfactor -- Z conversion factor. 
+        dem -- Name of the input raster DEM file.
+        output -- Name of the output raster image file.
+        log -- Display output values using a log-scale.
+        zfactor -- Z conversion factor.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4391,10 +4421,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        stations -- Input viewing station vector file. 
-        output -- Output raster file. 
-        height -- Viewing station height, in z units. 
+        dem -- Input raster DEM file.
+        stations -- Input viewing station vector file.
+        output -- Output raster file.
+        height -- Viewing station height, in z units.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4409,10 +4439,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        height -- Viewing station height, in z units. 
-        res_factor -- The resolution factor determines the density of measured viewsheds. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        height -- Viewing station height, in z units.
+        res_factor -- The resolution factor determines the density of measured viewsheds.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4427,9 +4457,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        sca -- Input raster specific contributing area (SCA) file. 
-        slope -- Input raster slope file (in degrees). 
-        output -- Output raster file. 
+        sca -- Input raster specific contributing area (SCA) file.
+        slope -- Input raster slope file (in degrees).
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4447,8 +4477,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4461,8 +4491,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4475,9 +4505,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input raster D8 pointer file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4491,12 +4521,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        max_depth -- Optional maximum breach depth (default is Inf). 
-        max_length -- Optional maximum breach channel length (in grid cells; default is Inf). 
-        flat_increment -- Optional elevation increment applied to flat areas. 
-        fill_pits -- Optional flag indicating whether to fill single-cell pits. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        max_depth -- Optional maximum breach depth (default is Inf).
+        max_length -- Optional maximum breach channel length (in grid cells; default is Inf).
+        flat_increment -- Optional elevation increment applied to flat areas.
+        fill_pits -- Optional flag indicating whether to fill single-cell pits.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4513,13 +4543,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        dist -- Maximum search distance for breach paths in cells. 
-        max_cost -- Optional maximum breach cost (default is Inf). 
-        min_dist -- Optional flag indicating whether to minimize breach distances. 
-        flat_increment -- Optional elevation increment applied to flat areas. 
-        fill -- Optional flag indicating whether to fill any remaining unbreached depressions. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        dist -- Maximum search distance for breach paths in cells.
+        max_cost -- Optional maximum breach cost (default is Inf).
+        min_dist -- Optional flag indicating whether to minimize breach distances.
+        flat_increment -- Optional elevation increment applied to flat areas.
+        fill -- Optional flag indicating whether to fill any remaining unbreached depressions.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4537,8 +4567,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4551,11 +4581,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster digital elevation model (DEM) file. 
-        streams -- Input vector streams file. 
-        roads -- Input vector roads file. 
-        output -- Output raster file. 
-        width -- Maximum road embankment width, in map units. 
+        dem -- Input raster digital elevation model (DEM) file.
+        streams -- Input vector streams file.
+        roads -- Input vector roads file.
+        output -- Output raster file.
+        width -- Maximum road embankment width, in map units.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4571,13 +4601,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster DEM or D8 pointer file. 
-        output -- Output raster file. 
-        out_type -- Output type; one of 'cells' (default), 'catchment area', and 'specific contributing area'. 
-        log -- Optional flag to request the output be log-transformed. 
-        clip -- Optional flag to request clipping the display max by 1%. 
-        pntr -- Is the input raster a D8 flow pointer rather than a DEM?. 
-        esri_pntr -- Input D8 pointer uses the ESRI style scheme. 
+        i -- Input raster DEM or D8 pointer file.
+        output -- Output raster file.
+        out_type -- Output type; one of 'cells' (default), 'catchment area', and 'specific contributing area'.
+        log -- Optional flag to request the output be log-transformed.
+        clip -- Optional flag to request clipping the display max by 1%.
+        pntr -- Is the input raster a D8 flow pointer rather than a DEM?.
+        esri_pntr -- Input D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4595,11 +4625,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        loading -- Input loading raster file. 
-        efficiency -- Input efficiency raster file. 
-        absorption -- Input absorption raster file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        loading -- Input loading raster file.
+        efficiency -- Input efficiency raster file.
+        absorption -- Input absorption raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4615,9 +4645,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4631,13 +4661,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster DEM or D-infinity pointer file. 
-        output -- Output raster file. 
-        out_type -- Output type; one of 'cells', 'sca' (default), and 'ca'. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
-        log -- Optional flag to request the output be log-transformed. 
-        clip -- Optional flag to request clipping the display max by 1%. 
-        pntr -- Is the input raster a D-infinity flow pointer rather than a DEM?. 
+        i -- Input raster DEM or D-infinity pointer file.
+        output -- Output raster file.
+        out_type -- Output type; one of 'cells', 'sca' (default), and 'ca'.
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity.
+        log -- Optional flag to request the output be log-transformed.
+        clip -- Optional flag to request clipping the display max by 1%.
+        pntr -- Is the input raster a D-infinity flow pointer rather than a DEM?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4655,11 +4685,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        loading -- Input loading raster file. 
-        efficiency -- Input efficiency raster file. 
-        absorption -- Input absorption raster file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        loading -- Input loading raster file.
+        efficiency -- Input efficiency raster file.
+        absorption -- Input absorption raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4675,8 +4705,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4689,9 +4719,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        zero_background -- Flag indicating whether the background value of zero should be used. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        zero_background -- Flag indicating whether the background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4705,10 +4735,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        dinf -- Use the D-infinity flow algorithm instead of D8?. 
+        dem -- Input raster DEM file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        dinf -- Use the D-infinity flow algorithm instead of D8?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4723,11 +4753,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input D8 pointer raster file. 
-        watersheds -- Optional input watershed raster file. 
-        weights -- Optional input weights raster file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input D8 pointer raster file.
+        watersheds -- Optional input watershed raster file.
+        weights -- Optional input weights raster file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4743,10 +4773,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file; must be depressionless. 
-        output -- Name of the output raster file. 
-        flow_type -- Flow algorithm type, one of 'd8', 'mfd', or 'dinf'. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
+        dem -- Name of the input DEM raster file; must be depressionless.
+        output -- Name of the output raster file.
+        flow_type -- Flow algorithm type, one of 'd8', 'mfd', or 'dinf'.
+        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4761,9 +4791,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4777,9 +4807,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4793,13 +4823,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
-        exponent -- Optional exponent parameter; default is 1.1. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
-        log -- Optional flag to request the output be log-transformed. 
-        clip -- Optional flag to request clipping the display max by 1%. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'.
+        exponent -- Optional exponent parameter; default is 1.1.
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity.
+        log -- Optional flag to request the output be log-transformed.
+        clip -- Optional flag to request clipping the display max by 1%.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4817,8 +4847,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4831,9 +4861,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        streams -- Input vector streams file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        streams -- Input vector streams file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4847,11 +4877,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        fix_flats -- Optional flag indicating whether flat areas should have a small gradient applied. 
-        flat_increment -- Optional elevation increment applied to flat areas. 
-        max_depth -- Optional maximum depression depth to fill. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        fix_flats -- Optional flag indicating whether flat areas should have a small gradient applied.
+        flat_increment -- Optional elevation increment applied to flat areas.
+        max_depth -- Optional maximum depression depth to fill.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4867,10 +4897,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        fix_flats -- Optional flag indicating whether flat areas should have a small gradient applied. 
-        flat_increment -- Optional elevation increment applied to flat areas. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        fix_flats -- Optional flag indicating whether flat areas should have a small gradient applied.
+        flat_increment -- Optional elevation increment applied to flat areas.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4885,10 +4915,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        fix_flats -- Optional flag indicating whether flat areas should have a small gradient applied. 
-        flat_increment -- Optional elevation increment applied to flat areas. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        fix_flats -- Optional flag indicating whether flat areas should have a small gradient applied.
+        flat_increment -- Optional elevation increment applied to flat areas.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4903,8 +4933,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4917,8 +4947,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4931,9 +4961,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input D8 pointer raster file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
+        d8_pntr -- Input D8 pointer raster file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4947,9 +4977,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        lakes -- Input lakes vector polygons file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        lakes -- Input lakes vector polygons file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4963,8 +4993,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4977,14 +5007,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_dem -- Output raster DEM file. 
-        out_pntr -- Output raster flow pointer file. 
-        out_accum -- Output raster flow accumulation file. 
-        out_type -- Output type; one of 'cells', 'sca' (default), and 'ca'. 
-        log -- Optional flag to request the output be log-transformed. 
-        clip -- Optional flag to request clipping the display max by 1%. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        dem -- Input raster DEM file.
+        out_dem -- Output raster DEM file.
+        out_pntr -- Output raster flow pointer file.
+        out_accum -- Output raster flow accumulation file.
+        out_type -- Output type; one of 'cells', 'sca' (default), and 'ca'.
+        log -- Optional flag to request the output be log-transformed.
+        clip -- Optional flag to request clipping the display max by 1%.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5003,9 +5033,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input D8 pointer raster file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input D8 pointer raster file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5019,10 +5049,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5037,11 +5067,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file; must be depressionless. 
-        output1 -- Name of the output downslope unsaturated length (DUL) file. 
-        output2 -- Name of the output upslope disconnected saturated area (UDSA) file. 
-        exponent -- Optional exponent parameter; default is 1.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
+        dem -- Name of the input DEM raster file; must be depressionless.
+        output1 -- Name of the output downslope unsaturated length (DUL) file.
+        output2 -- Name of the output upslope disconnected saturated area (UDSA) file.
+        exponent -- Optional exponent parameter; default is 1.0.
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5057,13 +5087,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        out_mean -- Output mean flooded depth file. 
-        out_max -- Output maximum flooded depth file. 
-        out_volume -- Output flooded volume file. 
-        out_area -- Output flooded area file. 
-        out_dam_height -- Output dam height file. 
-        damlength -- Maximum length of the dam. 
+        dem -- Input raster DEM file.
+        out_mean -- Output mean flooded depth file.
+        out_max -- Output maximum flooded depth file.
+        out_volume -- Output flooded volume file.
+        out_area -- Output flooded area file.
+        out_dam_height -- Output dam height file.
+        damlength -- Maximum length of the dam.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5081,10 +5111,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        dam_pts -- Input vector dam points file. 
-        output -- Output file. 
-        damlength -- Maximum length of the dam. 
+        dem -- Input raster DEM file.
+        dam_pts -- Input vector dam points file.
+        output -- Output file.
+        damlength -- Maximum length of the dam.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5099,10 +5129,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        size -- Target basin size, in grid cells. 
-        connections -- Output upstream-downstream flow connections among basins?. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        size -- Target basin size, in grid cells.
+        connections -- Output upstream-downstream flow connections among basins?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5117,10 +5147,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        pour_pts -- Input vector pour points (outlet) file. 
-        streams -- Input raster streams file. 
-        output -- Output vector file. 
-        snap_dist -- Maximum snap distance in map units. 
+        pour_pts -- Input vector pour points (outlet) file.
+        streams -- Input raster streams file.
+        output -- Output vector file.
+        snap_dist -- Maximum snap distance in map units.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5135,9 +5165,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        basins -- Input raster basins file. 
-        output -- Output vector file. 
+        dem -- Input raster DEM file.
+        basins -- Input raster basins file.
+        output -- Output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5151,9 +5181,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file. 
-        streams -- Name of the input stream channel raster file. 
-        output -- Name of the output vector file. 
+        dem -- Name of the input DEM raster file.
+        streams -- Name of the input stream channel raster file.
+        output -- Name of the output vector file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5167,8 +5197,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5181,13 +5211,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
-        exponent -- Optional exponent parameter; default is 1.1. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
-        log -- Optional flag to request the output be log-transformed. 
-        clip -- Optional flag to request clipping the display max by 1%. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'.
+        exponent -- Optional exponent parameter; default is 1.1.
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity.
+        log -- Optional flag to request the output be log-transformed.
+        clip -- Optional flag to request clipping the display max by 1%.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5205,8 +5235,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5219,14 +5249,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file; must be depressionless. 
-        output -- Name of the output raster file. 
-        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
-        exponent -- Optional upper-bound exponent parameter; default is 10.0. 
-        max_slope -- Optional upper-bound slope parameter, in degrees (0-90); default is 45.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
-        log -- Log-transform the output values?. 
-        clip -- Optional flag to request clipping the display max by 1%. 
+        dem -- Name of the input DEM raster file; must be depressionless.
+        output -- Name of the output raster file.
+        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'.
+        exponent -- Optional upper-bound exponent parameter; default is 10.0.
+        max_slope -- Optional upper-bound slope parameter, in degrees (0-90); default is 45.0.
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity.
+        log -- Log-transform the output values?.
+        clip -- Optional flag to request clipping the display max by 1%.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5245,13 +5275,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Name of the input DEM raster file; must be depressionless. 
-        output -- Name of the output raster file. 
-        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
-        exponent -- Optional exponent parameter; default is 1.0. 
-        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity. 
-        log -- Log-transform the output values?. 
-        clip -- Optional flag to request clipping the display max by 1%. 
+        dem -- Name of the input DEM raster file; must be depressionless.
+        output -- Name of the output raster file.
+        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'.
+        exponent -- Optional exponent parameter; default is 1.0.
+        threshold -- Optional convergence threshold parameter, in grid cells; default is infinity.
+        log -- Log-transform the output values?.
+        clip -- Optional flag to request clipping the display max by 1%.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5269,11 +5299,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector lines or polygons file. 
-        breach -- Optional input vector breach lines. 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        height -- Wall height. 
+        i -- Input vector lines or polygons file.
+        breach -- Optional input vector breach lines.
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        height -- Wall height.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5289,13 +5319,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input DEM or Rho8 pointer file; if a DEM is used, it must be depressionless. 
-        output -- Name of the output raster file. 
-        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'. 
-        log -- Log-transform the output values?. 
-        clip -- Optional flag to request clipping the display max by 1%. 
-        pntr -- Is the input raster a Rho8 flow pointer rather than a DEM?. 
-        esri_pntr -- Does the input Rho8 pointer use the ESRI style scheme?. 
+        i -- Input DEM or Rho8 pointer file; if a DEM is used, it must be depressionless.
+        output -- Name of the output raster file.
+        out_type -- Output type; one of 'cells', 'specific contributing area' (default), and 'catchment area'.
+        log -- Log-transform the output values?.
+        clip -- Optional flag to request clipping the display max by 1%.
+        pntr -- Is the input raster a Rho8 flow pointer rather than a DEM?.
+        esri_pntr -- Does the input Rho8 pointer use the ESRI style scheme?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5313,9 +5343,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5329,9 +5359,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster DEM file. 
-        output -- Output raster file. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        i -- Input raster DEM file.
+        output -- Output raster file.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5345,10 +5375,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        pour_pts -- Input vector pour points (outlet) file. 
-        flow_accum -- Input raster D8 flow accumulation file. 
-        output -- Output vector file. 
-        snap_dist -- Maximum snap distance in map units. 
+        pour_pts -- Input vector pour points (outlet) file.
+        flow_accum -- Input raster D8 flow accumulation file.
+        output -- Output vector file.
+        snap_dist -- Maximum snap distance in map units.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5363,11 +5393,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output file. 
-        rmse -- The DEM's root-mean-square-error (RMSE), in z units. This determines error magnitude. 
-        range -- The error field's correlation length, in xy-units. 
-        iterations -- The number of iterations. 
+        dem -- Input raster DEM file.
+        output -- Output file.
+        rmse -- The DEM's root-mean-square-error (RMSE), in z units. This determines error magnitude.
+        range -- The error field's correlation length, in xy-units.
+        iterations -- The number of iterations.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5383,10 +5413,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5401,10 +5431,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input D8 pointer raster file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input D8 pointer raster file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5419,11 +5449,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        seed_pts -- Input vector seed points file. 
-        d8_pntr -- Input D8 pointer raster file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        seed_pts -- Input vector seed points file.
+        d8_pntr -- Input D8 pointer raster file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5439,10 +5469,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input D8 pointer raster file. 
-        pour_pts -- Input vector pour points (outlet) file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input D8 pointer raster file.
+        pour_pts -- Input vector pour points (outlet) file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5457,8 +5487,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5471,10 +5501,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input D8 pointer raster file. 
-        pour_pts -- Input pour points (outlet) file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input D8 pointer raster file.
+        pour_pts -- Input pour points (outlet) file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5493,10 +5523,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        date1 -- Input raster files for the earlier date. 
-        date2 -- Input raster files for the later date. 
-        magnitude -- Output vector magnitude raster file. 
-        direction -- Output vector Direction raster file. 
+        date1 -- Input raster files for the earlier date.
+        date2 -- Input raster files for the later date.
+        magnitude -- Output vector magnitude raster file.
+        direction -- Output vector Direction raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5511,10 +5541,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5529,13 +5559,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        red -- Input red band image file. 
-        green -- Input green band image file. 
-        blue -- Input blue band image file. 
-        opacity -- Input opacity band image file (optional). 
-        output -- Output colour composite file. 
-        enhance -- Optional flag indicating whether a balance contrast enhancement is performed. 
-        zeros -- Optional flag to indicate if zeros are nodata values. 
+        red -- Input red band image file.
+        green -- Input green band image file.
+        blue -- Input blue band image file.
+        opacity -- Input opacity band image file (optional).
+        output -- Output colour composite file.
+        enhance -- Optional flag indicating whether a balance contrast enhancement is performed.
+        zeros -- Optional flag to indicate if zeros are nodata values.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5553,9 +5583,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        direction -- Direction of reflection; options include 'v' (vertical), 'h' (horizontal), and 'b' (both). 
+        i -- Input raster file.
+        output -- Output raster file.
+        direction -- Direction of reflection; options include 'v' (vertical), 'h' (horizontal), and 'b' (both).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5569,13 +5599,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        intensity -- Input intensity file. 
-        hue -- Input hue file. 
-        saturation -- Input saturation file. 
-        red -- Output red band file. Optionally specified if colour-composite not specified. 
-        green -- Output green band file. Optionally specified if colour-composite not specified. 
-        blue -- Output blue band file. Optionally specified if colour-composite not specified. 
-        output -- Output colour-composite file. Only used if individual bands are not specified. 
+        intensity -- Input intensity file.
+        hue -- Input hue file.
+        saturation -- Input saturation file.
+        red -- Output red band file. Optionally specified if colour-composite not specified.
+        green -- Output green band file. Optionally specified if colour-composite not specified.
+        blue -- Output blue band file. Optionally specified if colour-composite not specified.
+        output -- Output colour-composite file. Only used if individual bands are not specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5593,16 +5623,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Name of the left input image file. 
-        palette1 -- Left image palette; options are 'grey', 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'rgb'. 
-        reverse1 -- Reverse left image palette?. 
-        label1 -- Left image label (leave blank for none). 
-        input2 -- Name of the right input image file. 
-        palette2 -- Right image palette; options are 'grey', 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'rgb'. 
-        reverse2 -- Reverse right image palette?. 
-        label2 -- Right image label (leave blank for none). 
-        output -- Name of the output HTML file (*.html). 
-        height -- Image height, in pixels. 
+        input1 -- Name of the left input image file.
+        palette1 -- Left image palette; options are 'grey', 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'rgb'.
+        reverse1 -- Reverse left image palette?.
+        label1 -- Left image label (leave blank for none).
+        input2 -- Name of the right input image file.
+        palette2 -- Right image palette; options are 'grey', 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', 'deep', and 'rgb'.
+        reverse2 -- Reverse right image palette?.
+        label2 -- Right image label (leave blank for none).
+        output -- Name of the output HTML file (*.html).
+        height -- Image height, in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5623,9 +5653,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input multispectral image files. 
-        points -- Input vector points file. 
-        output -- Output HTML file. 
+        inputs -- Input multispectral image files.
+        points -- Input vector points file.
+        output -- Output HTML file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5639,8 +5669,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5653,8 +5683,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5667,9 +5697,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        method -- Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 'cc' (cubic convolution). 
+        inputs -- Input raster files.
+        output -- Output raster file.
+        method -- Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 'cc' (cubic convolution).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5683,11 +5713,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file to modify. 
-        input2 -- Input reference raster file. 
-        output -- Output raster file. 
-        method -- Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 'cc' (cubic convolution). 
-        weight -- . 
+        input1 -- Input raster file to modify.
+        input2 -- Input reference raster file.
+        output -- Output raster file.
+        method -- Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 'cc' (cubic convolution).
+        weight -- .
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5703,11 +5733,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input image 1 (e.g. near-infrared band). 
-        input2 -- Input image 2 (e.g. red band). 
-        output -- Output raster file. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
-        correction -- Optional adjustment value (e.g. 1, or 0.16 for the optimal soil adjusted vegetation index, OSAVI). 
+        input1 -- Input image 1 (e.g. near-infrared band).
+        input2 -- Input image 2 (e.g. red band).
+        output -- Output raster file.
+        clip -- Optional amount to clip the distribution tails by, in percent.
+        correction -- Optional adjustment value (e.g. 1, or 0.16 for the optimal soil adjusted vegetation index, OSAVI).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5723,10 +5753,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5741,9 +5771,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        iterations -- Maximum number of iterations. 
+        i -- Input raster file.
+        output -- Output raster file.
+        iterations -- Maximum number of iterations.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5757,11 +5787,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
-        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
-        method -- Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 'cc' (cubic convolution). 
+        inputs -- Input raster files.
+        output -- Output raster file.
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
+        base -- Optionally specified input base raster file. Not used when a cell size is specified.
+        method -- Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 'cc' (cubic convolution).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5777,13 +5807,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        red -- Input red band image file. Optionally specified if colour-composite not specified. 
-        green -- Input green band image file. Optionally specified if colour-composite not specified. 
-        blue -- Input blue band image file. Optionally specified if colour-composite not specified. 
-        composite -- Input colour-composite image file. Only used if individual bands are not specified. 
-        intensity -- Output intensity raster file. 
-        hue -- Output hue raster file. 
-        saturation -- Output saturation raster file. 
+        red -- Input red band image file. Optionally specified if colour-composite not specified.
+        green -- Input green band image file. Optionally specified if colour-composite not specified.
+        blue -- Input blue band image file. Optionally specified if colour-composite not specified.
+        composite -- Input colour-composite image file. Only used if individual bands are not specified.
+        intensity -- Output intensity raster file.
+        hue -- Output hue raster file.
+        saturation -- Output saturation raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5801,10 +5831,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input colour composite image file. 
-        red -- Output red band file. 
-        green -- Output green band file. 
-        blue -- Output blue band file. 
+        i -- Input colour composite image file.
+        red -- Output red band file.
+        green -- Output green band file.
+        blue -- Output blue band file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5819,8 +5849,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5833,11 +5863,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        variant -- Optional variant value. Options include 'white' and 'black'. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        variant -- Optional variant value. Options include 'white' and 'black'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5853,10 +5883,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file associated with the first date. 
-        input2 -- Input raster file associated with the second date. 
-        input3 -- Optional input raster file associated with the third date. 
-        output -- Output raster file. 
+        input1 -- Input raster file associated with the first date.
+        input2 -- Input raster file associated with the second date.
+        input3 -- Optional input raster file associated with the third date.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5875,10 +5905,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Name of the input band images. 
-        polys -- Name of the input training site polygons shapefile. 
-        field -- Name of the attribute containing class name data. 
-        output -- Name of the output report file (*.html). 
+        inputs -- Name of the input band images.
+        polys -- Name of the input training site polygons shapefile.
+        field -- Name of the attribute containing class name data.
+        output -- Name of the output report file (*.html).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5893,10 +5923,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster image file. 
-        output -- Name of the output raster file. 
-        min_size -- Minimum feature size, in grid cells. 
-        method -- Grouping method; one of 'longest' (default), 'largest', and 'nearest'. 
+        i -- Name of the input raster image file.
+        output -- Name of the output raster file.
+        min_size -- Minimum feature size, in grid cells.
+        method -- Grouping method; one of 'longest' (default), 'largest', and 'nearest'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5911,10 +5941,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster image file. 
-        similarity -- Names of the input similarity images. 
-        output -- Name of the output raster file. 
-        min_size -- Minimum feature size, in grid cells. 
+        i -- Name of the input raster image file.
+        similarity -- Names of the input similarity images.
+        output -- Name of the output raster file.
+        min_size -- Minimum feature size, in grid cells.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5929,11 +5959,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input band images. 
-        output -- Name of the output raster file. 
-        threshold -- Distance threshold, in z-scores. 
-        steps -- Number of steps. 
-        min_area -- Minimum object area, in grid cells (1-8). 
+        inputs -- Names of the input band images.
+        output -- Name of the output raster file.
+        threshold -- Distance threshold, in z-scores.
+        steps -- Number of steps.
+        min_area -- Minimum object area, in grid cells (1-8).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5949,11 +5979,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input band images. 
-        polys -- Name of the input training site polygons shapefile. 
-        field -- Name of the attribute containing class name data. 
-        output -- Name of the output raster file. 
-        threshold -- Distance threshold, in z-scores; blank for none. 
+        inputs -- Names of the input band images.
+        polys -- Name of the input training site polygons shapefile.
+        field -- Name of the attribute containing class name data.
+        output -- Name of the output raster file.
+        threshold -- Distance threshold, in z-scores; blank for none.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5969,10 +5999,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Name of the input band images. 
-        polys -- Name of the input training site polygons shapefile. 
-        field -- Name of the attribute containing class name data. 
-        output -- Name of the output raster file. 
+        inputs -- Name of the input band images.
+        polys -- Name of the input training site polygons shapefile.
+        field -- Name of the attribute containing class name data.
+        output -- Name of the output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -5991,11 +6021,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        threshold -- Difference from mean threshold, in standard deviations. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        threshold -- Difference from mean threshold, in standard deviations.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6011,10 +6041,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        sigma_dist -- Standard deviation in distance in pixels. 
-        sigma_int -- Standard deviation in intensity in pixels. 
+        i -- Input raster file.
+        output -- Output raster file.
+        sigma_dist -- Standard deviation in distance in pixels.
+        sigma_int -- Standard deviation in intensity in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6029,12 +6059,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster image file. 
-        output -- Name of the output raster image file. 
-        sigma -- Sigma value used in Gaussian filtering, default = 0.5. 
-        low -- Low threshold, default = 0.05. 
-        high -- High threshold, default = 0.15. 
-        add_back -- Add the edge cells back to the input image. 
+        i -- Name of the input raster image file.
+        output -- Name of the output raster image file.
+        sigma -- Sigma value used in Gaussian filtering, default = 0.5.
+        low -- Low threshold, default = 0.05.
+        high -- High threshold, default = 0.15.
+        add_back -- Add the edge cells back to the input image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6051,10 +6081,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6069,8 +6099,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input boolean image. 
-        output -- Output raster file. 
+        i -- Input boolean image.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6083,10 +6113,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        sigma1 -- Standard deviation distance in pixels. 
-        sigma2 -- Standard deviation distance in pixels. 
+        i -- Input raster file.
+        output -- Output raster file.
+        sigma1 -- Standard deviation distance in pixels.
+        sigma2 -- Standard deviation distance in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6101,10 +6131,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6119,10 +6149,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filter -- Size of the filter kernel. 
-        threshold -- Maximum difference in values. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filter -- Size of the filter kernel.
+        threshold -- Maximum difference in values.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6137,10 +6167,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        direction -- Direction of reflection; options include 'n', 's', 'e', 'w', 'ne', 'se', 'nw', 'sw'. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
+        i -- Input raster file.
+        output -- Output raster file.
+        direction -- Direction of reflection; options include 'n', 's', 'e', 'w', 'ne', 'se', 'nw', 'sw'.
+        clip -- Optional amount to clip the distribution tails by, in percent.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6155,9 +6185,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        sigma -- Standard deviation distance in pixels. 
+        i -- Input raster file.
+        output -- Output raster file.
+        sigma -- Standard deviation distance in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6171,9 +6201,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        sigma -- Standard deviation distance in pixels. 
+        i -- Input raster file.
+        output -- Output raster file.
+        sigma -- Standard deviation distance in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6187,10 +6217,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6205,11 +6235,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        sig_digits -- Number of significant digits. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        sig_digits -- Number of significant digits.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6225,11 +6255,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        k -- k-value in pixels; this is the number of nearest-valued neighbours to use. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        k -- k-value in pixels; this is the number of nearest-valued neighbours to use.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6245,10 +6275,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        variant -- Optional variant value. Options include 3x3(1), 3x3(2), 3x3(3), 3x3(4), 5x5(1), and 5x5(2) (default is 3x3(1)). 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
+        i -- Input raster file.
+        output -- Output raster file.
+        variant -- Optional variant value. Options include 3x3(1), 3x3(2), 3x3(3), 3x3(4), 5x5(1), and 5x5(2) (default is 3x3(1)).
+        clip -- Optional amount to clip the distribution tails by, in percent.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6263,9 +6293,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        sigma -- Standard deviation in pixels. 
+        i -- Input raster file.
+        output -- Output raster file.
+        sigma -- Standard deviation in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6279,12 +6309,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        sigma -- Sigma value should be related to the standard deviation of the distribution of image speckle noise. 
-        m -- M-threshold value the minimum allowable number of pixels within the intensity range. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        sigma -- Sigma value should be related to the standard deviation of the distribution of image speckle noise.
+        m -- M-threshold value the minimum allowable number of pixels within the intensity range.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6301,11 +6331,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        variant -- Optional variant value. Options include 'v' (vertical), 'h' (horizontal), '45', and '135' (default is 'v'). 
-        absvals -- Optional flag indicating whether outputs should be absolute values. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
+        i -- Input raster file.
+        output -- Output raster file.
+        variant -- Optional variant value. Options include 'v' (vertical), 'h' (horizontal), '45', and '135' (default is 'v').
+        absvals -- Optional flag indicating whether outputs should be absolute values.
+        clip -- Optional amount to clip the distribution tails by, in percent.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6321,10 +6351,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6339,10 +6369,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6357,10 +6387,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6375,11 +6405,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        sig_digits -- Number of significant digits. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        sig_digits -- Number of significant digits.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6395,10 +6425,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6413,10 +6443,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6431,11 +6461,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
-        sig_digits -- Number of significant digits. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
+        sig_digits -- Number of significant digits.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6451,9 +6481,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
+        i -- Input raster file.
+        output -- Output raster file.
+        clip -- Optional amount to clip the distribution tails by, in percent.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6467,10 +6497,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6485,9 +6515,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
+        i -- Input raster file.
+        output -- Output raster file.
+        clip -- Optional amount to clip the distribution tails by, in percent.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6501,9 +6531,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
+        i -- Input raster file.
+        output -- Output raster file.
+        clip -- Optional amount to clip the distribution tails by, in percent.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6517,10 +6547,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        variant -- Optional variant value. Options include 3x3 and 5x5 (default is 3x3). 
-        clip -- Optional amount to clip the distribution tails by, in percent (default is 0.0). 
+        i -- Input raster file.
+        output -- Output raster file.
+        variant -- Optional variant value. Options include 3x3 and 5x5 (default is 3x3).
+        clip -- Optional amount to clip the distribution tails by, in percent (default is 0.0).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6535,10 +6565,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6553,10 +6583,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        filterx -- Size of the filter kernel in the x-direction. 
-        filtery -- Size of the filter kernel in the y-direction. 
+        i -- Input raster file.
+        output -- Output raster file.
+        filterx -- Size of the filter kernel in the x-direction.
+        filtery -- Size of the filter kernel in the y-direction.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6571,11 +6601,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        sigma -- Standard deviation distance in pixels. 
-        amount -- A percentage and controls the magnitude of each overshoot. 
-        threshold -- Controls the minimal brightness change that will be sharpened. 
+        i -- Input raster file.
+        output -- Output raster file.
+        sigma -- Standard deviation distance in pixels.
+        amount -- A percentage and controls the magnitude of each overshoot.
+        threshold -- Controls the minimal brightness change that will be sharpened.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6591,11 +6621,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        weights -- Input weights file. 
-        output -- Output raster file. 
-        center -- Kernel center cell; options include 'center', 'upper-left', 'upper-right', 'lower-left', 'lower-right'. 
-        normalize -- Normalize kernel weights? This can reduce edge effects and lessen the impact of data gaps (nodata) but is not suited when the kernel weights sum to zero. 
+        i -- Input raster file.
+        weights -- Input weights file.
+        output -- Output raster file.
+        center -- Kernel center cell; options include 'center', 'upper-left', 'upper-right', 'lower-left', 'lower-right'.
+        normalize -- Normalize kernel weights? This can reduce edge effects and lessen the impact of data gaps (nodata) but is not suited when the kernel weights sum to zero.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6615,9 +6645,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input colour composite image file. 
-        output -- Output raster file. 
-        band_mean -- Band mean value. 
+        i -- Input colour composite image file.
+        output -- Output raster file.
+        band_mean -- Band mean value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6631,12 +6661,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        pp -- Input principal point file. 
-        output -- Output raster file. 
-        focal_length -- Camera focal length, in millimeters. 
-        image_width -- Distance between photograph edges, in millimeters. 
-        n -- The 'n' parameter. 
+        i -- Input raster file.
+        pp -- Input principal point file.
+        output -- Output raster file.
+        focal_length -- Camera focal length, in millimeters.
+        image_width -- Distance between photograph edges, in millimeters.
+        n -- The 'n' parameter.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6653,10 +6683,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input colour composite image file. 
-        output -- Output raster file. 
-        k -- Achromatic factor (k) ranges between 0 (no effect) and 1 (full saturation stretch), although typical values range from 0.3 to 0.7. 
-        clip -- Optional percent to clip the upper tail by during the stretch. 
+        i -- Input colour composite image file.
+        output -- Output raster file.
+        k -- Achromatic factor (k) ranges between 0 (no effect) and 1 (full saturation stretch), although typical values range from 0.3 to 0.7.
+        clip -- Optional percent to clip the upper tail by during the stretch.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6671,9 +6701,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        gamma -- Gamma value. 
+        i -- Input raster file.
+        output -- Output raster file.
+        gamma -- Gamma value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6687,9 +6717,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        num_tones -- Number of tones in the output image. 
+        i -- Input raster file.
+        output -- Output raster file.
+        num_tones -- Number of tones in the output image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6703,9 +6733,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        num_tones -- Number of tones in the output image. 
+        i -- Input raster file.
+        output -- Output raster file.
+        num_tones -- Number of tones in the output image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6719,9 +6749,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        histo_file -- Input reference probability distribution function (pdf) text file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        histo_file -- Input reference probability distribution function (pdf) text file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6735,9 +6765,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file to modify. 
-        input2 -- Input reference raster file. 
-        output -- Output raster file. 
+        input1 -- Input raster file to modify.
+        input2 -- Input reference raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6751,11 +6781,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        min_val -- Lower tail clip value. 
-        max_val -- Upper tail clip value. 
-        num_tones -- Number of tones in the output image. 
+        i -- Input raster file.
+        output -- Output raster file.
+        min_val -- Lower tail clip value.
+        max_val -- Upper tail clip value.
+        num_tones -- Number of tones in the output image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6771,13 +6801,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        red -- Input red band image file. Optionally specified if colour-composite not specified. 
-        green -- Input green band image file. Optionally specified if colour-composite not specified. 
-        blue -- Input blue band image file. Optionally specified if colour-composite not specified. 
-        composite -- Input colour-composite image file. Only used if individual bands are not specified. 
-        pan -- Input panchromatic band file. 
-        output -- Output colour composite file. 
-        method -- Options include 'brovey' (default) and 'ihs'. 
+        red -- Input red band image file. Optionally specified if colour-composite not specified.
+        green -- Input green band image file. Optionally specified if colour-composite not specified.
+        blue -- Input blue band image file. Optionally specified if colour-composite not specified.
+        composite -- Input colour-composite image file. Only used if individual bands are not specified.
+        pan -- Input panchromatic band file.
+        output -- Output colour composite file.
+        method -- Options include 'brovey' (default) and 'ihs'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6795,11 +6825,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        clip -- Optional amount to clip the distribution tails by, in percent. 
-        tail -- Specified which tails to clip; options include 'upper', 'lower', and 'both' (default is 'both'). 
-        num_tones -- Number of tones in the output image. 
+        i -- Input raster file.
+        output -- Output raster file.
+        clip -- Optional amount to clip the distribution tails by, in percent.
+        tail -- Specified which tails to clip; options include 'upper', 'lower', and 'both' (default is 'both').
+        num_tones -- Number of tones in the output image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6815,11 +6845,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        cutoff -- Cutoff value between 0.0 and 0.95. 
-        gain -- Gain value. 
-        num_tones -- Number of tones in the output image. 
+        i -- Input raster file.
+        output -- Output raster file.
+        cutoff -- Cutoff value between 0.0 and 0.95.
+        gain -- Gain value.
+        num_tones -- Number of tones in the output image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6835,10 +6865,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        stdev -- Standard deviation clip value. 
-        num_tones -- Number of tones in the output image. 
+        i -- Input raster file.
+        output -- Output raster file.
+        stdev -- Standard deviation clip value.
+        num_tones -- Number of tones in the output image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6857,9 +6887,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input LiDAR  ASCII files (.csv). 
-        pattern -- Input field pattern. 
-        proj -- Well-known-text string or EPSG code describing projection. 
+        inputs -- Input LiDAR  ASCII files (.csv).
+        pattern -- Input field pattern.
+        proj -- Well-known-text string or EPSG code describing projection.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6873,9 +6903,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        buildings -- Input vector polygons file. 
-        output -- Output LiDAR file. 
+        i -- Input LiDAR file.
+        buildings -- Input vector polygons file.
+        output -- Output LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6889,10 +6919,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        resolution -- The size of the square area used to evaluate nearby points in the LiDAR data. 
-        filter -- Filter out points from overlapping flightlines? If false, overlaps will simply be classified. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        resolution -- The size of the square area used to evaluate nearby points in the LiDAR data.
+        filter -- Filter out points from overlapping flightlines? If false, overlaps will simply be classified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6907,9 +6937,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        polygons -- Input vector polygons file. 
-        output -- Output LiDAR file. 
+        i -- Input LiDAR file.
+        polygons -- Input vector polygons file.
+        output -- Output LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6923,9 +6953,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        polygons -- Input vector polygons file. 
-        output -- Output LiDAR file. 
+        i -- Input LiDAR file.
+        polygons -- Input vector polygons file.
+        output -- Output LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6939,9 +6969,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6955,9 +6985,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        threshold -- Scan angle threshold. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        threshold -- Scan angle threshold.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6971,8 +7001,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output file. 
+        i -- Input LiDAR file.
+        output -- Output file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -6985,9 +7015,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output file. 
-        resolution -- Output raster's grid resolution. 
+        i -- Input LiDAR file.
+        output -- Output file.
+        resolution -- Output raster's grid resolution.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7001,8 +7031,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7015,7 +7045,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input LiDAR files. 
+        inputs -- Input LiDAR files.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7027,8 +7057,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LAS files (leave blank to use all LAS files in WorkingDirectory. 
-        output -- Output LAZ file (including extension). 
+        i -- Name of the input LAS files (leave blank to use all LAS files in WorkingDirectory.
+        output -- Output LAZ file (including extension).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7041,7 +7071,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
+        i -- Input LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7053,7 +7083,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
+        i -- Input LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7065,10 +7095,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input LAS files. 
-        outdir -- Output directory into which zlidar files are created. If unspecified, it is assumed to be the same as the inputs. 
-        compress -- Compression method, including 'brotli' and 'deflate'. 
-        level -- Compression level (1-9). 
+        inputs -- Input LAS files.
+        outdir -- Output directory into which zlidar files are created. If unspecified, it is assumed to be the same as the inputs.
+        compress -- Compression method, including 'brotli' and 'deflate'.
+        level -- Compression level (1-9).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7083,8 +7113,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LAZ files (leave blank to use all LAZ files in WorkingDirectory. 
-        output -- Output LAS file (including extension). 
+        i -- Name of the input LAZ files (leave blank to use all LAZ files in WorkingDirectory.
+        output -- Output LAS file (including extension).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7097,9 +7127,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output file. 
-        resolution -- Output raster's grid resolution. 
+        i -- Input LiDAR file.
+        output -- Output file.
+        resolution -- Output raster's grid resolution.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7113,9 +7143,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output file. 
-        resolution -- Output raster's grid resolution. 
+        i -- Input LiDAR file.
+        output -- Output file.
+        resolution -- Output raster's grid resolution.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7129,11 +7159,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        base -- Input base LiDAR file. 
-        subset -- Input subset LiDAR file. 
-        output -- Output LiDAR file. 
-        subset_class -- Subset point class value (must be 0-18; see LAS specifications). 
-        nonsubset_class -- Non-subset point class value (must be 0-18; see LAS specifications). 
+        base -- Input base LiDAR file.
+        subset -- Input subset LiDAR file.
+        output -- Output LiDAR file.
+        subset_class -- Subset point class value (must be 0-18; see LAS specifications).
+        nonsubset_class -- Non-subset point class value (must be 0-18; see LAS specifications).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7149,9 +7179,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        in_lidar -- Input LiDAR file. 
-        in_image -- Input colour image file. 
-        output -- Output LiDAR file. 
+        in_lidar -- Input LiDAR file.
+        in_image -- Input colour image file.
+        output -- Output LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7165,16 +7195,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LiDAR points. 
-        output -- Name of the output vector lines file. 
-        interval -- Contour interval. 
-        smooth -- Smoothing filter size (in num. points), e.g. 3, 5, 7, 9, 11. 
-        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'user_data'. 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
-        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded. 
+        i -- Name of the input LiDAR points.
+        output -- Name of the output vector lines file.
+        interval -- Contour interval.
+        smooth -- Smoothing filter size (in num. points), e.g. 3, 5, 7, 9, 11.
+        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'user_data'.
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
+        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7195,13 +7225,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
-        resolution -- Output raster's grid resolution. 
-        radius -- Search Radius. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
-        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded. 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
+        resolution -- Output raster's grid resolution.
+        radius -- Search Radius.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
+        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7219,13 +7249,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        minz -- Minimum elevation value (optional). 
-        maxz -- Maximum elevation value (optional). 
-        cls -- Optional boolean flag indicating whether points outside the range should be retained in output but reclassified. 
-        inclassval -- Optional parameter specifying the class value assigned to points within the slice. 
-        outclassval -- Optional parameter specifying the class value assigned to points within the slice. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        minz -- Minimum elevation value (optional).
+        maxz -- Maximum elevation value (optional).
+        cls -- Optional boolean flag indicating whether points outside the range should be retained in output but reclassified.
+        inclassval -- Optional parameter specifying the class value assigned to points within the slice.
+        outclassval -- Optional parameter specifying the class value assigned to points within the slice.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7243,15 +7273,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        radius -- Search Radius. 
-        min_neighbours -- The minimum number of neighbouring points within search areas. If fewer points than this threshold are identified during the fixed-radius search, a subsequent kNN search is performed to identify the k number of neighbours. 
-        slope_threshold -- Maximum inter-point slope to be considered an off-terrain point. 
-        height_threshold -- Inter-point height difference to be considered an off-terrain point. 
-        classify -- Classify points as ground (2) or off-ground (1). 
-        slope_norm -- Perform initial ground slope normalization?. 
-        height_above_ground -- Transform output to height above average ground elevation?. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        radius -- Search Radius.
+        min_neighbours -- The minimum number of neighbouring points within search areas. If fewer points than this threshold are identified during the fixed-radius search, a subsequent kNN search is performed to identify the k number of neighbours.
+        slope_threshold -- Maximum inter-point slope to be considered an off-terrain point.
+        height_threshold -- Inter-point height difference to be considered an off-terrain point.
+        classify -- Classify points as ground (2) or off-ground (1).
+        slope_norm -- Perform initial ground slope normalization?.
+        height_above_ground -- Transform output to height above average ground elevation?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7271,10 +7301,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input base file. 
-        output -- Output vector polygon file. 
-        width -- The grid cell width. 
-        orientation -- Grid Orientation, 'horizontal' or 'vertical'. 
+        i -- Input base file.
+        output -- Output vector polygon file.
+        width -- The grid cell width.
+        orientation -- Grid Orientation, 'horizontal' or 'vertical'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7289,11 +7319,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output file. 
-        azimuth -- Illumination source azimuth in degrees. 
-        altitude -- Illumination source altitude in degrees. 
-        radius -- Search Radius. 
+        i -- Input LiDAR file.
+        output -- Output file.
+        azimuth -- Illumination source azimuth in degrees.
+        altitude -- Illumination source altitude in degrees.
+        radius -- Search Radius.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7309,10 +7339,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
-        parameter -- Parameter; options are 'elevation' (default), 'intensity', 'scan angle', 'class', 'time'. 
-        clip -- Amount to clip distribution tails (in percent). 
+        i -- Input LiDAR file.
+        output -- Output HTML file (default name will be based on input file if unspecified).
+        parameter -- Parameter; options are 'elevation' (default), 'intensity', 'scan angle', 'class', 'time'.
+        clip -- Amount to clip distribution tails (in percent).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7327,16 +7357,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
-        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'. 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        resolution -- Output raster's grid resolution. 
-        weight -- IDW weight value. 
-        radius -- Search Radius. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
+        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'.
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        resolution -- Output raster's grid resolution.
+        weight -- IDW weight value.
+        radius -- Search Radius.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7357,10 +7387,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output HTML file for summary report. 
-        vlr -- Flag indicating whether or not to print the variable length records (VLRs). 
-        geokeys -- Flag indicating whether or not to print the geokeys. 
+        i -- Input LiDAR file.
+        output -- Output HTML file for summary report.
+        vlr -- Flag indicating whether or not to print the variable length records (VLRs).
+        geokeys -- Flag indicating whether or not to print the geokeys.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7375,8 +7405,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input LiDAR files. 
-        output -- Output LiDAR file. 
+        inputs -- Input LiDAR files.
+        output -- Output LiDAR file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7389,11 +7419,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input LiDAR classification file. 
-        input2 -- Input LiDAR reference file. 
-        output -- Output HTML file. 
-        class_accuracy -- Output classification accuracy raster file. 
-        resolution -- Output raster's grid resolution. 
+        input1 -- Input LiDAR classification file.
+        input2 -- Input LiDAR reference file.
+        output -- Output HTML file.
+        class_accuracy -- Output classification accuracy raster file.
+        resolution -- Output raster's grid resolution.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7409,15 +7439,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
-        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'. 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        resolution -- Output raster's grid resolution. 
-        radius -- Search Radius. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
+        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'.
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        resolution -- Output raster's grid resolution.
+        radius -- Search Radius.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7437,14 +7467,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        resolution -- Output raster's grid resolution. 
-        radius -- Search radius. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        resolution -- Output raster's grid resolution.
+        radius -- Search radius.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7463,8 +7493,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LiDAR points. 
-        output -- Name of the output LiDAR points. 
+        i -- Name of the input LiDAR points.
+        output -- Name of the output LiDAR points.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7477,14 +7507,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        resolution -- Output raster's grid resolution. 
-        num_points -- Flag indicating whether or not to output the number of points (returns) raster. 
-        num_pulses -- Flag indicating whether or not to output the number of pulses raster. 
-        avg_points_per_pulse -- Flag indicating whether or not to output the average number of points (returns) per pulse raster. 
-        z_range -- Flag indicating whether or not to output the elevation range raster. 
-        intensity_range -- Flag indicating whether or not to output the intensity range raster. 
-        predom_class -- Flag indicating whether or not to output the predominant classification raster. 
+        i -- Input LiDAR file.
+        resolution -- Output raster's grid resolution.
+        num_points -- Flag indicating whether or not to output the number of points (returns) raster.
+        num_pulses -- Flag indicating whether or not to output the number of pulses raster.
+        avg_points_per_pulse -- Flag indicating whether or not to output the average number of points (returns) per pulse raster.
+        z_range -- Flag indicating whether or not to output the elevation range raster.
+        intensity_range -- Flag indicating whether or not to output the intensity range raster.
+        predom_class -- Flag indicating whether or not to output the predominant classification raster.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7503,16 +7533,16 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        radius -- Search Radius. 
-        num_iter -- Number of iterations. 
-        num_samples -- Number of sample points on which to build the model. 
-        threshold -- Threshold used to determine inlier points. 
-        model_size -- Acceptable model size. 
-        max_slope -- Maximum planar slope. 
-        classify -- Classify points as ground (2) or off-ground (1). 
-        last_returns -- Only include last- and only-return points. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        radius -- Search Radius.
+        num_iter -- Number of iterations.
+        num_samples -- Number of sample points on which to build the model.
+        threshold -- Threshold used to determine inlier points.
+        model_size -- Acceptable model size.
+        max_slope -- Maximum planar slope.
+        classify -- Classify points as ground (2) or off-ground (1).
+        last_returns -- Only include last- and only-return points.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7533,18 +7563,18 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
-        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'. 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        resolution -- Output raster's grid resolution. 
-        num_points -- Number of points. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
-        func_type -- Radial basis function type; options are 'ThinPlateSpline' (default), 'PolyHarmonic', 'Gaussian', 'MultiQuadric', 'InverseMultiQuadric'. 
-        poly_order -- Polynomial order; options are 'none' (default), 'constant', 'affine'. 
-        weight -- Weight parameter used in basis function. 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
+        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'.
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        resolution -- Output raster's grid resolution.
+        num_points -- Number of points.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
+        func_type -- Radial basis function type; options are 'ThinPlateSpline' (default), 'PolyHarmonic', 'Gaussian', 'MultiQuadric', 'InverseMultiQuadric'.
+        poly_order -- Polynomial order; options are 'none' (default), 'constant', 'affine'.
+        weight -- Weight parameter used in basis function.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7567,9 +7597,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        include_z -- Include z-values in point comparison?. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        include_z -- Include z-values in point comparison?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7583,12 +7613,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        radius -- Search Radius. 
-        elev_diff -- Max. elevation difference. 
-        use_median -- Optional flag indicating whether to use the difference from median elevation rather than mean. 
-        classify -- Classify points as ground (2) or off-ground (1). 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        radius -- Search Radius.
+        elev_diff -- Max. elevation difference.
+        use_median -- Optional flag indicating whether to use the difference from median elevation rather than mean.
+        classify -- Classify points as ground (2) or off-ground (1).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7605,18 +7635,18 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        buildings -- Input vector build footprint polygons file. 
-        output -- Output vector polygon file. 
-        radius -- Search Radius. 
-        num_iter -- Number of iterations. 
-        num_samples -- Number of sample points on which to build the model. 
-        threshold -- Threshold used to determine inlier points (in elevation units). 
-        model_size -- Acceptable model size, in points. 
-        max_slope -- Maximum planar slope, in degrees. 
-        norm_diff -- Maximum difference in normal vectors, in degrees. 
-        azimuth -- Illumination source azimuth, in degrees. 
-        altitude -- Illumination source altitude in degrees. 
+        i -- Input LiDAR file.
+        buildings -- Input vector build footprint polygons file.
+        output -- Output vector polygon file.
+        radius -- Search Radius.
+        num_iter -- Number of iterations.
+        num_samples -- Number of sample points on which to build the model.
+        threshold -- Threshold used to determine inlier points (in elevation units).
+        model_size -- Acceptable model size, in points.
+        max_slope -- Maximum planar slope, in degrees.
+        norm_diff -- Maximum difference in normal vectors, in degrees.
+        azimuth -- Illumination source azimuth, in degrees.
+        altitude -- Illumination source altitude in degrees.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7639,18 +7669,18 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        radius -- Search Radius. 
-        num_iter -- Number of iterations. 
-        num_samples -- Number of sample points on which to build the model. 
-        threshold -- Threshold used to determine inlier points. 
-        model_size -- Acceptable model size. 
-        max_slope -- Maximum planar slope. 
-        norm_diff -- Maximum difference in normal vectors, in degrees. 
-        maxzdiff -- Maximum difference in elevation (z units) between neighbouring points of the same segment. 
-        classes -- Segments don't cross class boundaries. 
-        ground -- Classify the largest segment as ground points?. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        radius -- Search Radius.
+        num_iter -- Number of iterations.
+        num_samples -- Number of sample points on which to build the model.
+        threshold -- Threshold used to determine inlier points.
+        model_size -- Acceptable model size.
+        max_slope -- Maximum planar slope.
+        norm_diff -- Maximum difference in normal vectors, in degrees.
+        maxzdiff -- Maximum difference in elevation (z units) between neighbouring points of the same segment.
+        classes -- Segments don't cross class boundaries.
+        ground -- Classify the largest segment as ground points?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7673,12 +7703,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output file. 
-        radius -- Search Radius. 
-        norm_diff -- Maximum difference in normal vectors, in degrees. 
-        maxzdiff -- Maximum difference in elevation (z units) between neighbouring points of the same segment. 
-        classify -- Classify points as ground (2) or off-ground (1). 
+        i -- Input LiDAR file.
+        output -- Output file.
+        radius -- Search Radius.
+        norm_diff -- Maximum difference in normal vectors, in degrees.
+        maxzdiff -- Maximum difference in elevation (z units) between neighbouring points of the same segment.
+        classify -- Classify points as ground (2) or off-ground (1).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7695,11 +7725,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LiDAR points. 
-        output -- Name of the output LiDAR points. 
-        x_shift -- x-shift value, blank for none. 
-        y_shift -- y-shift value, blank for none. 
-        z_shift -- z-shift value, blank for none. 
+        i -- Name of the input LiDAR points.
+        output -- Name of the output LiDAR points.
+        x_shift -- x-shift value, blank for none.
+        y_shift -- y-shift value, blank for none.
+        z_shift -- z-shift value, blank for none.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7715,14 +7745,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LiDAR points (leave blank to use all files in WorkingDirectory. 
-        output -- Output raster file (including extension). 
-        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'user_data'. 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        resolution -- Output raster's grid resolution. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
+        i -- Name of the input LiDAR points (leave blank to use all files in WorkingDirectory.
+        output -- Output raster file (including extension).
+        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'user_data'.
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        resolution -- Output raster's grid resolution.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7741,8 +7771,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input LiDAR points. 
-        output -- Name of the output LiDAR points. 
+        i -- Name of the input LiDAR points.
+        output -- Name of the output LiDAR points.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7755,11 +7785,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        resolution -- The size of the square area used to evaluate nearby points in the LiDAR data. 
-        method -- Point selection method; options are 'first', 'last', 'lowest' (default), 'highest', 'nearest'. 
-        save_filtered -- Save filtered points to separate file?. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        resolution -- The size of the square area used to evaluate nearby points in the LiDAR data.
+        method -- Point selection method; options are 'first', 'last', 'lowest' (default), 'highest', 'nearest'.
+        save_filtered -- Save filtered points to separate file?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7775,11 +7805,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        resolution -- Output raster's grid resolution. 
-        density -- Max. point density (points / m^3). 
-        save_filtered -- Save filtered points to separate file?. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        resolution -- Output raster's grid resolution.
+        density -- Max. point density (points / m^3).
+        save_filtered -- Save filtered points to separate file?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7795,12 +7825,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        width -- Width of tiles in the X dimension; default 1000.0. 
-        height -- Height of tiles in the Y dimension. 
-        origin_x -- Origin point X coordinate for tile grid. 
-        origin_y -- Origin point Y coordinate for tile grid. 
-        min_points -- Minimum number of points contained in a tile for it to be saved. 
+        i -- Input LiDAR file.
+        width -- Width of tiles in the X dimension; default 1000.0.
+        height -- Height of tiles in the Y dimension.
+        origin_x -- Origin point X coordinate for tile grid.
+        origin_y -- Origin point Y coordinate for tile grid.
+        min_points -- Minimum number of points contained in a tile for it to be saved.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7817,9 +7847,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output vector polygon file. 
-        hull -- Identify the convex hull around points. 
+        i -- Input LiDAR file.
+        output -- Output vector polygon file.
+        hull -- Identify the convex hull around points.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7833,15 +7863,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file (including extension). 
-        output -- Output raster file (including extension). 
-        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'. 
-        returns -- Point return types to include; options are 'all' (default), 'last', 'first'. 
-        resolution -- Output raster's grid resolution. 
-        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'. 
-        minz -- Optional minimum elevation for inclusion in interpolation. 
-        maxz -- Optional maximum elevation for inclusion in interpolation. 
-        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded. 
+        i -- Input LiDAR file (including extension).
+        output -- Output raster file (including extension).
+        parameter -- Interpolation parameter; options are 'elevation' (default), 'intensity', 'class', 'return_number', 'number_of_returns', 'scan angle', 'rgb', 'user data'.
+        returns -- Point return types to include; options are 'all' (default), 'last', 'first'.
+        resolution -- Output raster's grid resolution.
+        exclude_cls -- Optional exclude classes from interpolation; Valid class values range from 0 to 18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'.
+        minz -- Optional minimum elevation for inclusion in interpolation.
+        maxz -- Optional maximum elevation for inclusion in interpolation.
+        max_triangle_edge_length -- Optional maximum triangle edge length; triangles larger than this size will not be gridded.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7861,9 +7891,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        radius -- Search Radius. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        radius -- Search Radius.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7877,9 +7907,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input LiDAR file. 
-        output -- Output LiDAR file. 
-        radius -- Search Radius. 
+        i -- Input LiDAR file.
+        output -- Output LiDAR file.
+        radius -- Search Radius.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7893,9 +7923,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        indir -- Input LAS file source directory. 
-        outdir -- Output directory into which LAS files within the polygon are copied. 
-        polygons -- Input vector polygons file. 
+        indir -- Input LAS file source directory.
+        outdir -- Output directory into which LAS files within the polygon are copied.
+        polygons -- Input vector polygons file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7909,8 +7939,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input ZLidar files. 
-        outdir -- Output directory into which zlidar files are created. If unspecified, it is assumed to be the same as the inputs. 
+        inputs -- Input ZLidar files.
+        outdir -- Output directory into which zlidar files are created. If unspecified, it is assumed to be the same as the inputs.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7927,11 +7957,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input rasters. 
-        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
-        output -- Name of the output raster file. 
-        search_dist -- Search-distance parameter. 
-        min_points -- Minimum point density needed to define 'core' point in cluster. 
+        inputs -- Names of the input rasters.
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'.
+        output -- Name of the output raster file.
+        search_dist -- Search-distance parameter.
+        min_points -- Minimum point density needed to define 'core' point in cluster.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7947,14 +7977,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        out_html -- Output HTML report file. 
-        classes -- Number of classes. 
-        max_iterations -- Maximum number of iterations. 
-        class_change -- Minimum percent of cells changed between iterations before completion. 
-        initialize -- How to initialize cluster centres?. 
-        min_class_size -- Minimum class size, in pixels. 
+        inputs -- Input raster files.
+        output -- Output raster file.
+        out_html -- Output HTML report file.
+        classes -- Number of classes.
+        max_iterations -- Maximum number of iterations.
+        class_change -- Minimum percent of cells changed between iterations before completion.
+        initialize -- How to initialize cluster centres?.
+        min_class_size -- Minimum class size, in pixels.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7973,14 +8003,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
-        training -- Name of the input training site polygons/points shapefile. 
-        field -- Name of the attribute containing class name data. 
-        output -- Name of the output raster file. 
-        k -- k-parameter, which determines the number of nearest neighbours used. 
-        clip -- Perform training data clipping to remove outlier pixels?. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'.
+        training -- Name of the input training site polygons/points shapefile.
+        field -- Name of the attribute containing class name data.
+        output -- Name of the output raster file.
+        k -- k-parameter, which determines the number of nearest neighbours used.
+        clip -- Perform training data clipping to remove outlier pixels?.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -7999,14 +8029,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
-        training -- Name of the input training site points Shapefile. 
-        field -- Name of the attribute containing response variable name data. 
-        output -- Name of the output raster file. 
-        k -- k-parameter, which determines the number of nearest neighbours used. 
-        weight -- Use distance weighting?. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'.
+        training -- Name of the input training site points Shapefile.
+        field -- Name of the attribute containing response variable name data.
+        output -- Name of the output raster file.
+        k -- k-parameter, which determines the number of nearest neighbours used.
+        weight -- Use distance weighting?.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8025,12 +8055,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
-        training -- Name of the input training site polygons/points shapefile. 
-        field -- Name of the attribute containing class data. 
-        output -- Name of the output raster file. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'.
+        training -- Name of the input training site polygons/points shapefile.
+        field -- Name of the attribute containing class data.
+        output -- Name of the output raster file.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8047,13 +8077,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output raster file. 
-        out_html -- Output HTML report file. 
-        start_clusters -- Initial number of clusters. 
-        merge_dist -- Cluster merger distance. 
-        max_iterations -- Maximum number of iterations. 
-        class_change -- Minimum percent of cells changed between iterations before completion. 
+        inputs -- Input raster files.
+        output -- Output raster file.
+        out_html -- Output HTML report file.
+        start_clusters -- Initial number of clusters.
+        merge_dist -- Cluster merger distance.
+        max_iterations -- Maximum number of iterations.
+        class_change -- Minimum percent of cells changed between iterations before completion.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8071,15 +8101,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        training -- Name of the input training site polygons/points shapefile. 
-        field -- Name of the attribute containing class data. 
-        output -- Name of the output raster file. 
-        split_criterion -- Split criterion to use when building a tree. Options include 'Gini', 'Entropy', and 'ClassificationError'. 
-        n_trees -- The number of trees in the forest. 
-        min_samples_leaf -- The minimum number of samples required to be at a leaf node. 
-        min_samples_split -- The minimum number of samples required to split an internal node. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        training -- Name of the input training site polygons/points shapefile.
+        field -- Name of the attribute containing class data.
+        output -- Name of the output raster file.
+        split_criterion -- Split criterion to use when building a tree. Options include 'Gini', 'Entropy', and 'ClassificationError'.
+        n_trees -- The number of trees in the forest.
+        min_samples_leaf -- The minimum number of samples required to be at a leaf node.
+        min_samples_split -- The minimum number of samples required to split an internal node.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8099,14 +8129,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        training -- Name of the input training site points shapefile. 
-        field -- Name of the attribute containing response variable name data. 
-        output -- Name of the output raster file. This parameter is optional. When unspecified, the tool will only build the model. When specified, the tool will use the built model and predictor rasters to perform a spatial prediction. 
-        n_trees -- The number of trees in the forest. 
-        min_samples_leaf -- The minimum number of samples required to be at a leaf node. 
-        min_samples_split -- The minimum number of samples required to split an internal node. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        training -- Name of the input training site points shapefile.
+        field -- Name of the attribute containing response variable name data.
+        output -- Name of the output raster file. This parameter is optional. When unspecified, the tool will only build the model. When specified, the tool will use the built model and predictor rasters to perform a spatial prediction.
+        n_trees -- The number of trees in the forest.
+        min_samples_leaf -- The minimum number of samples required to be at a leaf node.
+        min_samples_split -- The minimum number of samples required to split an internal node.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8125,15 +8155,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
-        training -- Name of the input training site polygons/points Shapefile. 
-        field -- Name of the attribute containing class data. 
-        output -- Name of the output raster file. 
-        c -- c-value, the regularization parameter. 
-        gamma -- Gamma parameter used in setting the RBF (Gaussian) kernel function. 
-        tolerance -- The tolerance parameter used in determining the stopping condition. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'.
+        training -- Name of the input training site polygons/points Shapefile.
+        field -- Name of the attribute containing class data.
+        output -- Name of the output raster file.
+        c -- c-value, the regularization parameter.
+        gamma -- Gamma parameter used in setting the RBF (Gaussian) kernel function.
+        tolerance -- The tolerance parameter used in determining the stopping condition.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8153,15 +8183,15 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Names of the input predictor rasters. 
-        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'. 
-        training -- Name of the input training site points Shapefile. 
-        field -- Name of the attribute containing class data. 
-        output -- Name of the output raster file. 
-        c -- c-value, the regularization parameter. 
-        eps -- Epsilon in the epsilon-SVR model. 
-        gamma -- Gamma parameter used in setting the RBF (Gaussian) kernel function. 
-        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2. 
+        inputs -- Names of the input predictor rasters.
+        scaling -- Scaling method for predictors. Options include 'None', 'Normalize', and 'Standardize'.
+        training -- Name of the input training site points Shapefile.
+        field -- Name of the attribute containing class data.
+        output -- Name of the output raster file.
+        c -- c-value, the regularization parameter.
+        eps -- Epsilon in the epsilon-SVR model.
+        gamma -- Gamma parameter used in setting the RBF (Gaussian) kernel function.
+        test_proportion -- The proportion of the dataset to include in the test split; default is 0.2.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8185,9 +8215,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file. 
-        output -- Output raster file. 
+        input1 -- Input raster file.
+        input2 -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8201,9 +8231,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file. 
-        output -- Output raster file. 
+        input1 -- Input raster file.
+        input2 -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8217,9 +8247,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file. 
-        output -- Output raster file. 
+        input1 -- Input raster file.
+        input2 -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8233,8 +8263,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8247,9 +8277,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8263,9 +8293,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        features -- Feature definition (or class) raster. 
-        output -- Output HTML file. 
+        i -- Input raster file.
+        features -- Feature definition (or class) raster.
+        output -- Output HTML file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8279,8 +8309,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8293,8 +8323,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8307,8 +8337,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8321,8 +8351,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8335,8 +8365,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8349,8 +8379,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8363,9 +8393,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input_y -- Input y raster file or constant value (rise). 
-        input_x -- Input x raster file or constant value (run). 
-        output -- Output raster file. 
+        input_y -- Input y raster file or constant value (rise).
+        input_x -- Input x raster file or constant value (run).
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8379,8 +8409,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        i -- Input vector file.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8393,12 +8423,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector file. 
-        field1 -- First input field name (dependent variable) in attribute table. 
-        field2 -- Second input field name (independent variable) in attribute table. 
-        radius -- Search Radius (in map units). 
-        min_points -- Minimum number of points. 
-        stat -- Correlation type; one of 'pearson' (default) and 'spearman'. 
+        i -- Input vector file.
+        field1 -- First input field name (dependent variable) in attribute table.
+        field2 -- Second input field name (independent variable) in attribute table.
+        radius -- Search Radius (in map units).
+        min_points -- Minimum number of points.
+        stat -- Correlation type; one of 'pearson' (default) and 'spearman'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8415,9 +8445,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        field -- Input field name in attribute table. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        i -- Input raster file.
+        field -- Input field name in attribute table.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8431,11 +8461,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        fieldx -- Input field name in attribute table for the x-axis. 
-        fieldy -- Input field name in attribute table for the y-axis. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
-        trendline -- Draw the trendline. 
+        i -- Input raster file.
+        fieldx -- Input field name in attribute table for the x-axis.
+        fieldy -- Input field name in attribute table for the y-axis.
+        output -- Output HTML file (default name will be based on input file if unspecified).
+        trendline -- Draw the trendline.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8451,8 +8481,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8465,11 +8495,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input raster file. 
-        statement -- Conditional statement e.g. value > 35.0. This statement must be a valid Rust statement. 
-        true -- Value where condition evaluates TRUE (input raster or constant value). 
-        false -- Value where condition evaluates FALSE (input raster or constant value). 
-        output -- Name of the output raster file. 
+        i -- Name of the input raster file.
+        statement -- Conditional statement e.g. value > 35.0. This statement must be a valid Rust statement.
+        true -- Value where condition evaluates TRUE (input raster or constant value).
+        false -- Value where condition evaluates FALSE (input raster or constant value).
+        output -- Name of the output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8485,8 +8515,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8499,8 +8529,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8513,8 +8543,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Optional output html file (default name will be based on input file if unspecified). 
+        i -- Input raster file.
+        output -- Optional output html file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8527,9 +8557,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file 1. 
-        input2 -- Input raster file 1. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        input1 -- Input raster file 1.
+        input2 -- Input raster file 1.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8543,8 +8573,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8557,8 +8587,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8571,9 +8601,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8587,9 +8617,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8603,8 +8633,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8617,8 +8647,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8631,8 +8661,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8645,10 +8675,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
-        incl_equals -- Perform a greater-than-or-equal-to operation. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
+        incl_equals -- Perform a greater-than-or-equal-to operation.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8663,9 +8693,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        contiguity -- Contiguity type. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        inputs -- Input raster files.
+        contiguity -- Contiguity type.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8679,8 +8709,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        inputs -- Input raster files.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8693,12 +8723,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file. 
-        output1 -- Output correlation (r-value or rho) raster file. 
-        output2 -- Output significance (p-value) raster file. 
-        filter -- Size of the filter kernel. 
-        stat -- Correlation type; one of 'pearson' (default) and 'spearman'. 
+        input1 -- Input raster file.
+        input2 -- Input raster file.
+        output1 -- Output correlation (r-value or rho) raster file.
+        output2 -- Output significance (p-value) raster file.
+        filter -- Size of the filter kernel.
+        stat -- Correlation type; one of 'pearson' (default) and 'spearman'.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8715,13 +8745,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file (independent variable, X). 
-        input2 -- Input raster file (dependent variable, Y). 
-        output -- Output HTML file for regression summary report. 
-        out_residuals -- Output raster regression residual file. 
-        standardize -- Optional flag indicating whether to standardize the residuals map. 
-        scattergram -- Optional flag indicating whether to output a scattergram. 
-        num_samples -- Number of samples used to create scattergram. 
+        input1 -- Input raster file (independent variable, X).
+        input2 -- Input raster file (dependent variable, Y).
+        output -- Output HTML file for regression summary report.
+        out_residuals -- Output raster regression residual file.
+        standardize -- Optional flag indicating whether to standardize the residuals map.
+        scattergram -- Optional flag indicating whether to output a scattergram.
+        num_samples -- Number of samples used to create scattergram.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8739,8 +8769,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file or constant value. 
+        input1 -- Input raster file.
+        input2 -- Input raster file or constant value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8753,8 +8783,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file or constant value. 
+        input1 -- Input raster file.
+        input2 -- Input raster file or constant value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8767,8 +8797,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file or constant value. 
+        input1 -- Input raster file.
+        input2 -- Input raster file or constant value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8781,8 +8811,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file or constant value. 
+        input1 -- Input raster file.
+        input2 -- Input raster file or constant value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8795,8 +8825,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8809,9 +8839,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8825,8 +8855,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Name of the input PCA component images. 
-        report -- Name of the PCA report file (*.html). 
+        inputs -- Name of the input PCA component images.
+        report -- Name of the PCA report file (*.html).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8839,8 +8869,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8853,9 +8883,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input classification raster file. 
-        input2 -- Input reference raster file. 
-        output -- Output HTML file. 
+        input1 -- Input classification raster file.
+        input2 -- Input reference raster file.
+        output -- Output HTML file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8869,9 +8899,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output HTML file. 
-        num_samples -- Number of samples. Leave blank to use whole image. 
+        i -- Input raster file.
+        output -- Output HTML file.
+        num_samples -- Number of samples. Leave blank to use whole image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8885,10 +8915,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
-        incl_equals -- Perform a less-than-or-equal-to operation. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
+        incl_equals -- Perform a less-than-or-equal-to operation.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8903,9 +8933,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        field -- Input field name in attribute table. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        i -- Input raster file.
+        field -- Input field name in attribute table.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8919,8 +8949,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8933,8 +8963,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8947,8 +8977,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8961,9 +8991,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8977,9 +9007,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -8993,9 +9023,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9009,9 +9039,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9025,8 +9055,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9039,9 +9069,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9055,10 +9085,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- First input raster file. 
-        input2 -- Second input raster file. 
-        output -- Output HTML file. 
-        num_samples -- Number of samples. Leave blank to use whole image. 
+        input1 -- First input raster file.
+        input2 -- Second input raster file.
+        output -- Output HTML file.
+        num_samples -- Number of samples. Leave blank to use whole image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9073,9 +9103,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Name of the first input raster image file. 
-        input2 -- Name of the second input raster image file. 
-        output -- Name of the output HTML file. 
+        input1 -- Name of the first input raster image file.
+        input2 -- Name of the second input raster image file.
+        output -- Name of the output HTML file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9089,9 +9119,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9105,10 +9135,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        inputs -- Input raster files. 
-        output -- Output HTML report file. 
-        num_comp -- Number of component images to output; <= to num. input images. 
-        standardized -- Perform standardized PCA?. 
+        inputs -- Input raster files.
+        output -- Output HTML report file.
+        num_comp -- Number of component images to output; <= to num. input images.
+        standardized -- Perform standardized PCA?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9123,9 +9153,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        num_quantiles -- Number of quantiles. 
+        i -- Input raster file.
+        output -- Output raster file.
+        num_quantiles -- Number of quantiles.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9139,8 +9169,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        base -- Input raster file. 
-        output -- Output raster file. 
+        base -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9153,9 +9183,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        base -- Input raster file. 
-        output -- Output raster file. 
-        num_samples -- Number of samples. 
+        base -- Input raster file.
+        output -- Output raster file.
+        num_samples -- Number of samples.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9169,8 +9199,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        statement -- Statement e.g. cos("raster1") * 35.0 + "raster2". This statement must be a valid Rust statement. 
-        output -- Name of the output raster file. 
+        statement -- Statement e.g. cos("raster1") * 35.0 + "raster2". This statement must be a valid Rust statement.
+        output -- Name of the output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9183,8 +9213,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output HTML file (default name will be based on input file if unspecified). 
+        i -- Input raster file.
+        output -- Output HTML file (default name will be based on input file if unspecified).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9197,7 +9227,7 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
+        i -- Input raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9209,8 +9239,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9223,12 +9253,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        out_min_val -- New minimum value in output image. 
-        out_max_val -- New maximum value in output image. 
-        clip_min -- Optional lower tail clip value. 
-        clip_max -- Optional upper tail clip value. 
+        i -- Input raster file.
+        output -- Output raster file.
+        out_min_val -- New minimum value in output image.
+        out_max_val -- New maximum value in output image.
+        clip_min -- Optional lower tail clip value.
+        clip_max -- Optional upper tail clip value.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9245,8 +9275,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        base -- Input base raster file used for comparison. 
+        i -- Input raster file.
+        base -- Input base raster file used for comparison.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9259,8 +9289,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9273,8 +9303,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9287,8 +9317,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9301,8 +9331,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9315,8 +9345,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9329,9 +9359,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file or constant value. 
-        input2 -- Input raster file or constant value. 
-        output -- Output raster file. 
+        input1 -- Input raster file or constant value.
+        input2 -- Input raster file or constant value.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9345,8 +9375,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9359,8 +9389,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9373,8 +9403,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9387,8 +9417,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9401,9 +9431,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        order -- Polynomial order (1 to 10). 
+        i -- Input raster file.
+        output -- Output raster file.
+        order -- Polynomial order (1 to 10).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9417,11 +9447,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input vector Points file. 
-        field -- Input field name in attribute table. 
-        output -- Output raster file. 
-        order -- Polynomial order (1 to 10). 
-        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
+        i -- Input vector Points file.
+        field -- Input field name in attribute table.
+        output -- Output raster file.
+        order -- Polynomial order (1 to 10).
+        cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9437,9 +9467,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
-        num_decimals -- Number of decimals left after truncation (default is zero). 
+        i -- Input raster file.
+        output -- Output raster file.
+        num_decimals -- Number of decimals left after truncation (default is zero).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9453,10 +9483,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        base -- Input base raster file. 
-        output -- Output file. 
-        range -- The field's range, in xy-units, related to the extent of spatial autocorrelation. 
-        iterations -- The number of iterations. 
+        base -- Input base raster file.
+        output -- Output file.
+        range -- The field's range, in xy-units, related to the extent of spatial autocorrelation.
+        iterations -- The number of iterations.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9471,10 +9501,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- First input raster file. 
-        input2 -- Second input raster file. 
-        output -- Output HTML file. 
-        num_samples -- Number of samples. Leave blank to use whole image. 
+        input1 -- First input raster file.
+        input2 -- Second input raster file.
+        output -- Output HTML file.
+        num_samples -- Number of samples. Leave blank to use whole image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9489,10 +9519,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- First input raster file. 
-        input2 -- Second input raster file. 
-        output -- Output HTML file. 
-        num_samples -- Number of samples. Leave blank to use whole image. 
+        input1 -- First input raster file.
+        input2 -- Second input raster file.
+        output -- Output HTML file.
+        num_samples -- Number of samples. Leave blank to use whole image.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9507,9 +9537,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        input1 -- Input raster file. 
-        input2 -- Input raster file. 
-        output -- Output raster file. 
+        input1 -- Input raster file.
+        input2 -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9523,8 +9553,8 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input raster file. 
-        output -- Output raster file. 
+        i -- Input raster file.
+        output -- Output raster file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9537,11 +9567,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Input data raster file. 
-        features -- Input feature definition raster file. 
-        output -- Output raster file. 
-        stat -- Statistic to extract, including 'mean', 'median', 'minimum', 'maximum', 'range', 'standard deviation', and 'total'. 
-        out_table -- Output HTML Table file. 
+        i -- Input data raster file.
+        features -- Input feature definition raster file.
+        output -- Output raster file.
+        stat -- Statistic to extract, including 'mean', 'median', 'minimum', 'maximum', 'range', 'standard deviation', and 'total'.
+        out_table -- Output HTML Table file.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9561,14 +9591,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input points shapefile. 
-        region_field -- Name of the attribute containing region data. 
-        yield_field -- Name of the attribute containing yield data. 
-        output -- Name of the output points shapefile. 
-        radius -- Optional search radius, in metres. Only specify this value if you want to calculate locally normalized yield. 
-        min_yield -- Minimum yield value in output. 
-        max_yield -- Maximum yield value in output. 
-        mean_tonnage -- Use this optional parameter to force the output to have a certain overall average tonnage. 
+        i -- Name of the input points shapefile.
+        region_field -- Name of the attribute containing region data.
+        yield_field -- Name of the attribute containing yield data.
+        output -- Name of the output points shapefile.
+        radius -- Optional search radius, in metres. Only specify this value if you want to calculate locally normalized yield.
+        min_yield -- Minimum yield value in output.
+        max_yield -- Maximum yield value in output.
+        mean_tonnage -- Use this optional parameter to force the output to have a certain overall average tonnage.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9587,12 +9617,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input points shapefile. 
-        yield_field_name -- Name of the attribute containing yield data. 
-        output_lines -- Name of the output pass lines shapefile. 
-        output_points -- Name of the output points shapefile. 
-        max_change_in_heading -- Max change in heading. 
-        ignore_zeros -- Ignore zero-valued yield points?. 
+        i -- Name of the input points shapefile.
+        yield_field_name -- Name of the attribute containing yield data.
+        output_lines -- Name of the output pass lines shapefile.
+        output_points -- Name of the output points shapefile.
+        max_change_in_heading -- Max change in heading.
+        ignore_zeros -- Ignore zero-valued yield points?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9609,11 +9639,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input points shapefile. 
-        output -- Name of the output points shapefile. 
-        dist -- Average distance between passes, in meters. 
-        max_change_in_heading -- Max change in heading. 
-        flag_edges -- Don't remove edge points, just flag them in the attribute table?. 
+        i -- Name of the input points shapefile.
+        output -- Name of the output points shapefile.
+        dist -- Average distance between passes, in meters.
+        max_change_in_heading -- Max change in heading.
+        flag_edges -- Don't remove edge points, just flag them in the attribute table?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9629,14 +9659,14 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input points shapefile. 
-        yield_field -- Name of the attribute containing yield data. 
-        pass_field -- Name of the attribute containing pass line ID. 
-        output -- Name of the output points shapefile. 
-        width -- Pass swath width (m). 
-        z_score_threshold -- Z-score threshold value (default=2.5). 
-        min_yield -- Minimum yield value in output. 
-        max_yield -- Maximum yield value in output. 
+        i -- Name of the input points shapefile.
+        yield_field -- Name of the attribute containing yield data.
+        pass_field -- Name of the attribute containing pass line ID.
+        output -- Name of the output points shapefile.
+        width -- Pass swath width (m).
+        z_score_threshold -- Z-score threshold value (default=2.5).
+        min_yield -- Minimum yield value in output.
+        max_yield -- Maximum yield value in output.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9655,11 +9685,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input points shapefile. 
-        pass_field_name -- Name of the attribute containing pass line ID. 
-        output -- Name of the output polygon shapefile. 
-        width -- Pass swath width (m). 
-        max_change_in_heading -- Max change in heading. 
+        i -- Name of the input points shapefile.
+        pass_field_name -- Name of the attribute containing pass line ID.
+        output -- Name of the output polygon shapefile.
+        width -- Pass swath width (m).
+        max_change_in_heading -- Max change in heading.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9675,13 +9705,13 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input points shapefile. 
-        yield_field -- Name of the attribute containing yield data. 
-        output -- Name of the output points shapefile. 
-        standardize -- Should the yield values be standardized (converted to z-scores) rather than normalized?. 
-        radius -- Optional search radius, in metres. Only specify this value if you want to calculate locally normalized yield. 
-        min_yield -- Minimum yield value in output. 
-        max_yield -- Maximum yield value in output. 
+        i -- Name of the input points shapefile.
+        yield_field -- Name of the attribute containing yield data.
+        output -- Name of the output points shapefile.
+        standardize -- Should the yield values be standardized (converted to z-scores) rather than normalized?.
+        radius -- Optional search radius, in metres. Only specify this value if you want to calculate locally normalized yield.
+        min_yield -- Minimum yield value in output.
+        max_yield -- Maximum yield value in output.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9703,11 +9733,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9723,10 +9753,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        flow_accum -- Input raster D8 flow accumulation file. 
-        output -- Output raster file. 
-        threshold -- Threshold in flow accumulation values for channelization. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        flow_accum -- Input raster D8 flow accumulation file.
+        output -- Output raster file.
+        threshold -- Threshold in flow accumulation values for channelization.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9741,11 +9771,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        variant -- Options include 'LQ' (lower quartile), 'JandR' (Johnston and Rosenfeld), and 'PandD' (Peucker and Douglas); default is 'LQ'. 
-        line_thin -- Optional flag indicating whether post-processing line-thinning should be performed. 
-        filter -- Optional argument (only used when variant='lq') providing the filter size, in grid cells, used for lq-filtering (default is 5). 
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        variant -- Options include 'LQ' (lower quartile), 'JandR' (Johnston and Rosenfeld), and 'PandD' (Peucker and Douglas); default is 'LQ'.
+        line_thin -- Optional flag indicating whether post-processing line-thinning should be performed.
+        filter -- Optional argument (only used when variant='lq') providing the filter size, in grid cells, used for lq-filtering (default is 5).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9761,11 +9791,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9781,11 +9811,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9801,11 +9831,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9821,11 +9851,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9841,11 +9871,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9861,11 +9891,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        dem -- Input raster DEM file. 
-        output -- Output HTML file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        dem -- Input raster DEM file.
+        output -- Output HTML file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9881,11 +9911,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        points -- Input vector points file. 
-        dem -- Input raster DEM file. 
-        output -- Output HTML file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input raster D8 pointer file.
+        points -- Input vector points file.
+        dem -- Input raster DEM file.
+        output -- Output HTML file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9901,10 +9931,10 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        streams -- Input raster streams file. 
-        d8_pntr -- Input raster D8 pointer file. 
-        output -- Output vector file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        streams -- Input raster streams file.
+        d8_pntr -- Input raster D8 pointer file.
+        output -- Output vector file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9919,11 +9949,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        streams -- Input vector streams file. 
-        base -- Input base raster file. 
-        output -- Output raster file. 
-        nodata -- Use NoData value for background?. 
-        feature_id -- Use feature number as output value?. 
+        streams -- Input vector streams file.
+        base -- Input base raster file.
+        output -- Output raster file.
+        nodata -- Use NoData value for background?.
+        feature_id -- Use feature number as output value?.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9939,11 +9969,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        min_length -- Minimum tributary length (in map units) used for network pruning. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        min_length -- Minimum tributary length (in map units) used for network pruning.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9959,9 +9989,9 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        i -- Name of the input lines vector file. 
-        output -- Name of the output lines vector file. 
-        dist -- Snap distance, in xy units (metres). 
+        i -- Name of the input lines vector file.
+        output -- Name of the output lines vector file.
+        dist -- Snap distance, in xy units (metres).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9975,11 +10005,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -9995,11 +10025,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10015,11 +10045,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10035,11 +10065,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10055,11 +10085,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        linkid -- Input raster streams link ID (or tributary ID) file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        linkid -- Input raster streams link ID (or tributary ID) file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10075,12 +10105,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        linkid -- Input raster streams link ID (or tributary ID) file. 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        linkid -- Input raster streams link ID (or tributary ID) file.
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10097,12 +10127,12 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        dem -- Input raster DEM file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        dem -- Input raster DEM file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10119,11 +10149,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10139,11 +10169,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        d8_pntr -- Input raster D8 pointer file. 
-        streams -- Input raster streams file. 
-        output -- Output raster file. 
-        esri_pntr -- D8 pointer uses the ESRI style scheme. 
-        zero_background -- Flag indicating whether a background value of zero should be used. 
+        d8_pntr -- Input raster D8 pointer file.
+        streams -- Input raster streams file.
+        output -- Output raster file.
+        esri_pntr -- D8 pointer uses the ESRI style scheme.
+        zero_background -- Flag indicating whether a background value of zero should be used.
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10159,11 +10189,11 @@ Okay, that's it for now.
 
         Keyword arguments:
 
-        streams -- Name of the input streams vector file. 
-        dem -- Name of the input DEM raster file. 
-        output -- Name of the output lines shapefile. 
-        cutting_height -- Maximum ridge-cutting height (z units). 
-        snap -- Snap distance, in xy units (metres). 
+        streams -- Name of the input streams vector file.
+        dem -- Name of the input DEM raster file.
+        output -- Name of the output lines shapefile.
+        cutting_height -- Maximum ridge-cutting height (z units).
+        snap -- Snap distance, in xy units (metres).
         callback -- Custom function for handling tool text outputs.
         """
         args = []
