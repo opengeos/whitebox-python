@@ -11,6 +11,7 @@ def download_wbt(verbose=True):
     import shutil
     import urllib.request
     import pkg_resources
+    import webbrowser
 
     # print("Your operating system: {}".format(platform.system()))
     package_name = "whitebox"
@@ -141,6 +142,8 @@ def download_wbt(verbose=True):
                         os.system("chmod 755 " + plugin)
                 except Exception as e:
                     print(e)
+
+            webbrowser.open('https://www.whiteboxgeo.com/', new=2)
 
         if not os.path.exists(work_dir):
             if verbose:
