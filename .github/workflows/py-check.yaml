@@ -5,6 +5,9 @@ on:
     pull_request:
         branches:
             - master
+    workflow_dispatch:
+    schedule:
+        - cron: '0 6 * * 1'
 
 name: py-check
 jobs:
@@ -14,20 +17,21 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                config:
-                    - { os: windows-latest, py: "3.9" }
-                    - { os: macOS-latest, py: "3.9" }
-                    - { os: ubuntu-latest, py: "3.7" }
-                    - { os: ubuntu-latest, py: "3.8" }
-                    - { os: ubuntu-latest, py: "3.9" }
+                os: [ubuntu-latest]
+                py: ["3.7", "3.8", "3.9", "3.10", "3.11-dev"]
+                include:
+                  - os: macos-latest
+                    python-version: "3.10"
+                  - os: windows-latest
+                    python-version: "3.10"
 
         env:
             SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
         steps:
             - name: CHECKOUT CODE
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: SETUP PYTHON
-              uses: actions/setup-python@v1
+              uses: actions/setup-python@v4
               with:
                   python-version: ${{ matrix.config.py }}
             - name: Install dependencies
