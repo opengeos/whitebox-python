@@ -12,8 +12,8 @@ on:
 name: py-check
 jobs:
     py-check:
-        runs-on: ${{ matrix.config.os }}
-        name: ${{ matrix.config.os }} (${{ matrix.config.py }})
+        runs-on: ${{ matrix.os }}
+        name: ${{ matrix.os }} (${{ matrix.py }})
         strategy:
             fail-fast: false
             matrix:
@@ -33,7 +33,7 @@ jobs:
             - name: SETUP PYTHON
               uses: actions/setup-python@v4
               with:
-                  python-version: ${{ matrix.config.py }}
+                  python-version: ${{ matrix.py }}
             - name: Install dependencies
               run: |
                   python -m pip install --upgrade pip
