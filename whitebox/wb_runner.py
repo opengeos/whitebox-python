@@ -25,6 +25,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog
+from tkinter.simpledialog import askinteger
 from tkinter import messagebox
 from tkinter import PhotoImage
 import webbrowser
@@ -117,6 +118,8 @@ class FileSelector(tk.Frame):
                     ftypes = [("Text files", "*.txt"), ("all files", "*.*")]
                 elif 'Csv' in self.file_type:
                     ftypes = [("CSC files", "*.csv"), ("all files", "*.*")]
+                elif 'Dat' in self.file_type:
+                    ftypes = [("Binary data files", "*.dat"), ("all files", "*.*")]
                 elif 'Html' in self.file_type:
                     ftypes = [("HTML files", "*.html")]
 
@@ -765,7 +768,7 @@ class WbRunner(tk.Frame):
             os.system(
                 '''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
         self.create_widgets()
-        self.working_dir = str(Path.home())
+        self.working_dir = wbt.get_working_dir() # str(Path.home())
 
     def create_widgets(self):
 
@@ -953,8 +956,19 @@ class WbRunner(tk.Frame):
         self.filemenu.add_command(label="Set Working Directory", command=self.set_directory)
         self.filemenu.add_command(label="Locate WhiteboxTools exe", command=self.select_exe)
         self.filemenu.add_command(label="Refresh Tools", command=self.refresh_tools)
-        wbt.set_compress_rasters(True)
-        self.filemenu.add_command(label="Do Not Compress Output TIFFs", command=self.update_compress)
+
+        if wbt.get_verbose_mode():
+            self.filemenu.add_command(label="Do Not Print Tool Output", command=self.update_verbose)
+        else:
+            self.filemenu.add_command(label="Print Tool Output", command=self.update_verbose)
+
+        if wbt.get_compress_rasters():
+            self.filemenu.add_command(label="Do Not Compress Output TIFFs", command=self.update_compress)
+        else:
+            self.filemenu.add_command(label="Compress Output TIFFs", command=self.update_compress)
+
+        self.filemenu.add_command(label="Set Num. Processors", command=self.set_procs)
+
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Install a Whitebox Extension", command=self.install_extension)
         self.filemenu.add_separator()
@@ -973,6 +987,14 @@ class WbRunner(tk.Frame):
         menubar.add_cascade(label="Help ", menu=helpmenu)
 
         self.master.config(menu=menubar)     
+
+    def update_verbose(self):
+        if wbt.get_verbose_mode():
+            wbt.set_verbose_mode(False)
+            self.filemenu.entryconfig(3, label = "Print Tool Output")
+        else:
+            wbt.set_verbose_mode(True)
+            self.filemenu.entryconfig(3, label = "Do Not Print Tool Output")
 
     def update_compress(self):
         if wbt.get_compress_rasters():
@@ -1084,7 +1106,7 @@ class WbRunner(tk.Frame):
                 b.grid(row=param_num, column=0, sticky=tk.W)
                 param_num = param_num + 1
             elif ('Float' in pt or 'Integer' in pt or
-                  'String' in pt or 'StringOrNumber' in pt or
+                  'Text' in pt or 'String' in pt or 'StringOrNumber' in pt or
                   'StringList' in pt or 'VectorAttributeField' in pt):
                 b = DataInput(json_str, self.arg_scroll_frame)
                 b.grid(row=param_num, column=0, sticky=tk.NSEW)
@@ -1211,11 +1233,22 @@ class WbRunner(tk.Frame):
 
     def set_directory(self):
         try:
-            self.working_dir =filedialog.askdirectory(initialdir=self.working_dir)
+            self.working_dir = filedialog.askdirectory(initialdir=self.working_dir)
             wbt.set_working_dir(self.working_dir)
         except:
             messagebox.showinfo(
                 "Warning", "Could not set the working directory.")
+
+    def set_procs(self):
+        try:
+            self.__max_procs = askinteger(
+                "max_proc", 
+                "Set the maximum number of processors used (-1 for all):",
+                parent=self)
+            wbt.set_max_procs(self.__max_procs)
+        except:
+            messagebox.showinfo(
+                "Warning", "Could not set the number of processors.")
 
     def select_exe(self):
         try:

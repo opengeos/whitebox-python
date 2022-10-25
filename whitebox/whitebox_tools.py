@@ -18,6 +18,7 @@ from os import path
 import sys
 import platform
 import re
+import json
 # import shutil
 from subprocess import CalledProcessError, Popen, PIPE, STDOUT
 
@@ -148,30 +149,30 @@ def download_wbt(verbose=True):
             except:
                 pass
 
-            # The official WhiteboxTools Linux binary from whiteboxgeo.com requires GLIBC 2.29,
-            # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
-            # downloads the binary that is compatible with Google Colab.
-            if "google.colab" in sys.modules:
-                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
-                zip_name = os.path.join(pkg_dir, os.path.basename(url))
-                try:
-                    request = urllib.request.urlopen(url, timeout=500)
-                    with open(zip_name, "wb") as f:
-                        f.write(request.read())
-                    os.remove(exe_path)
-                    with zipfile.ZipFile(zip_name, "r") as zip_ref:
-                        zip_ref.extractall(pkg_dir)
-                    os.system("chmod 755 " + exe_path)
-                    plugins = list(
-                        set(glob.glob(os.path.join(new_plugin_dir, "*")))
-                        - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
-                    )
-                    for plugin in plugins:
-                        os.system("chmod 755 " + plugin)
-                except Exception as e:
-                    print(e)
+            # # The official WhiteboxTools Linux binary from whiteboxgeo.com requires GLIBC 2.29,
+            # # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
+            # # downloads the binary that is compatible with Google Colab.
+            # if "google.colab" in sys.modules:
+            #     url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
+            #     zip_name = os.path.join(pkg_dir, os.path.basename(url))
+            #     try:
+            #         request = urllib.request.urlopen(url, timeout=500)
+            #         with open(zip_name, "wb") as f:
+            #             f.write(request.read())
+            #         os.remove(exe_path)
+            #         with zipfile.ZipFile(zip_name, "r") as zip_ref:
+            #             zip_ref.extractall(pkg_dir)
+            #         os.system("chmod 755 " + exe_path)
+            #         plugins = list(
+            #             set(glob.glob(os.path.join(new_plugin_dir, "*")))
+            #             - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
+            #         )
+            #         for plugin in plugins:
+            #             os.system("chmod 755 " + plugin)
+            #     except Exception as e:
+            #         print(e)
 
-            webbrowser.open('https://www.whiteboxgeo.com/', new=2)
+            webbrowser.open("https://www.whiteboxgeo.com/", new=2)
 
         if not os.path.exists(work_dir):
             if verbose:
@@ -229,14 +230,30 @@ class WhiteboxTools(object):
         #     self.exe_name) or path.dirname(path.abspath(__file__)))
         # self.exe_path = os.path.dirname(os.path.join(os.path.realpath(__file__)))
         self.exe_path = path.dirname(path.abspath(__file__))
+
         self.work_dir = ""
         self.verbose = True
+        self.__compress_rasters = False
+        self.__max_procs = -1
+        download_wbt()
+
+        if os.path.isfile('settings.json'):
+            # read the settings.json file if it exists
+            with open('settings.json', 'r') as settings_file:
+                data = settings_file.read()
+
+            # parse file
+            settings = json.loads(data)
+            self.work_dir = str(settings['working_directory'])
+            self.verbose = str(settings['verbose_mode'])
+            self.__compress_rasters = settings['compress_rasters']
+            self.__max_procs = settings['max_procs']
+
+
         self.cancel_op = False
         self.default_callback = default_callback
         self.start_minimized = False
-        self.__compress_rasters = False
-        download_wbt()
-
+        
     def set_whitebox_dir(self, path_str):
         ''' 
         Sets the directory to the WhiteboxTools executable file.
@@ -251,6 +268,12 @@ class WhiteboxTools(object):
         specify the file name rather than the complete file path.
         '''
         self.work_dir = path.normpath(path_str)
+
+    def get_working_dir(self):
+        return self.work_dir
+
+    def get_verbose_mode(self):
+        return self.verbose
 
     def set_verbose_mode(self, val=True):
         ''' 
@@ -267,6 +290,7 @@ class WhiteboxTools(object):
         try:
             callback = self.default_callback
 
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args2 = []
             args2.append("." + path.sep + self.exe_name)
@@ -275,8 +299,6 @@ class WhiteboxTools(object):
                 args2.append("-v")
             else:
                 args2.append("-v=false")
-
-            print(args2)
 
             proc = None
 
@@ -309,6 +331,8 @@ class WhiteboxTools(object):
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
+        finally:
+            os.chdir(work_dir)
 
     def set_default_callback(self, callback_func):
         '''
@@ -316,15 +340,115 @@ class WhiteboxTools(object):
         '''
         self.default_callback = callback_func
 
-    def set_compress_rasters(self, compress_rasters):
+    def set_compress_rasters(self, val=True):
         ''' 
         Sets the flag used by WhiteboxTools to determine whether to use compression for output rasters.
         '''
-        self.__compress_rasters = compress_rasters
+        self.__compress_rasters = val
+
+        try:
+            callback = self.default_callback
+
+            work_dir = os.getcwd()
+            os.chdir(self.exe_path)
+            args2 = []
+            args2.append("." + path.sep + self.exe_name)
+            
+            if self.__compress_rasters:
+                args2.append("--compress_rasters=true")
+            else:
+                args2.append("--compress_rasters=false")
+
+            proc = None
+
+            if running_windows and self.start_minimized == True:
+                si = STARTUPINFO()
+                si.dwFlags = STARTF_USESHOWWINDOW
+                si.wShowWindow = 7 #Set window minimized and not activated
+                proc = Popen(args2, shell=False, stdout=PIPE,
+                            stderr=STDOUT, bufsize=1, universal_newlines=True,
+                            startupinfo=si)
+            else:
+                proc = Popen(args2, shell=False, stdout=PIPE,
+                            stderr=STDOUT, bufsize=1, universal_newlines=True)
+
+            while proc is not None:
+                line = proc.stdout.readline()
+                sys.stdout.flush()
+                if line != '':
+                    if not self.cancel_op:
+                        callback(line.strip())
+                    else:
+                        self.cancel_op = False
+                        proc.terminate()
+                        return 2
+
+                else:
+                    break
+
+            return 0
+        except (OSError, ValueError, CalledProcessError) as err:
+            callback(str(err))
+            return 1
+        finally:
+            os.chdir(work_dir)
     
     def get_compress_rasters(self):
         return self.__compress_rasters
         
+    def set_max_procs(self, val=-1):
+        ''' 
+        Sets the flag used by WhiteboxTools to determine whether to use compression for output rasters.
+        '''
+        self.__max_procs = val
+
+        try:
+            callback = self.default_callback
+
+            work_dir = os.getcwd()
+            os.chdir(self.exe_path)
+            args2 = []
+            args2.append("." + path.sep + self.exe_name)
+            
+            args2.append(f"--max_procs={val}")
+
+            proc = None
+
+            if running_windows and self.start_minimized == True:
+                si = STARTUPINFO()
+                si.dwFlags = STARTF_USESHOWWINDOW
+                si.wShowWindow = 7 # Set window minimized and not activated
+                proc = Popen(args2, shell=False, stdout=PIPE,
+                            stderr=STDOUT, bufsize=1, universal_newlines=True,
+                            startupinfo=si)
+            else:
+                proc = Popen(args2, shell=False, stdout=PIPE,
+                            stderr=STDOUT, bufsize=1, universal_newlines=True)
+
+            while proc is not None:
+                line = proc.stdout.readline()
+                sys.stdout.flush()
+                if line != '':
+                    if not self.cancel_op:
+                        callback(line.strip())
+                    else:
+                        self.cancel_op = False
+                        proc.terminate()
+                        return 2
+
+                else:
+                    break
+
+            return 0
+        except (OSError, ValueError, CalledProcessError) as err:
+            callback(str(err))
+            return 1
+        finally:
+            os.chdir(work_dir)
+    
+    def get_max_procs(self):
+        return self.__max_procs
+    
     def run_tool(self, tool_name, args, callback=None):
         ''' 
         Runs a tool and specifies tool arguments.
@@ -336,6 +460,7 @@ class WhiteboxTools(object):
             if callback is None:
                 callback = self.default_callback
 
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args2 = []
             args2.append("." + path.sep + self.exe_name)
@@ -350,13 +475,15 @@ class WhiteboxTools(object):
             # args_str = args_str[:-1]
             # a.append("--args=\"{}\"".format(args_str))
 
-            # if self.verbose:
-            #     args2.append("-v")
-            # else:
-            #     args2.append("-v=false")
+            if self.verbose:
+                args2.append("-v")
+            else:
+                args2.append("-v=false")
 
             if self.__compress_rasters:
-                args2.append("--compress_rasters")
+                args2.append("--compress_rasters=True")
+            else:
+                args2.append("--compress_rasters=False")
 
             if self.verbose:
                 cl = " ".join(args2)
@@ -393,12 +520,15 @@ class WhiteboxTools(object):
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
+        finally:
+            os.chdir(work_dir)
 
     def help(self):
         ''' 
         Retrieves the help description for WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -417,12 +547,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def license(self, toolname=None):
         ''' 
         Retrieves the license information for WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -443,12 +576,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def version(self):
         ''' 
         Retrieves the version information for WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -467,12 +603,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def tool_help(self, tool_name=''):
         ''' 
         Retrieves the help description for a specific tool.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -491,12 +630,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def tool_parameters(self, tool_name):
         ''' 
         Retrieves the tool parameter descriptions for a specific tool.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -515,12 +657,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def toolbox(self, tool_name=''):
         ''' 
         Retrieve the toolbox for a specific tool.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -539,6 +684,8 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def view_code(self, tool_name):
         ''' 
@@ -546,6 +693,7 @@ class WhiteboxTools(object):
         on the projects source code repository.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -564,12 +712,15 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def list_tools(self, keywords=[]):
         ''' 
         Lists all available tools in WhiteboxTools.
         '''
         try:
+            work_dir = os.getcwd()
             os.chdir(self.exe_path)
             args = []
             args.append("." + os.path.sep + self.exe_name)
@@ -594,6 +745,8 @@ class WhiteboxTools(object):
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err
+        finally:
+            os.chdir(work_dir)
 
     def install_wbt_extension(self, ext_name=""):
         try:
@@ -708,7 +861,7 @@ Okay, that's it for now.
     def activate_license(self):
         try:
             if platform.system() == 'Windows':
-                os.system("./plugins/register_license.exe")
+                os.system("plugins\\register_license.exe")
             else:
                 os.system("./plugins/register_license")
         except:
@@ -726,6 +879,11 @@ Okay, that's it for now.
     # restrict the ability for text editors and IDEs to use autocomplete.
     ########################################################################
 
+    
+    
+    
+    
+    
     
     
     
@@ -879,7 +1037,7 @@ Okay, that's it for now.
         args.append("--dist={}".format(dist))
         return self.run_tool('fix_dangling_arcs', args, callback) # returns 1 if error
 
-    def join_tables(self, input1, pkey, input2, fkey, import_field, callback=None):
+    def join_tables(self, input1, pkey, input2, fkey, import_field=None, callback=None):
         """Merge a vector's attribute table with another table based on a common field.
 
         Keyword arguments:
@@ -896,7 +1054,7 @@ Okay, that's it for now.
         args.append("--pkey='{}'".format(pkey))
         args.append("--input2='{}'".format(input2))
         args.append("--fkey='{}'".format(fkey))
-        args.append("--import_field='{}'".format(import_field))
+        if import_field is not None: args.append("--import_field='{}'".format(import_field))
         return self.run_tool('join_tables', args, callback) # returns 1 if error
 
     def lines_to_polygons(self, i, output, callback=None):
@@ -1153,7 +1311,7 @@ Okay, that's it for now.
         i -- Input vector Points file. 
         field -- Input field name in attribute table. 
         output -- Output raster file. 
-        assign -- Assignment operation, where multiple points are in the same grid cell; options include 'first', 'last' (default), 'min', 'max', 'sum'. 
+        assign -- Assignment operation, where multiple points are in the same grid cell; options include 'first', 'last' (default), 'min', 'max', 'sum', 'number'. 
         nodata -- Background value to set to NoData. Without this flag, it will be set to 0.0. 
         cell_size -- Optionally specified cell size of output raster. Not used when base raster is specified. 
         base -- Optionally specified input base raster file. Not used when a cell size is specified. 
@@ -1409,7 +1567,7 @@ Okay, that's it for now.
         Keyword arguments:
 
         i -- Input vector file. 
-        output -- Output vector polygon file. 
+        output -- Output vector points file. 
         tolerance -- The distance tolerance for points. 
         callback -- Custom function for handling tool text outputs.
         """
@@ -1500,6 +1658,30 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         args.append("--out_type={}".format(out_type))
         return self.run_tool('find_lowest_or_highest_points', args, callback) # returns 1 if error
+
+    def heat_map(self, i, output, weight_field=None, bandwidth="", kernel="quartic", cell_size="", base=None, callback=None):
+        """This tool calculates a heat map, or kernel density estimation (KDE), for an input point set.
+
+        Keyword arguments:
+
+        i -- Name of the input points shapefile. 
+        weight_field -- Optional name of the attribute containing point weight. 
+        output -- Name of the output raster image file. 
+        bandwidth -- Bandwidth (metres). 
+        kernel -- Kernel type; one of 'uniform', 'triangular', 'epanechnikov', 'quartic', 'triweight', 'tricube', 'gaussian', 'cosine', 'logistic', 'sigmoid', 'silverman'. 
+        cell_size -- Optionally specified cell size of output raster, in metres. Not used when base raster is specified. 
+        base -- Optionally specified input base raster file. Not used when a cell size is specified. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        if weight_field is not None: args.append("--weight_field='{}'".format(weight_field))
+        args.append("--output='{}'".format(output))
+        args.append("--bandwidth={}".format(bandwidth))
+        args.append("--kernel={}".format(kernel))
+        args.append("--cell_size={}".format(cell_size))
+        if base is not None: args.append("--base='{}'".format(base))
+        return self.run_tool('heat_map', args, callback) # returns 1 if error
 
     def idw_interpolation(self, i, field, output, use_z=False, weight=2.0, radius=None, min_points=None, cell_size=None, base=None, callback=None):
         """Interpolates vector points into a raster surface using an inverse-distance weighted scheme.
@@ -1921,6 +2103,22 @@ Okay, that's it for now.
         if max_triangle_edge_length is not None: args.append("--max_triangle_edge_length='{}'".format(max_triangle_edge_length))
         return self.run_tool('tin_gridding', args, callback) # returns 1 if error
 
+    def travelling_salesman_problem(self, i, output, duration=60, callback=None):
+        """This tool finds approximate solutions to travelling salesman problems, the goal of which is to identify the shortest route connecting a set of locations.
+
+        Keyword arguments:
+
+        i -- Name of the input points shapefile. 
+        output -- Name of the output lines shapefile. 
+        duration -- Maximum duration, in seconds. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--duration={}".format(duration))
+        return self.run_tool('travelling_salesman_problem', args, callback) # returns 1 if error
+
     def vector_hex_binning(self, i, output, width, orientation="horizontal", callback=None):
         """Hex-bins a set of vector points.
 
@@ -2089,7 +2287,7 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         return self.run_tool('clip', args, callback) # returns 1 if error
 
-    def clip_raster_to_polygon(self, i, polygons, output, maintain_dimensions=False, callback=None):
+    def clip_raster_to_polygon(self, i, polygons, output, maintain_dimensions=True, callback=None):
         """Clips a raster to a vector polygon.
 
         Keyword arguments:
@@ -2305,6 +2503,20 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         return self.run_tool('min_overlay', args, callback) # returns 1 if error
 
+    def multiply_overlay(self, inputs, output, callback=None):
+        """Calculates the sum for each grid cell from a group of raster images.
+
+        Keyword arguments:
+
+        inputs -- Input raster files. 
+        output -- Output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('multiply_overlay', args, callback) # returns 1 if error
+
     def percent_equal_to(self, inputs, comparison, output, callback=None):
         """Calculates the percentage of a raster stack that have cell values equal to an input on a cell-by-cell basis.
 
@@ -2472,7 +2684,7 @@ Okay, that's it for now.
 
         factors -- Input factor raster files. 
         weights -- Weight values, contained in quotes and separated by commas or semicolons. Must have the same number as factors. 
-        cost -- Weight values, contained in quotes and separated by commas or semicolons. Must have the same number as factors. 
+        cost -- Boolean array indicating which factors are cost factors, contained in quotes and separated by commas or semicolons. Must have the same number as factors. 
         constraints -- Input constraints raster files. 
         output -- Output raster file. 
         scale_max -- Suitability scale maximum value (common values are 1.0, 100.0, and 255.0). 
@@ -2764,6 +2976,24 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         args.append("--filter={}".format(filter))
         return self.run_tool('average_normal_vector_angular_deviation', args, callback) # returns 1 if error
+
+    def breakline_mapping(self, dem, output, threshold=2.0, min_length=3, callback=None):
+        """This tool maps breaklines from an input DEM.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster image file. 
+        output -- Name of the output vector lines file. 
+        threshold -- Threshold value (0 - infinity but typcially 1 to 5 works well). 
+        min_length -- Minimum line length, in grid cells. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--output='{}'".format(output))
+        args.append("--threshold={}".format(threshold))
+        args.append("--min_length={}".format(min_length))
+        return self.run_tool('breakline_mapping', args, callback) # returns 1 if error
 
     def circular_variance_of_aspect(self, dem, output, filter=11, callback=None):
         """Calculates the circular variance of aspect at a scale for a DEM.
@@ -3217,17 +3447,19 @@ Okay, that's it for now.
         args.append("--zfactor={}".format(zfactor))
         return self.run_tool('generating_function', args, callback) # returns 1 if error
 
-    def geomorphons(self, dem, output, search=50, threshold=0.0, tdist=0, forms=True, callback=None):
+    def geomorphons(self, dem, output, search=50, threshold=0.0, fdist=0, skip=0, forms=True, residuals=False, callback=None):
         """Computes geomorphon patterns.
 
         Keyword arguments:
 
         dem -- Input raster DEM file. 
         output -- Output raster file. 
-        search -- Look up distance. 
+        search -- Look up distance (in cells). 
         threshold -- Flatness threshold for the classification function (in degrees). 
-        tdist -- Distance (in cells) to begin reducing the flatness threshold to avoid problems with pseudo-flat lines-of-sight. 
-        forms -- Classify geomorphons into 10 common land morphologies, else, output ternary code. 
+        fdist -- Distance (in cells) to begin reducing the flatness threshold to avoid problems with pseudo-flat lines-of-sight. 
+        skip -- Distance (in cells) to begin calculating lines-of-sight. 
+        forms -- Classify geomorphons into 10 common land morphologies, else output ternary pattern. 
+        residuals -- Convert elevation to residuals of a linear model. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -3235,8 +3467,10 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         args.append("--search={}".format(search))
         args.append("--threshold={}".format(threshold))
-        args.append("--tdist={}".format(tdist))
+        args.append("--fdist={}".format(fdist))
+        args.append("--skip={}".format(skip))
         if forms: args.append("--forms")
+        if residuals: args.append("--residuals")
         return self.run_tool('geomorphons', args, callback) # returns 1 if error
 
     def hillshade(self, dem, output, azimuth=315.0, altitude=30.0, zfactor=None, callback=None):
@@ -3322,7 +3556,7 @@ Okay, that's it for now.
         hs_weight -- Weight given to hillshade relative to relief (0.0-1.0). 
         brightness -- Brightness factor (0.0-1.0). 
         atmospheric -- Atmospheric effects weight (0.0-1.0). 
-        palette -- Options include 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridi', 'gn_yl', 'pi_y_g', 'bl_yl_rd', and 'deep'. 
+        palette -- Options include 'atlas', 'high_relief', 'arid', 'soft', 'muted', 'purple', 'viridis', 'gn_yl', 'pi_y_g', 'bl_yl_rd', and 'deep'. 
         reverse -- Optional flag indicating whether to use reverse the palette. 
         zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
         full_mode -- Optional flag indicating whether to use full 360-degrees of illumination sources. 
@@ -4007,20 +4241,18 @@ Okay, that's it for now.
         args.append("--zfactor={}".format(zfactor))
         return self.run_tool('rotor', args, callback) # returns 1 if error
 
-    def ruggedness_index(self, dem, output, zfactor=None, callback=None):
+    def ruggedness_index(self, dem, output, callback=None):
         """Calculates the Riley et al.'s (1999) terrain ruggedness index from an input DEM.
 
         Keyword arguments:
 
         dem -- Input raster DEM file. 
         output -- Output raster file. 
-        zfactor -- Optional multiplier for when the vertical and horizontal units are not the same. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
-        if zfactor is not None: args.append("--zfactor='{}'".format(zfactor))
         return self.run_tool('ruggedness_index', args, callback) # returns 1 if error
 
     def sediment_transport_index(self, sca, slope, output, sca_exponent=0.4, slope_exponent=1.3, callback=None):
@@ -4288,7 +4520,7 @@ Okay, that's it for now.
         start_day -- Start day of the year (1-365). 
         end_day -- End day of the year (1-365). 
         start_time -- Starting hour to track shadows (e.g. 5, 5:00, 05:00:00). Assumes 24-hour time: HH:MM:SS. 'sunrise' is also a valid time. 
-        end_time -- Starting hour to track shadows (e.g. 21, 21:00, 21:00:00). Assumes 24-hour time: HH:MM:SS. 'sunset' is also a valid time. 
+        end_time -- Ending hour to track shadows (e.g. 21, 21:00, 21:00:00). Assumes 24-hour time: HH:MM:SS. 'sunset' is also a valid time. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -4702,6 +4934,24 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         if zero_background: args.append("--zero_background")
         return self.run_tool('depth_in_sink', args, callback) # returns 1 if error
+
+    def depth_to_water(self, dem, output, streams=None, lakes=None, callback=None):
+        """This tool calculates cartographic depth-to-water (DTW) index.
+
+        Keyword arguments:
+
+        dem -- Name of the input raster DEM file. 
+        streams -- Name of the input streams vector (optional). 
+        lakes -- Name of the input lakes vector (optional). 
+        output -- Name of the output raster image file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        if streams is not None: args.append("--streams='{}'".format(streams))
+        if lakes is not None: args.append("--lakes='{}'".format(lakes))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('depth_to_water', args, callback) # returns 1 if error
 
     def downslope_distance_to_stream(self, dem, streams, output, dinf=False, callback=None):
         """Measures distance to the nearest downslope stream cell.
@@ -5178,6 +5428,22 @@ Okay, that's it for now.
         args.append("--dem='{}'".format(dem))
         args.append("--output='{}'".format(output))
         return self.run_tool('max_upslope_flowpath_length', args, callback) # returns 1 if error
+
+    def max_upslope_value(self, dem, values, output, callback=None):
+        """This tool calculates the maximum upslope value from an input values raster along flowpaths.
+
+        Keyword arguments:
+
+        dem -- Input DEM; it must be depressionless. 
+        values -- Name of the input values raster file. 
+        output -- Name of the output raster file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--dem='{}'".format(dem))
+        args.append("--values='{}'".format(values))
+        args.append("--output='{}'".format(output))
+        return self.run_tool('max_upslope_value', args, callback) # returns 1 if error
 
     def md_inf_flow_accumulation(self, dem, output, out_type="specific contributing area", exponent=1.1, threshold=None, log=False, clip=False, callback=None):
         """Calculates an FD8 flow accumulation raster from an input DEM.
@@ -6185,6 +6451,24 @@ Okay, that's it for now.
         args.append("--sigma={}".format(sigma))
         return self.run_tool('gaussian_filter', args, callback) # returns 1 if error
 
+    def high_pass_bilateral_filter(self, i, output, sigma_dist=0.75, sigma_int=1.0, callback=None):
+        """Performs a high-pass bilateral filter, by differencing an input image by the bilateral filter by Tomasi and Manduchi (1998).
+
+        Keyword arguments:
+
+        i -- Input raster file. 
+        output -- Output raster file. 
+        sigma_dist -- Standard deviation in distance in pixels. 
+        sigma_int -- Standard deviation in intensity in pixels. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--sigma_dist={}".format(sigma_dist))
+        args.append("--sigma_int={}".format(sigma_int))
+        return self.run_tool('high_pass_bilateral_filter', args, callback) # returns 1 if error
+
     def high_pass_filter(self, i, output, filterx=11, filtery=11, callback=None):
         """Performs a high-pass filter on an input image.
 
@@ -6813,6 +7097,24 @@ Okay, that's it for now.
         args.append("--num_tones={}".format(num_tones))
         return self.run_tool('percentage_contrast_stretch', args, callback) # returns 1 if error
 
+    def piecewise_contrast_stretch(self, i, output, function="", greytones=1024, callback=None):
+        """Performs a piecewise contrast stretch on an input image.
+
+        Keyword arguments:
+
+        i -- Name of the input raster image file. 
+        output -- Name of the output raster image file. 
+        function -- Piecewise function break-points e.g. '(50, 0.1); (150, 0.8); (255; 1.0). 
+        greytones -- Number of greytones in the output image. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--function={}".format(function))
+        args.append("--greytones={}".format(greytones))
+        return self.run_tool('piecewise_contrast_stretch', args, callback) # returns 1 if error
+
     def sigmoidal_contrast_stretch(self, i, output, cutoff=0.0, gain=1.0, num_tones=256, callback=None):
         """Performs a sigmoidal contrast stretch on input images.
 
@@ -6887,7 +7189,35 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         return self.run_tool('classify_buildings_in_lidar', args, callback) # returns 1 if error
 
-    def classify_overlap_points(self, i, output, resolution=2.0, filter=False, callback=None):
+    def classify_lidar(self, i=None, output=None, radius=1.5, grd_threshold=0.1, oto_threshold=2.0, planarity_threshold=0.85, linearity_threshold=0.70, iterations=30, facade_threshold=0.5, callback=None):
+        """Classify points within a LiDAR point cloud based on point properties.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        radius -- Search distance used in neighbourhood search (metres). 
+        grd_threshold -- Ground threshold (metres). 
+        oto_threshold -- Off-terrain object threshold (metres). 
+        planarity_threshold -- Planarity threshold (0-1). 
+        linearity_threshold -- Linearity threshold (0-1). 
+        iterations -- Number of iterations. 
+        facade_threshold -- Facade threshold (metres). 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--radius={}".format(radius))
+        args.append("--grd_threshold={}".format(grd_threshold))
+        args.append("--oto_threshold={}".format(oto_threshold))
+        args.append("--planarity_threshold={}".format(planarity_threshold))
+        args.append("--linearity_threshold={}".format(linearity_threshold))
+        args.append("--iterations={}".format(iterations))
+        args.append("--facade_threshold={}".format(facade_threshold))
+        return self.run_tool('classify_lidar', args, callback) # returns 1 if error
+
+    def classify_overlap_points(self, i, output, resolution=2.0, criterion="max scan angle", filter=False, callback=None):
         """Classifies or filters LAS points in regions of overlapping flight lines.
 
         Keyword arguments:
@@ -6895,6 +7225,7 @@ Okay, that's it for now.
         i -- Input LiDAR file. 
         output -- Output LiDAR file. 
         resolution -- The size of the square area used to evaluate nearby points in the LiDAR data. 
+        criterion -- Criterion used to identify overlapping points; options are 'max scan angle', 'not min point source ID', 'not min time', 'multiple point source IDs'. 
         filter -- Filter out points from overlapping flightlines? If false, overlaps will simply be classified. 
         callback -- Custom function for handling tool text outputs.
         """
@@ -6902,6 +7233,7 @@ Okay, that's it for now.
         args.append("--input='{}'".format(i))
         args.append("--output='{}'".format(output))
         args.append("--resolution={}".format(resolution))
+        args.append("--criterion={}".format(criterion))
         if filter: args.append("--filter")
         return self.run_tool('classify_overlap_points', args, callback) # returns 1 if error
 
@@ -6921,6 +7253,52 @@ Okay, that's it for now.
         args.append("--output='{}'".format(output))
         return self.run_tool('clip_lidar_to_polygon', args, callback) # returns 1 if error
 
+    def colourize_based_on_class(self, i=None, output=None, intensity_blending=50.0, clr_str="", use_unique_clrs_for_buildings=False, radius="", callback=None):
+        """Sets the RGB values of a LiDAR point cloud based on the point classification values.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        intensity_blending -- Intensity blending amount (0-100%). 
+        clr_str -- Colour values, e.g. 2: (184, 167, 108); 5: #9ab86c. 
+        use_unique_clrs_for_buildings -- Use unique colours for each building?. 
+        radius -- Search distance used in neighbourhood search. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--intensity_blending={}".format(intensity_blending))
+        args.append("--clr_str={}".format(clr_str))
+        if use_unique_clrs_for_buildings: args.append("--use_unique_clrs_for_buildings")
+        args.append("--radius={}".format(radius))
+        return self.run_tool('colourize_based_on_class', args, callback) # returns 1 if error
+
+    def colourize_based_on_point_returns(self, i=None, output=None, intensity_blending=50.0, only="(230,214,170)", first="(0,140,0)", intermediate="(255,0,255)", last="(0,0,255)", callback=None):
+        """Sets the RGB values of a LiDAR point cloud based on the point returns.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        intensity_blending -- Intensity blending amount (0-100%). 
+        only -- Only return colour, e.g. (230,214,170), #e6d6aa, or 0xe6d6aa. 
+        first -- First return colour, e.g. (230,214,170), #e6d6aa, or 0xe6d6aa. 
+        intermediate -- Intermediate return colour, e.g. (230,214,170), #e6d6aa, or 0xe6d6aa. 
+        last -- Last return colour, e.g. (230,214,170), #e6d6aa, or 0xe6d6aa. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--intensity_blending={}".format(intensity_blending))
+        args.append("--only={}".format(only))
+        args.append("--first={}".format(first))
+        args.append("--intermediate={}".format(intermediate))
+        args.append("--last={}".format(last))
+        return self.run_tool('colourize_based_on_point_returns', args, callback) # returns 1 if error
+
     def erase_polygon_from_lidar(self, i, polygons, output, callback=None):
         """Erases (cuts out) a vector polygon or polygons from a LiDAR point cloud.
 
@@ -6936,6 +7314,22 @@ Okay, that's it for now.
         args.append("--polygons='{}'".format(polygons))
         args.append("--output='{}'".format(output))
         return self.run_tool('erase_polygon_from_lidar', args, callback) # returns 1 if error
+
+    def filter_lidar(self, i=None, output=None, statement="", callback=None):
+        """Filters points within a LiDAR point cloud based on point properties.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        statement -- Filter statement e.g. x < 5000.0 && y > 100.0 && is_late && !is_noise. This statement must be a valid Rust statement. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--statement={}".format(statement))
+        return self.run_tool('filter_lidar', args, callback) # returns 1 if error
 
     def filter_lidar_classes(self, i, output, exclude_cls=None, callback=None):
         """Removes points in a LAS file with certain specified class values.
@@ -6984,7 +7378,7 @@ Okay, that's it for now.
         return self.run_tool('find_flightline_edge_points', args, callback) # returns 1 if error
 
     def flightline_overlap(self, i=None, output=None, resolution=1.0, callback=None):
-        """Reads a LiDAR (LAS) point file and outputs a raster containing the number of overlapping flight lines in each grid cell.
+        """Reads a LiDAR (LAS) point file and outputs a raster containing the number of overlapping flight-lines in each grid cell.
 
         Keyword arguments:
 
@@ -7217,6 +7611,22 @@ Okay, that's it for now.
         if max_triangle_edge_length is not None: args.append("--max_triangle_edge_length='{}'".format(max_triangle_edge_length))
         return self.run_tool('lidar_digital_surface_model', args, callback) # returns 1 if error
 
+    def lidar_eigenvalue_features(self, i=None, num_neighbours=None, radius=None, callback=None):
+        """Calculate eigenvalue-based metrics from a LiDAR point cloud.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        num_neighbours -- Number of neighbours used in search. 
+        radius -- Search distance used in neighbourhood search. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if num_neighbours is not None: args.append("--num_neighbours='{}'".format(num_neighbours))
+        if radius is not None: args.append("--radius='{}'".format(radius))
+        return self.run_tool('lidar_eigenvalue_features', args, callback) # returns 1 if error
+
     def lidar_elevation_slice(self, i, output, minz=None, maxz=None, cls=False, inclassval=2, outclassval=1, callback=None):
         """Outputs all of the points within a LiDAR (LAS) point file that lie between a specified elevation range.
 
@@ -7355,20 +7765,22 @@ Okay, that's it for now.
         if maxz is not None: args.append("--maxz='{}'".format(maxz))
         return self.run_tool('lidar_idw_interpolation', args, callback) # returns 1 if error
 
-    def lidar_info(self, i, output=None, vlr=True, geokeys=True, callback=None):
+    def lidar_info(self, i, output, density=True, vlr=True, geokeys=True, callback=None):
         """Prints information about a LiDAR (LAS) dataset, including header, point return frequency, and classification data and information about the variable length records (VLRs) and geokeys.
 
         Keyword arguments:
 
         i -- Input LiDAR file. 
         output -- Output HTML file for summary report. 
+        density -- Flag indicating whether or not to calculate the average point density and nominal point spacing. 
         vlr -- Flag indicating whether or not to print the variable length records (VLRs). 
         geokeys -- Flag indicating whether or not to print the geokeys. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
         args.append("--input='{}'".format(i))
-        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--output='{}'".format(output))
+        if density: args.append("--density")
         if vlr: args.append("--vlr")
         if geokeys: args.append("--geokeys")
         return self.run_tool('lidar_info', args, callback) # returns 1 if error
@@ -7740,7 +8152,7 @@ Okay, that's it for now.
         return self.run_tool('lidar_sibson_interpolation', args, callback) # returns 1 if error
 
     def lidar_sort_by_time(self, i, output, callback=None):
-        """This sorts the points in a LiDAR file by the GPS time.
+        """This tool sorts the points in a LiDAR file by the GPS time.
 
         Keyword arguments:
 
@@ -7875,6 +8287,22 @@ Okay, that's it for now.
         args.append("--radius={}".format(radius))
         return self.run_tool('lidar_tophat_transform', args, callback) # returns 1 if error
 
+    def modify_lidar(self, i=None, output=None, statement="", callback=None):
+        """Modify points within a LiDAR point cloud based on point properties.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        statement -- Modify statement e.g. x += 5000.0. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--statement={}".format(statement))
+        return self.run_tool('modify_lidar', args, callback) # returns 1 if error
+
     def normal_vectors(self, i, output, radius=1.0, callback=None):
         """Calculates normal vectors for points within a LAS file and stores these data (XYZ vector components) in the RGB field.
 
@@ -7891,6 +8319,28 @@ Okay, that's it for now.
         args.append("--radius={}".format(radius))
         return self.run_tool('normal_vectors', args, callback) # returns 1 if error
 
+    def recover_flightline_info(self, i, output, max_time_diff=5.0, pt_src_id=False, user_data=False, rgb=False, callback=None):
+        """Associates LiDAR points by their flightlines.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        max_time_diff -- Maximum in-flightline time difference (seconds). 
+        pt_src_id -- Add flightline information to the point source ID. 
+        user_data -- Add flightline information to the user data. 
+        rgb -- Add flightline information to the RGB colour data. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--input='{}'".format(i))
+        args.append("--output='{}'".format(output))
+        args.append("--max_time_diff={}".format(max_time_diff))
+        if pt_src_id: args.append("--pt_src_id")
+        if user_data: args.append("--user_data")
+        if rgb: args.append("--rgb")
+        return self.run_tool('recover_flightline_info', args, callback) # returns 1 if error
+
     def select_tiles_by_polygon(self, indir, outdir, polygons, callback=None):
         """Copies LiDAR tiles overlapping with a polygon into an output directory.
 
@@ -7906,6 +8356,40 @@ Okay, that's it for now.
         args.append("--outdir='{}'".format(outdir))
         args.append("--polygons='{}'".format(polygons))
         return self.run_tool('select_tiles_by_polygon', args, callback) # returns 1 if error
+
+    def sort_lidar(self, i=None, output=None, criteria="", callback=None):
+        """Sorts LiDAR points based on their properties.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        output -- Name of the output LiDAR points. 
+        criteria -- Sort criteria e.g. 'x 50.0, y 50.0, z'; criteria may include x, y, z, intensity, class, user_data, point_source_id, and scan_angle. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        if output is not None: args.append("--output='{}'".format(output))
+        args.append("--criteria={}".format(criteria))
+        return self.run_tool('sort_lidar', args, callback) # returns 1 if error
+
+    def split_lidar(self, i=None, criterion="num_pts", interval="", min_pts=5, callback=None):
+        """Splits LiDAR points up into a series of new files based on their properties.
+
+        Keyword arguments:
+
+        i -- Name of the input LiDAR points. 
+        criterion -- Criterion on which to base the split of the input file. Options include 'num_pts, 'x', 'y', 'z', intensity, 'class', 'user_data', 'point_source_id', 'scan_angle', 'time'. 
+        interval -- Interval. 
+        min_pts -- Minimum number of points in an output file. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        if i is not None: args.append("--input='{}'".format(i))
+        args.append("--criterion={}".format(criterion))
+        args.append("--interval={}".format(interval))
+        args.append("--min_pts={}".format(min_pts))
+        return self.run_tool('split_lidar', args, callback) # returns 1 if error
 
     def zlidar_to_las(self, inputs=None, outdir=None, callback=None):
         """Converts one or more zlidar files into the LAS data format.
@@ -7971,7 +8455,7 @@ Okay, that's it for now.
         args.append("--min_class_size={}".format(min_class_size))
         return self.run_tool('k_means_clustering', args, callback) # returns 1 if error
 
-    def knn_classification(self, inputs, training, field, output, scaling="Normalize", k=5, clip=True, test_proportion=0.2, callback=None):
+    def knn_classification(self, inputs, training, field, scaling="Normalize", output=None, k=5, clip=True, test_proportion=0.2, callback=None):
         """Performs a supervised k-nearest neighbour classification using training site polygons/points and predictor rasters.
 
         Keyword arguments:
@@ -7991,7 +8475,7 @@ Okay, that's it for now.
         args.append("--scaling={}".format(scaling))
         args.append("--training='{}'".format(training))
         args.append("--field='{}'".format(field))
-        args.append("--output='{}'".format(output))
+        if output is not None: args.append("--output='{}'".format(output))
         args.append("-k={}".format(k))
         if clip: args.append("--clip")
         args.append("--test_proportion={}".format(test_proportion))
@@ -8482,6 +8966,38 @@ Okay, that's it for now.
         if false is not None: args.append("--false='{}'".format(false))
         args.append("--output='{}'".format(output))
         return self.run_tool('conditional_evaluation', args, callback) # returns 1 if error
+
+    def conditioned_latin_hypercube(self, inputs, output, samples=500, iterations=25000, seed=None, prob=0.5, threshold=None, temp=1.0, temp_decay=0.05, cycle=10, average=False, callback=None):
+        """Implements conditioned Latin Hypercube sampling.
+
+        Keyword arguments:
+
+        inputs -- Name of the input raster file. 
+        output -- Output shapefile. 
+        samples -- Number of sample sites returned. 
+        iterations -- Maximum iterations (if stopping criteria not reached). 
+        seed -- Seed for RNG consistency. 
+        prob -- Probability of random resample or resampling worst strata between [0,1]. 
+        threshold -- Objective function values below the theshold stop the resampling iterations. 
+        temp -- Initial annealing temperature between [0,1]. 
+        temp_decay -- Annealing temperature decay proportion between [0,1]. Reduce temperature by this proportion each annealing cycle. 
+        cycle -- Number of iterations before decaying annealing temperature. 
+        average -- Weight the continuous objective funtion by the 1/N contributing strata. 
+        callback -- Custom function for handling tool text outputs.
+        """
+        args = []
+        args.append("--inputs='{}'".format(inputs))
+        args.append("--output='{}'".format(output))
+        args.append("--samples={}".format(samples))
+        args.append("--iterations={}".format(iterations))
+        if seed is not None: args.append("--seed='{}'".format(seed))
+        args.append("--prob={}".format(prob))
+        if threshold is not None: args.append("--threshold='{}'".format(threshold))
+        args.append("--temp={}".format(temp))
+        args.append("--temp_decay={}".format(temp_decay))
+        args.append("--cycle={}".format(cycle))
+        if average: args.append("--average")
+        return self.run_tool('conditioned_latin_hypercube', args, callback) # returns 1 if error
 
     def cos(self, i, output, callback=None):
         """Returns the cosine (cos) of each values in a raster.
