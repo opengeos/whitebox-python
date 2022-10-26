@@ -89,18 +89,25 @@ print("Generating whitebox_tools.py ...")
 with open(os.path.join(WBT_dir, "whitebox_tools.py")) as f_wbt:
     lines = f_wbt.readlines()
     for index, line in enumerate(lines):
+        if line.strip() == "os.chdir(self.exe_path)":
+            f.write("            work_dir = os.getcwd()\n")
         f.write(line)
+
         if line.strip() == "from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW":
             with open(os.path.join(work_dir, "download_wbt.py")) as f_dl:
                 dl_lines = f_dl.readlines()
                 f.write("\n")
                 f.writelines(dl_lines)
-        elif line.strip() == "self.__compress_rasters = False":
+        elif line.strip() == "self.__max_procs = -1":
             f.write("        download_wbt()\n")
 
+        if line.strip() in ["return 1", "return err"]:
+            f.write("        finally:\n")
+            f.write("            os.chdir(work_dir)\n")
+
+
 shutil.move(
-    os.path.join(WBT_dir, "whitebox_tools"), os.path.join(
-        work_dir, "whitebox_tools")
+    os.path.join(WBT_dir, "whitebox_tools"), os.path.join(work_dir, "whitebox_tools")
 )
 
 

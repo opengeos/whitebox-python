@@ -120,9 +120,9 @@ def download_wbt(verbose=True):
             except:
                 pass
 
-            # The official WhiteboxTools Linux binary from whiteboxgeo.com requires GLIBC 2.29,
-            # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
-            # downloads the binary that is compatible with Google Colab.
+            # # The official WhiteboxTools Linux binary from whiteboxgeo.com requires GLIBC 2.29,
+            # # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
+            # # downloads the binary that is compatible with Google Colab.
             if "google.colab" in sys.modules:
                 url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
                 zip_name = os.path.join(pkg_dir, os.path.basename(url))
@@ -143,7 +143,7 @@ def download_wbt(verbose=True):
                 except Exception as e:
                     print(e)
 
-            webbrowser.open('https://www.whiteboxgeo.com/', new=2)
+            webbrowser.open("https://www.whiteboxgeo.com/", new=2)
 
         if not os.path.exists(work_dir):
             if verbose:
