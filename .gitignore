@@ -16,6 +16,7 @@ dev/
 .vscode/
 _build/
 temp/
+whitebox/__MACOSX/
 
 # C extensions
 *.so

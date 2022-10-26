@@ -123,25 +123,25 @@ def download_wbt(verbose=True):
             # # The official WhiteboxTools Linux binary from whiteboxgeo.com requires GLIBC 2.29,
             # # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
             # # downloads the binary that is compatible with Google Colab.
-            # if "google.colab" in sys.modules:
-            #     url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
-            #     zip_name = os.path.join(pkg_dir, os.path.basename(url))
-            #     try:
-            #         request = urllib.request.urlopen(url, timeout=500)
-            #         with open(zip_name, "wb") as f:
-            #             f.write(request.read())
-            #         os.remove(exe_path)
-            #         with zipfile.ZipFile(zip_name, "r") as zip_ref:
-            #             zip_ref.extractall(pkg_dir)
-            #         os.system("chmod 755 " + exe_path)
-            #         plugins = list(
-            #             set(glob.glob(os.path.join(new_plugin_dir, "*")))
-            #             - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
-            #         )
-            #         for plugin in plugins:
-            #             os.system("chmod 755 " + plugin)
-            #     except Exception as e:
-            #         print(e)
+            if "google.colab" in sys.modules:
+                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
+                zip_name = os.path.join(pkg_dir, os.path.basename(url))
+                try:
+                    request = urllib.request.urlopen(url, timeout=500)
+                    with open(zip_name, "wb") as f:
+                        f.write(request.read())
+                    os.remove(exe_path)
+                    with zipfile.ZipFile(zip_name, "r") as zip_ref:
+                        zip_ref.extractall(pkg_dir)
+                    os.system("chmod 755 " + exe_path)
+                    plugins = list(
+                        set(glob.glob(os.path.join(new_plugin_dir, "*")))
+                        - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
+                    )
+                    for plugin in plugins:
+                        os.system("chmod 755 " + plugin)
+                except Exception as e:
+                    print(e)
 
             webbrowser.open("https://www.whiteboxgeo.com/", new=2)
 
