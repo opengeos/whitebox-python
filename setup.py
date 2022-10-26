@@ -47,6 +47,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/giswqs/whitebox',
-    version='2.1.4',
+    version='2.2.0',
     zip_safe=False,
 )
