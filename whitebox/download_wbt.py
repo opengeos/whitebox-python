@@ -124,14 +124,16 @@ def download_wbt(verbose=True):
             runner_path = os.path.join(exe_dir, runner_name)
 
             # grant executable permission
-            os.system("chmod 755 " + exe_path)
-            os.system("chmod 755 " + runner_path)
+            if platform.system() != "Windows":
+                os.system("chmod 755 " + exe_path)
+                os.system("chmod 755 " + runner_path)
             plugins = list(
                 set(glob.glob(os.path.join(new_plugin_dir, "*")))
                 - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
             )
-            for plugin in plugins:
-                os.system("chmod 755 " + plugin)
+            if platform.system() != "Windows":
+                for plugin in plugins:
+                    os.system("chmod 755 " + plugin)
 
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
