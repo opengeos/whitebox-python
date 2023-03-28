@@ -7,6 +7,7 @@ whitebox/WBT/
 **/*.tar.xz
 **/*.xml
 whitebox/img/.DS_Store
+whitebox/img/._*
 whitebox/plugins
 whitebox/testdata/breached.tif
 whitebox/testdata/flow_accum.tif
@@ -120,3 +121,4 @@ whitebox/WhiteboxTools_linux_amd64.zip
 whitebox/img/._WhiteboxToolsLogo_box_only.png
 whitebox/img/.DS_Store
 whitebox/GeneralToolsetExtension_linux.zip
+whitebox/settings.json

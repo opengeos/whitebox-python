@@ -12,7 +12,6 @@ from whitebox_tools import WhiteboxTools
 
 
 if __name__ == '__main__':
-
     try:
         wbt = WhiteboxTools()
 
@@ -38,13 +37,21 @@ if __name__ == '__main__':
         all_tools = wbt.list_tools()
         print("\nAll Available Tools:")
         for index, tool in enumerate(all_tools):
-            print("{} {}: {} ...".format(str(index+1).zfill(3), tool, all_tools[tool][:45]))
+            print(
+                "{} {}: {} ...".format(
+                    str(index + 1).zfill(3), tool, all_tools[tool][:45]
+                )
+            )
 
         # Lists tools with 'lidar' or 'LAS' in tool name or description.
         lidar_tools = wbt.list_tools(['lidar', 'LAS'])
         print("\nAvailable LiDAR Tools:")
         for index, tool in enumerate(lidar_tools):
-            print("{} {}: {} ...".format(str(index+1).zfill(3), tool, all_tools[tool][:45]))
+            print(
+                "{} {}: {} ...".format(
+                    str(index + 1).zfill(3), tool, all_tools[tool][:45]
+                )
+            )
         # print("lidar tools: {}\n".format(wbt.list_tools(['lidar', 'LAS'])))
 
         # Notice that tool names within WhiteboxTools.exe are CamelCase but
@@ -61,6 +68,3 @@ if __name__ == '__main__':
         # For 'permission denied', you need to ensure that whitebox_tools has executable permission
         # cd /path/to/folder/WBT"
         # chmod 755 whitebox_tools"
-
-
-

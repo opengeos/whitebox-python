@@ -42,7 +42,6 @@ def download_wbt(verbose=True):
     }
 
     try:
-
         if not os.path.exists(
             exe_dir
         ):  # Download WhiteboxTools executable file if non-existent
@@ -85,25 +84,25 @@ def download_wbt(verbose=True):
                     zip_ref.extractall(pkg_dir)
             else:  # Decompress Linux tar file
                 with tarfile.open(zip_name, "r") as tar_ref:
+
                     def is_within_directory(directory, target):
-                        
                         abs_directory = os.path.abspath(directory)
                         abs_target = os.path.abspath(target)
-                    
+
                         prefix = os.path.commonprefix([abs_directory, abs_target])
-                        
+
                         return prefix == abs_directory
-                    
-                    def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-                    
+
+                    def safe_extract(
+                        tar, path=".", members=None, *, numeric_owner=False
+                    ):
                         for member in tar.getmembers():
                             member_path = os.path.join(path, member.name)
                             if not is_within_directory(path, member_path):
                                 raise Exception("Attempted Path Traversal in Tar File")
-                    
-                        tar.extractall(path, members, numeric_owner=numeric_owner) 
-                        
-                    
+
+                        tar.extractall(path, members, numeric_owner=numeric_owner)
+
                     safe_extract(tar_ref, pkg_dir)
             if verbose:
                 print("WhiteboxTools package directory: {}".format(pkg_dir))
@@ -121,9 +120,12 @@ def download_wbt(verbose=True):
                 exe_ext = ".exe"
             exe_name = "whitebox_tools{}".format(exe_ext)
             exe_path = os.path.join(exe_dir, exe_name)
+            runner_name = "whitebox_runner{}".format(exe_ext)
+            runner_path = os.path.join(exe_dir, runner_name)
 
             # grant executable permission
             os.system("chmod 755 " + exe_path)
+            os.system("chmod 755 " + runner_path)
             plugins = list(
                 set(glob.glob(os.path.join(new_plugin_dir, "*")))
                 - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
@@ -133,6 +135,8 @@ def download_wbt(verbose=True):
 
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
+            runner_path_new = os.path.join(pkg_dir, runner_name)
+            shutil.copy(runner_path, runner_path_new)
 
             try:
                 os.remove(zip_name)

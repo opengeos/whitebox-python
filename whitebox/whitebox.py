@@ -4,6 +4,7 @@
 
 from .whitebox_tools import WhiteboxTools
 
-def Runner():
-    from .wb_runner import Runner
-    Runner()
+
+def Runner(clear_app_state=False, callback=None):
+    wbt = WhiteboxTools()
+    wbt.launch_wb_runner(clear_app_state, callback)
