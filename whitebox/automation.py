@@ -54,29 +54,30 @@ if os.path.exists(new_plugin_dir):
 shutil.copytree(init_img_dir, new_img_dir)
 shutil.copytree(init_plugin_dir, new_plugin_dir)
 
-print("Generating wb_runner.py ...")
-with open(os.path.join(WBT_dir, "wb_runner.py")) as f_runner:
-    lines = f_runner.readlines()
-    for index, line in enumerate(lines):
-        if line.strip() == "from whitebox_tools import WhiteboxTools, to_camelcase":
-            line = "from .whitebox_tools import WhiteboxTools, to_camelcase\n"
-            lines[index] = line
-            # print("{}: {}".format(index, line))
-        elif line.strip() == "def main():":
-            line = "def Runner():\n"
-            lines[index] = line
-            # print("{}: {}".format(index, line))
-        elif line.strip() == "main()":
-            line = "    Runner()\n"
-            lines[index] = line
-            # print("{}: {}".format(index, line))
 
-    runner_path = os.path.join(work_dir, "wb_runner.py")
-    if os.path.exists(runner_path):
-        os.remove(runner_path)
+# print("Generating wb_runner.py ...")
+# with open(os.path.join(WBT_dir, "wb_runner.py")) as f_runner:
+#     lines = f_runner.readlines()
+#     for index, line in enumerate(lines):
+#         if line.strip() == "from whitebox_tools import WhiteboxTools, to_camelcase":
+#             line = "from .whitebox_tools import WhiteboxTools, to_camelcase\n"
+#             lines[index] = line
+#             # print("{}: {}".format(index, line))
+#         elif line.strip() == "def main():":
+#             line = "def Runner():\n"
+#             lines[index] = line
+#             # print("{}: {}".format(index, line))
+#         elif line.strip() == "main()":
+#             line = "    Runner()\n"
+#             lines[index] = line
+#             # print("{}: {}".format(index, line))
 
-    with open(runner_path, "w") as f_runner_w:
-        f_runner_w.writelines(lines)
+#     runner_path = os.path.join(work_dir, "wb_runner.py")
+#     if os.path.exists(runner_path):
+#         os.remove(runner_path)
+
+#     with open(runner_path, "w") as f_runner_w:
+#         f_runner_w.writelines(lines)
 
 
 wbt_path = os.path.join(work_dir, "whitebox_tools.py")
@@ -110,5 +111,8 @@ shutil.move(
     os.path.join(WBT_dir, "whitebox_tools"), os.path.join(work_dir, "whitebox_tools")
 )
 
+shutil.move(
+    os.path.join(WBT_dir, "whitebox_runner"), os.path.join(work_dir, "whitebox_runner")
+)
 
 f.close()

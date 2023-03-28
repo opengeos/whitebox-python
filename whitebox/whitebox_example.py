@@ -17,8 +17,7 @@ import urllib.request
 
 
 def main():
-    ''' main function
-    '''
+    '''main function'''
     try:
         wbt = WhiteboxTools()
 
@@ -41,8 +40,7 @@ def main():
         # Set the working directory. This is the path to the folder containing the data,
         # i.e. files sent to tools as input/output parameters. You don't need to set
         # the working directory if you specify full path names as tool parameters.
-        wbt.work_dir = os.path.dirname(
-            os.path.abspath(__file__)) + "/testdata/"
+        wbt.work_dir = os.path.dirname(os.path.abspath(__file__)) + "/testdata/"
 
         # If test datasets do not exist, download them from the WhiteboxTools repo
         if not os.path.exists(wbt.work_dir):
@@ -70,9 +68,7 @@ def main():
         # All of the convenience methods just call the 'run_tool' method, feeding it an
         # args array. This is an alternative way of calling tools:
         tool_name = "elev_percentile"
-        args = ["--dem=\"DEM.dep\"",
-                "--output=\"DEV_101.dep\"",
-                "--filterx=101"]
+        args = ["--dem=\"DEM.dep\"", "--output=\"DEV_101.dep\"", "--filterx=101"]
 
         if wbt.run_tool(tool_name, args, my_callback) != 0:
             print("ERROR running {}".format(tool_name))
@@ -103,7 +99,7 @@ def main():
 
 
 def my_callback(out_str):
-    ''' Create a custom callback to process the text coming out of the tool.
+    '''Create a custom callback to process the text coming out of the tool.
     If a callback is not provided, it will simply print the output stream.
     A custom callback allows for processing of the output stream.
     '''
@@ -113,8 +109,7 @@ def my_callback(out_str):
         if "%" in out_str:
             str_array = out_str.split(" ")
             label = out_str.replace(str_array[len(str_array) - 1], "").strip()
-            progress = int(
-                str_array[len(str_array) - 1].replace("%", "").strip())
+            progress = int(str_array[len(str_array) - 1].replace("%", "").strip())
             if my_callback.prev_line_progress:
                 print('{0} {1}%'.format(label, progress), end="\r")
             else:
@@ -125,9 +120,14 @@ def my_callback(out_str):
             my_callback.prev_line_progress = False
         elif "elapsed time (excluding i/o):" in out_str.lower():
             elapsed_time = ''.join(
-                ele for ele in out_str if ele.isdigit() or ele == '.')
-            units = out_str.lower().replace("elapsed time (excluding i/o):",
-                                            "").replace(elapsed_time, "").strip()
+                ele for ele in out_str if ele.isdigit() or ele == '.'
+            )
+            units = (
+                out_str.lower()
+                .replace("elapsed time (excluding i/o):", "")
+                .replace(elapsed_time, "")
+                .strip()
+            )
             print("Elapsed time: {0}{1}".format(elapsed_time, units))
             my_callback.prev_line_progress = False
         else:
