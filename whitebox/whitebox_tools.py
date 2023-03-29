@@ -27,9 +27,14 @@ running_windows = platform.system() == 'Windows'
 if running_windows:
     from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW
 
-def download_wbt(verbose=True):
-    """
-    Download WhiteboxTools pre-complied binary for first-time use
+def download_wbt(linux_musl=False, reset=False, verbose=True):
+    """Downloads WhiteboxTools pre-complied binary for first-time use
+
+    Args:
+        linux_musl (bool, optional): Whether to download the musl version of WhiteboxTools for Linux. Defaults to False.
+        reset (bool, optional): Whether to reset the WhiteboxTools installation. Defaults to False.
+        verbose (bool, optional): Whether to print verbose messages. Defaults to True.
+   
     """
     import glob
     import os
@@ -61,9 +66,13 @@ def download_wbt(verbose=True):
         "Windows": "https://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip",
         "Darwin": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip",
         "Linux": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip",
+        "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
     }
 
-    # These are backup links only used to pass GitHub automated tests. WhiteboxGeo links frequently encourter timeout errors, which fail the automated tests.
+    if linux_musl:
+        links["Linux"] = links["Linux-musl"]
+
+    # These are backup links only used to pass GitHub automated tests. WhiteboxGeo links frequently encounter timeout errors, which fail the automated tests.
     backup_links = {
         "Windows": "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_win_amd64.zip",
         "Darwin": "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_darwin_amd64.zip",
@@ -71,6 +80,10 @@ def download_wbt(verbose=True):
     }
 
     try:
+        if reset:
+            if os.path.exists(exe_dir):
+                shutil.rmtree(exe_dir)
+
         if not os.path.exists(
             exe_dir
         ):  # Download WhiteboxTools executable file if non-existent
@@ -153,14 +166,16 @@ def download_wbt(verbose=True):
             runner_path = os.path.join(exe_dir, runner_name)
 
             # grant executable permission
-            os.system("chmod 755 " + exe_path)
-            os.system("chmod 755 " + runner_path)
+            if platform.system() != "Windows":
+                os.system("chmod 755 " + exe_path)
+                os.system("chmod 755 " + runner_path)
             plugins = list(
                 set(glob.glob(os.path.join(new_plugin_dir, "*")))
                 - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
             )
-            for plugin in plugins:
-                os.system("chmod 755 " + plugin)
+            if platform.system() != "Windows":
+                for plugin in plugins:
+                    os.system("chmod 755 " + plugin)
 
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
@@ -176,7 +191,9 @@ def download_wbt(verbose=True):
             # # which is incompatible with Google Colab that uses GLIBC 2.27. The following code
             # # downloads the binary that is compatible with Google Colab.
             if "google.colab" in sys.modules:
-                url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
+                # url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
+                url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+
                 zip_name = os.path.join(pkg_dir, os.path.basename(url))
                 try:
                     request = urllib.request.urlopen(url, timeout=500)

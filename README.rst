@@ -2,6 +2,9 @@
 whitebox-python
 ===============
 
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+        :target: https://gishub.org/whitebox-colab
+
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
 
@@ -98,18 +101,21 @@ It is recommended that you use a Python virtual environment (e.g., conda) to tes
   source activate wbt
   conda install whitebox -c conda-forge
 
+If you encounter an GLIBC errors when installing the whitebox package, you can try the following command:
+
+.. code:: python
+
+  import whitebox
+  whitebox.download_wbt(linux_musl=True, reset=True)
+
 
 whitebox Tutorials
 ------------------
 
-Launch the whitebox tutorial notebook directly with **mybinder.org** or **binder.pangeo.io** now:
+Launch the whitebox tutorial notebook directly with **mybinder.org** now:
 
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
-
-.. image:: https://binder.pangeo.io/badge.svg 
-        :target: https://binder.pangeo.io/v2/gh/giswqs/whitebox/master?filepath=examples%2Fwhitebox.ipynb
-
 
 Quick Example
 =============
