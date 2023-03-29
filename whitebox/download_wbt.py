@@ -40,7 +40,7 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
         "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
     }
 
-    if linux_musl or ('google.colab' in sys.modules):
+    if linux_musl or ('google.colab' in sys.modules) or (os.environ.get('WBT_LINUX', False) == "MUSL"):
         links["Linux"] = links["Linux-musl"]
 
     # These are backup links only used to pass GitHub automated tests. WhiteboxGeo links frequently encounter timeout errors, which fail the automated tests.

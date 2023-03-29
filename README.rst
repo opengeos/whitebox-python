@@ -109,6 +109,13 @@ If you encounter an GLIBC errors when installing the whitebox package, you can t
   whitebox.download_wbt(linux_musl=True, reset=True)
 
 
+Alternatively, you can set the environment variable ``WBT_LINUX`` to ``MUSL`` before installing the whitebox package. It will automatically download the MUSL version of WhiteboxTools.
+
+.. code:: python
+
+  import os
+  os.environ["WBT_LINUX"] = "MUSL"
+
 whitebox Tutorials
 ------------------
 
