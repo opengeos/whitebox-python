@@ -2,8 +2,7 @@
 
 """Main module."""
 
-from .whitebox_tools import WhiteboxTools
-
+from .whitebox_tools import download_wbt, WhiteboxTools
 
 def Runner(clear_app_state=False, callback=None):
     wbt = WhiteboxTools()
