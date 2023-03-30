@@ -36,12 +36,16 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
     links = {
         "Windows": "https://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip",
         "Darwin": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip",
+        "Darwin-arm": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_m_series.zip",
         "Linux": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip",
         "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
     }
 
     if linux_musl or ('google.colab' in sys.modules) or (os.environ.get('WBT_LINUX', False) == "MUSL"):
         links["Linux"] = links["Linux-musl"]
+
+    if platform.system() == "Darwin" and platform.processor() == "arm":
+        links["Darwin"] = links["Darwin-arm"]
 
     # These are backup links only used to pass GitHub automated tests. WhiteboxGeo links frequently encounter timeout errors, which fail the automated tests.
     backup_links = {
