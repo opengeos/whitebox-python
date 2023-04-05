@@ -5,5 +5,5 @@ tar -xvf WhiteboxTools_linux_amd64.tar.xz
 mv WBT/whitebox_tools .
 mkdir testdata
 cd testdata
-wget https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif
-wget https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep
+wget https://github.com/opengeos/whitebox-python/raw/master/examples/testdata/DEM.tif
+wget https://github.com/opengeos/whitebox-python/raw/master/examples/testdata/DEM.dep
