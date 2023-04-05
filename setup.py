@@ -48,7 +48,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/giswqs/whitebox',
+    url='https://github.com/opengeos/whitebox',
     version='2.3.1',
     zip_safe=False,
 )

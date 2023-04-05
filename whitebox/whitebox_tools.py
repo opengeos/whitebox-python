@@ -222,8 +222,8 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             if verbose:
                 print("Downloading testdata ...")
             os.mkdir(work_dir)
-            dem_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.tif"
-            dep_url = "https://github.com/giswqs/whitebox-python/raw/master/examples/testdata/DEM.dep"
+            dem_url = "https://github.com/opengeos/whitebox-python/raw/master/examples/testdata/DEM.tif"
+            dep_url = "https://github.com/opengeos/whitebox-python/raw/master/examples/testdata/DEM.dep"
             urllib.request.urlretrieve(dem_url, os.path.join(work_dir, "DEM.tif"))
             urllib.request.urlretrieve(dep_url, os.path.join(work_dir, "DEM.dep"))
 

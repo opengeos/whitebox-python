@@ -29,4 +29,4 @@ For example:
 
 Check the example.py_ for more details.
 
-.. _example.py: https://github.com/giswqs/whitebox/blob/master/whitebox/example.py
+.. _example.py: https://github.com/opengeos/whitebox/blob/master/whitebox/example.py

@@ -17,12 +17,6 @@ whitebox-python
 .. image:: https://anaconda.org/conda-forge/whitebox/badges/version.svg
         :target: https://anaconda.org/conda-forge/whitebox
 
-.. image:: https://img.shields.io/travis/giswqs/whitebox-python.svg
-        :target: https://travis-ci.org/giswqs/whitebox-python
-
-.. image:: https://ci.appveyor.com/api/projects/status/a7r1hna30kjbsmk3?svg=true
-        :target: https://ci.appveyor.com/project/giswqs/whitebox-python
-
 .. image:: https://readthedocs.org/projects/whitebox/badge/?version=latest
         :target: https://whitebox.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
@@ -30,11 +24,8 @@ whitebox-python
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
         :target: https://opensource.org/licenses/MIT
 
-.. image:: https://img.shields.io/twitter/follow/giswqs?style=social   
-        :target: https://twitter.com/giswqs
-
 .. image:: https://img.shields.io/badge/Donate-Buy%20me%20a%20coffee-yellowgreen.svg
-        :target: https://www.buymeacoffee.com/giswqs
+        :target: https://www.buymeacoffee.com/opengeos
 
 
 Important Note
@@ -47,7 +38,7 @@ This repository is related to the WhiteboxTools Python Frontend only. You can re
 
 * Authors: Dr. John Lindsay (https://jblindsay.github.io/ghrg/index.html)
 * Contributors: Dr. Qiusheng Wu (https://wetlands.io)
-* GitHub repo: https://github.com/giswqs/whitebox-python
+* GitHub repo: https://github.com/opengeos/whitebox-python
 * WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 * User Manual: https://www.whiteboxgeo.com/manual/wbt_book/intro.html
 * PyPI: https://pypi.org/project/whitebox/
@@ -207,7 +198,7 @@ Contributing
 
 If you would like to contribute to the project as a developer, follow these instructions to get started:
 
-1. Fork the whitebox project (https://github.com/giswqs/whitebox-python)
+1. Fork the whitebox project (https://github.com/opengeos/whitebox-python)
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -221,7 +212,7 @@ The **whitebox** package is distributed under the `MIT license`_, a permissive o
 
 Reporting Bugs
 --------------
-Report bugs at https://github.com/giswqs/whitebox-python/issues.
+Report bugs at https://github.com/opengeos/whitebox-python/issues.
 
 If you are reporting a bug, please include:
 
@@ -236,7 +227,7 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-.. _example.py: https://github.com/giswqs/whitebox/blob/master/whitebox/example.py
+.. _example.py: https://github.com/opengeos/whitebox/blob/master/whitebox/example.py
 .. _WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 .. _webpage: https://jblindsay.github.io/ghrg/index.html
 .. _jblindsay: https://github.com/jblindsay
