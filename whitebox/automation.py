@@ -45,11 +45,18 @@ print("Decompressing {} ...".format(linux_zip))
 with zipfile.ZipFile(zip_path, "r") as tar_ref:
     tar_ref.extractall(work_dir)
 
+zip_dir = os.path.join(work_dir, linux_zip.split(".")[0])
+src_dir = os.path.join(zip_dir, "WBT")
+shutil.move(src_dir, WBT_dir)
+
 if os.path.exists(new_img_dir):
     shutil.rmtree(new_img_dir)
 
 if os.path.exists(new_plugin_dir):
     shutil.rmtree(new_plugin_dir)
+
+if os.path.exists(zip_dir):
+    shutil.rmtree(zip_dir)
 
 shutil.copytree(init_img_dir, new_img_dir)
 shutil.copytree(init_plugin_dir, new_plugin_dir)
@@ -111,8 +118,8 @@ shutil.move(
     os.path.join(WBT_dir, "whitebox_tools"), os.path.join(work_dir, "whitebox_tools")
 )
 
-shutil.move(
-    os.path.join(WBT_dir, "whitebox_runner"), os.path.join(work_dir, "whitebox_runner")
-)
+# shutil.move(
+#     os.path.join(WBT_dir, "whitebox_runner"), os.path.join(work_dir, "whitebox_runner")
+# )
 
 f.close()

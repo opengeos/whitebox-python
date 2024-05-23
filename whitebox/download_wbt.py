@@ -5,7 +5,7 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
         linux_musl (bool, optional): Whether to download the musl version of WhiteboxTools for Linux. Defaults to False.
         reset (bool, optional): Whether to reset the WhiteboxTools installation. Defaults to False.
         verbose (bool, optional): Whether to print verbose messages. Defaults to True.
-   
+
     """
     import glob
     import os
@@ -38,10 +38,14 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
         "Darwin": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip",
         "Darwin-arm": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_m_series.zip",
         "Linux": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip",
-        "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+        "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip",
     }
 
-    if linux_musl or ('google.colab' in sys.modules) or (os.environ.get('WBT_LINUX', False) == "MUSL"):
+    if (
+        linux_musl
+        or ("google.colab" in sys.modules)
+        or (os.environ.get("WBT_LINUX", False) == "MUSL")
+    ):
         links["Linux"] = links["Linux-musl"]
 
     if platform.system() == "Darwin" and platform.processor() == "arm":
@@ -124,10 +128,17 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             if verbose:
                 print("WhiteboxTools package directory: {}".format(pkg_dir))
 
+            zip_dir = zip_name.split(".")[0]
+            src_dir = os.path.join(zip_dir, "WBT")
+            shutil.move(src_dir, exe_dir)
+
             if os.path.exists(new_img_dir):
                 shutil.rmtree(new_img_dir)
             if os.path.exists(new_plugin_dir):
                 shutil.rmtree(new_plugin_dir)
+
+            if os.path.exists(zip_dir):
+                shutil.rmtree(zip_dir)
 
             shutil.copytree(init_img_dir, new_img_dir)
             shutil.copytree(init_plugin_dir, new_plugin_dir)
@@ -167,7 +178,9 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             # # downloads the binary that is compatible with Google Colab.
             if "google.colab" in sys.modules:
                 # url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
-                url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+                url = (
+                    "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+                )
 
                 zip_name = os.path.join(pkg_dir, os.path.basename(url))
                 try:

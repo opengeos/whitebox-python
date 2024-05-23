@@ -34,7 +34,7 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
         linux_musl (bool, optional): Whether to download the musl version of WhiteboxTools for Linux. Defaults to False.
         reset (bool, optional): Whether to reset the WhiteboxTools installation. Defaults to False.
         verbose (bool, optional): Whether to print verbose messages. Defaults to True.
-   
+
     """
     import glob
     import os
@@ -67,10 +67,14 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
         "Darwin": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_amd64.zip",
         "Darwin-arm": "https://www.whiteboxgeo.com/WBT_Darwin/WhiteboxTools_darwin_m_series.zip",
         "Linux": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_amd64.zip",
-        "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+        "Linux-musl": "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip",
     }
 
-    if linux_musl or ('google.colab' in sys.modules) or (os.environ.get('WBT_LINUX', False) == "MUSL"):
+    if (
+        linux_musl
+        or ("google.colab" in sys.modules)
+        or (os.environ.get("WBT_LINUX", False) == "MUSL")
+    ):
         links["Linux"] = links["Linux-musl"]
 
     if platform.system() == "Darwin" and platform.processor() == "arm":
@@ -153,10 +157,17 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             if verbose:
                 print("WhiteboxTools package directory: {}".format(pkg_dir))
 
+            zip_dir = zip_name.split(".")[0]
+            src_dir = os.path.join(zip_dir, "WBT")
+            shutil.move(src_dir, exe_dir)
+
             if os.path.exists(new_img_dir):
                 shutil.rmtree(new_img_dir)
             if os.path.exists(new_plugin_dir):
                 shutil.rmtree(new_plugin_dir)
+
+            if os.path.exists(zip_dir):
+                shutil.rmtree(zip_dir)
 
             shutil.copytree(init_img_dir, new_img_dir)
             shutil.copytree(init_plugin_dir, new_plugin_dir)
@@ -196,7 +207,9 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             # # downloads the binary that is compatible with Google Colab.
             if "google.colab" in sys.modules:
                 # url = "https://github.com/giswqs/whitebox-bin/raw/master/WhiteboxTools_ubuntu_18.04.zip"
-                url = "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+                url = (
+                    "https://www.whiteboxgeo.com/WBT_Linux/WhiteboxTools_linux_musl.zip"
+                )
 
                 zip_name = os.path.join(pkg_dir, os.path.basename(url))
                 try:
@@ -3048,7 +3061,7 @@ Okay, that's it for now.
 
         dem -- Name of the input raster image file. 
         output -- Name of the output vector lines file. 
-        threshold -- Threshold value (0 - infinity but typcially 1 to 5 works well). 
+        threshold -- Threshold value (0 - infinity but typically 1 to 5 works well). 
         min_length -- Minimum line length, in grid cells. 
         callback -- Custom function for handling tool text outputs.
         """
@@ -9190,11 +9203,11 @@ Okay, that's it for now.
         iterations -- Maximum iterations (if stopping criteria not reached). 
         seed -- Seed for RNG consistency. 
         prob -- Probability of random resample or resampling worst strata between [0,1]. 
-        threshold -- Objective function values below the theshold stop the resampling iterations. 
+        threshold -- Objective function values below the threshold stop the resampling iterations. 
         temp -- Initial annealing temperature between [0,1]. 
         temp_decay -- Annealing temperature decay proportion between [0,1]. Reduce temperature by this proportion each annealing cycle. 
         cycle -- Number of iterations before decaying annealing temperature. 
-        average -- Weight the continuous objective funtion by the 1/N contributing strata. 
+        average -- Weight the continuous objective function by the 1/N contributing strata. 
         callback -- Custom function for handling tool text outputs.
         """
         args = []
@@ -10897,7 +10910,7 @@ Okay, that's it for now.
         if zero_background: args.append("--zero_background")
         return self.run_tool('tributary_identifier', args, callback) # returns 1 if error
 
-    def vector_stream_network_analysis(self, streams, dem, output, cutting_height=10.0, snap=0.1, callback=None):
+    def vector_stream_network_analysis(self, streams, output, snap=0.1, callback=None):
         """This tool performs common stream network analysis operations on an input vector stream file.
 
         Keyword arguments:
