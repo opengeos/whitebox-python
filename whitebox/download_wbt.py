@@ -132,7 +132,7 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             src_dir = os.path.join(zip_dir, "WBT")
 
             if os.path.exists(src_dir):
-                shutil.move(src_dir, exe_dir)
+                shutil.move(src_dir, pkg_dir)
 
             if os.path.exists(new_img_dir):
                 shutil.rmtree(new_img_dir)
