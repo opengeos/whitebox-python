@@ -49,6 +49,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/opengeos/whitebox',
-    version='2.3.1',
+    version='2.3.2',
     zip_safe=False,
 )
