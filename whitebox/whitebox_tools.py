@@ -179,13 +179,13 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
                 exe_ext = ".exe"
             exe_name = "whitebox_tools{}".format(exe_ext)
             exe_path = os.path.join(exe_dir, exe_name)
-            runner_name = "whitebox_runner{}".format(exe_ext)
-            runner_path = os.path.join(exe_dir, runner_name)
+            # runner_name = "whitebox_runner{}".format(exe_ext)
+            # runner_path = os.path.join(exe_dir, runner_name)
 
             # grant executable permission
             if platform.system() != "Windows":
                 os.system("chmod 755 " + exe_path)
-                os.system("chmod 755 " + runner_path)
+                # os.system("chmod 755 " + runner_path)
             plugins = list(
                 set(glob.glob(os.path.join(new_plugin_dir, "*")))
                 - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
@@ -196,8 +196,8 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
 
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
-            runner_path_new = os.path.join(pkg_dir, runner_name)
-            shutil.copy(runner_path, runner_path_new)
+            # runner_path_new = os.path.join(pkg_dir, runner_name)
+            # shutil.copy(runner_path, runner_path_new)
 
             try:
                 os.remove(zip_name)
