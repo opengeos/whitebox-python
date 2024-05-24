@@ -168,12 +168,14 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             if os.path.exists(new_plugin_dir):
                 shutil.rmtree(new_plugin_dir)
 
+            if os.path.exists(new_img_dir):
+                shutil.copytree(init_img_dir, new_img_dir)
+
+            if os.path.exists(new_plugin_dir):
+                shutil.copytree(init_plugin_dir, new_plugin_dir)
+
             if os.path.exists(zip_dir):
                 shutil.rmtree(zip_dir)
-
-            shutil.copytree(init_img_dir, new_img_dir)
-            shutil.copytree(init_plugin_dir, new_plugin_dir)
-
             exe_ext = ""  # file extension for MacOS/Linux
             if platform.system() == "Windows":
                 exe_ext = ".exe"
