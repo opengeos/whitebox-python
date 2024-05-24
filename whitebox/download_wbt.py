@@ -128,7 +128,9 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             if verbose:
                 print("WhiteboxTools package directory: {}".format(pkg_dir))
 
-            zip_dir = zip_name.split(".")[0]
+            zip_dir = os.path.join(
+                pkg_dir, os.path.basename(zip_name).replace(".zip", "")
+            ).replace("musl", "amd64")
             src_dir = os.path.join(zip_dir, "WBT")
 
             if os.path.exists(src_dir):
