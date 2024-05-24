@@ -4,7 +4,7 @@
 
 __author__ = """Qiusheng Wu"""
 __email__ = 'giswqs@gmail.com'
-__version__ = '2.3.2'
+__version__ = '2.3.3'
 
 from .whitebox import *
 
