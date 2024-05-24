@@ -227,7 +227,7 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-.. _example.py: https://github.com/opengeos/whitebox/blob/master/whitebox/example.py
+.. _example.py: https://github.com/opengeos/whitebox-python/blob/master/whitebox/example.py
 .. _WhiteboxTools: https://github.com/jblindsay/whitebox-tools
 .. _webpage: https://jblindsay.github.io/ghrg/index.html
 .. _jblindsay: https://github.com/jblindsay
