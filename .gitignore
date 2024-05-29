@@ -20,6 +20,7 @@ dev/
 _build/
 temp/
 whitebox/__MACOSX/
+**/.DS_Store
 
 # C extensions
 *.so
