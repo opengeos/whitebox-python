@@ -203,7 +203,8 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             exe_path_new = os.path.join(pkg_dir, exe_name)
             shutil.copy(exe_path, exe_path_new)
             runner_path_new = os.path.join(pkg_dir, runner_name)
-            shutil.copy(runner_path, runner_path_new)
+            if os.path.exists(runner_path):
+                shutil.copy(runner_path, runner_path_new)
 
             try:
                 os.remove(zip_name)
