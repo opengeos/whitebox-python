@@ -164,7 +164,8 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             # grant executable permission
             if platform.system() != "Windows":
                 os.system("chmod 755 " + exe_path)
-                os.system("chmod 755 " + runner_path)
+                if os.path.exists(runner_path):
+                    os.system("chmod 755 " + runner_path)
             plugins = list(
                 set(glob.glob(os.path.join(new_plugin_dir, "*")))
                 - set(glob.glob(os.path.join(new_plugin_dir, "*.json")))
