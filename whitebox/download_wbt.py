@@ -89,10 +89,12 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
             # Download WhiteboxTools
             try:
                 request = urllib.request.urlopen(url, timeout=500)
+                print("Downloading WhiteboxTools binary from {}".format(url))
             except urllib.error.URLError as e:
                 print(e)
                 print("Trying backup link ...")
                 url = backup_links[platform.system()]
+                print("Downloading WhiteboxTools binary from {}".format(url))
                 request = urllib.request.urlopen(url, timeout=500)
 
             with open(zip_name, "wb") as f:
