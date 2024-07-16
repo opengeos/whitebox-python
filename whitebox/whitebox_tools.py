@@ -47,6 +47,9 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
     import pkg_resources
     import webbrowser
 
+    if os.environ.get("WBT_PATH", None) is not None:
+        return
+
     # print("Your operating system: {}".format(platform.system()))
     package_name = "whitebox"
     # Get package directory
