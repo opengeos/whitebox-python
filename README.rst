@@ -3,7 +3,7 @@ whitebox-python
 ===============
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-        :target: https://gishub.org/whitebox-colab
+        :target: https://colab.research.google.com/github/opengeos/whitebox-python/blob/master/examples/whitebox.ipynb
 
 .. image:: https://mybinder.org/badge_logo.svg 
         :target: https://gishub.org/whitebox-cloud
