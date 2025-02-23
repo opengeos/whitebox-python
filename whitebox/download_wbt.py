@@ -15,7 +15,7 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
     import tarfile
     import shutil
     import urllib.request
-    import pkg_resources
+    from importlib.metadata import files
     import webbrowser
 
     if os.environ.get("WBT_PATH", None) is not None:
@@ -25,8 +25,9 @@ def download_wbt(linux_musl=False, reset=False, verbose=True):
     package_name = "whitebox"
     # Get package directory
     pkg_dir = os.path.dirname(
-        pkg_resources.resource_filename(package_name, "whitebox_tools.py")
+        next(f.locate() for f in files(package_name) if f.name == "whitebox_tools.py")
     )
+
     exe_dir = os.path.join(
         pkg_dir, "WBT"
     )  # Get directory of WhiteboxTools executable file

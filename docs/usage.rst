@@ -11,7 +11,7 @@ For example:
 .. code:: python
 
     import os
-    import pkg_resources
+    from importlib_resources import files
     import whitebox
 
     wbt = whitebox.WhiteboxTools()
@@ -19,7 +19,7 @@ For example:
     print(wbt.help())
 
     # identify the sample data directory of the package
-    data_dir = os.path.dirname(pkg_resources.resource_filename("whitebox", 'testdata/'))
+    data_dir = str(files("whitebox").joinpath("testdata"))
 
     wbt.set_working_dir(data_dir)
     wbt.verbose = False
