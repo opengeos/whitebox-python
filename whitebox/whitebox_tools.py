@@ -13291,7 +13291,7 @@ Okay, that's it for now.
             "tributary_identifier", args, callback
         )  # returns 1 if error
 
-    def vector_stream_network_analysis(self, streams, output, snap=0.1, callback=None):
+    def vector_stream_network_analysis(self, streams, dem, output, cutting_height=10, snap=0.1, callback=None):
         """This tool performs common stream network analysis operations on an input vector stream file.
 
         Keyword arguments:
