@@ -9,7 +9,6 @@ See whitebox_example.py for an example of how to use it.
 # Last Modified: 09/12/2019
 # License: MIT
 
-from __future__ import print_function
 import urllib.request
 import zipfile
 import shutil
@@ -20,7 +19,6 @@ import platform
 import re
 import json
 
-# import shutil
 from subprocess import CalledProcessError, Popen, PIPE, STDOUT
 
 running_windows = platform.system() == "Windows"
@@ -291,7 +289,7 @@ def to_snakecase(name):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-class WhiteboxTools(object):
+class WhiteboxTools:
     """
     An object for interfacing with the WhiteboxTools executable.
     """
@@ -301,7 +299,7 @@ class WhiteboxTools(object):
             self.ext = ".exe"
         else:
             self.ext = ""
-        self.exe_name = "whitebox_tools{}".format(self.ext)
+        self.exe_name = f"whitebox_tools{self.ext}"
         # self.exe_path = os.path.dirname(shutil.which(
         #     self.exe_name) or path.dirname(path.abspath(__file__)))
         # self.exe_path = os.path.dirname(os.path.join(os.path.realpath(__file__)))
@@ -328,6 +326,60 @@ class WhiteboxTools(object):
         self.cancel_op = False
         self.default_callback = default_callback
         self.start_minimized = False
+
+    def _popen_kwargs(self):
+        """Returns common keyword arguments for Popen calls."""
+        kwargs = {
+            "shell": False,
+            "stdout": PIPE,
+            "stderr": STDOUT,
+            "bufsize": 1,
+            "universal_newlines": True,
+        }
+        if running_windows and self.start_minimized:
+            si = STARTUPINFO()
+            si.dwFlags = STARTF_USESHOWWINDOW
+            si.wShowWindow = 7  # Set window minimized and not activated
+            kwargs["startupinfo"] = si
+        return kwargs
+
+    def _run_process(self, args, callback):
+        """
+        Runs a subprocess with the given args and streams output to callback.
+
+        Uses Popen as a context manager to avoid ResourceWarning (see #84).
+        Returns 0 on success, 1 on error, 2 if cancelled by user.
+        """
+        with Popen(args, **self._popen_kwargs()) as proc:
+            while True:
+                line = proc.stdout.readline()
+                if line != "":
+                    if not self.cancel_op:
+                        if callback:
+                            callback(line.strip())
+                    else:
+                        self.cancel_op = False
+                        proc.terminate()
+                        return 2
+                else:
+                    break
+        return 0
+
+    def _run_process_output(self, args):
+        """
+        Runs a subprocess and returns the full output as a string.
+
+        Uses Popen as a context manager to avoid ResourceWarning (see #84).
+        """
+        with Popen(args, **self._popen_kwargs()) as proc:
+            ret = ""
+            while True:
+                line = proc.stdout.readline()
+                if line != "":
+                    ret += line
+                else:
+                    break
+        return ret
 
     def set_whitebox_dir(self, path_str):
         """
@@ -367,54 +419,14 @@ class WhiteboxTools(object):
 
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args2 = []
-            args2.append("." + path.sep + self.exe_name)
+            args2 = [f".{path.sep}{self.exe_name}"]
 
             if self.verbose:
                 args2.append("-v")
             else:
                 args2.append("-v=false")
 
-            proc = None
-
-            if running_windows and self.start_minimized == True:
-                si = STARTUPINFO()
-                si.dwFlags = STARTF_USESHOWWINDOW
-                si.wShowWindow = 7  # Set window minimized and not activated
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                    startupinfo=si,
-                )
-            else:
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                )
-
-            while proc is not None:
-                line = proc.stdout.readline()
-                sys.stdout.flush()
-                if line != "":
-                    if not self.cancel_op:
-                        callback(line.strip())
-                    else:
-                        self.cancel_op = False
-                        proc.terminate()
-                        return 2
-
-                else:
-                    break
-
-            return 0
+            return self._run_process(args2, callback)
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
@@ -438,54 +450,14 @@ class WhiteboxTools(object):
 
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args2 = []
-            args2.append("." + path.sep + self.exe_name)
+            args2 = [f".{path.sep}{self.exe_name}"]
 
             if self.__compress_rasters:
                 args2.append("--compress_rasters=true")
             else:
                 args2.append("--compress_rasters=false")
 
-            proc = None
-
-            if running_windows and self.start_minimized == True:
-                si = STARTUPINFO()
-                si.dwFlags = STARTF_USESHOWWINDOW
-                si.wShowWindow = 7  # Set window minimized and not activated
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                    startupinfo=si,
-                )
-            else:
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                )
-
-            while proc is not None:
-                line = proc.stdout.readline()
-                sys.stdout.flush()
-                if line != "":
-                    if not self.cancel_op:
-                        callback(line.strip())
-                    else:
-                        self.cancel_op = False
-                        proc.terminate()
-                        return 2
-
-                else:
-                    break
-
-            return 0
+            return self._run_process(args2, callback)
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
@@ -497,7 +469,7 @@ class WhiteboxTools(object):
 
     def set_max_procs(self, val=-1):
         """
-        Sets the flag used by WhiteboxTools to determine whether to use compression for output rasters.
+        Sets the maximum number of processes for WhiteboxTools.
         """
         self.__max_procs = val
 
@@ -506,51 +478,9 @@ class WhiteboxTools(object):
 
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args2 = []
-            args2.append("." + path.sep + self.exe_name)
+            args2 = [f".{path.sep}{self.exe_name}", f"--max_procs={val}"]
 
-            args2.append(f"--max_procs={val}")
-
-            proc = None
-
-            if running_windows and self.start_minimized == True:
-                si = STARTUPINFO()
-                si.dwFlags = STARTF_USESHOWWINDOW
-                si.wShowWindow = 7  # Set window minimized and not activated
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                    startupinfo=si,
-                )
-            else:
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                )
-
-            while proc is not None:
-                line = proc.stdout.readline()
-                sys.stdout.flush()
-                if line != "":
-                    if not self.cancel_op:
-                        callback(line.strip())
-                    else:
-                        self.cancel_op = False
-                        proc.terminate()
-                        return 2
-
-                else:
-                    break
-
-            return 0
+            return self._run_process(args2, callback)
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
@@ -573,18 +503,15 @@ class WhiteboxTools(object):
 
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args2 = []
-            args2.append("." + path.sep + self.exe_name)
-            args2.append('--run="{}"'.format(to_camelcase(tool_name)))
+            args2 = [
+                f".{path.sep}{self.exe_name}",
+                f'--run="{to_camelcase(tool_name)}"',
+            ]
 
             if self.work_dir.strip() != "":
-                args2.append('--wd="{}"'.format(self.work_dir))
+                args2.append(f'--wd="{self.work_dir}"')
 
-            for arg in args:
-                args2.append(arg)
-
-            # args_str = args_str[:-1]
-            # a.append("--args=\"{}\"".format(args_str))
+            args2.extend(args)
 
             if self.verbose:
                 args2.append("-v")
@@ -600,46 +527,9 @@ class WhiteboxTools(object):
                 cl = " ".join(args2)
                 callback(cl.strip() + "\n")
 
-            proc = None
-
-            if running_windows and self.start_minimized == True:
-                si = STARTUPINFO()
-                si.dwFlags = STARTF_USESHOWWINDOW
-                si.wShowWindow = 7  # Set window minimized and not activated
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                    startupinfo=si,
-                )
-            else:
-                proc = Popen(
-                    args2,
-                    shell=False,
-                    stdout=PIPE,
-                    stderr=STDOUT,
-                    bufsize=1,
-                    universal_newlines=True,
-                )
-
-            while proc is not None:
-                line = proc.stdout.readline()
-                sys.stdout.flush()
-                if line != "":
-                    if not self.cancel_op:
-                        if self.verbose:
-                            callback(line.strip())
-                    else:
-                        self.cancel_op = False
-                        proc.terminate()
-                        return 2
-                else:
-                    break
-
-            return 0
+            return self._run_process(
+                args2, callback if self.verbose else None
+            )
         except (OSError, ValueError, CalledProcessError) as err:
             callback(str(err))
             return 1
@@ -653,27 +543,8 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("-h")
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            args = [f".{os.path.sep}{self.exe_name}", "-h"]
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
@@ -686,29 +557,10 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--license")
+            args = [f".{os.path.sep}{self.exe_name}", "--license"]
             if toolname is not None:
                 args.append(f"={toolname}")
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
@@ -721,27 +573,8 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--version")
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            args = [f".{os.path.sep}{self.exe_name}", "--version"]
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
@@ -754,27 +587,11 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--toolhelp={}".format(to_camelcase(tool_name)))
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            args = [
+                f".{os.path.sep}{self.exe_name}",
+                f"--toolhelp={to_camelcase(tool_name)}",
+            ]
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
@@ -787,27 +604,11 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--toolparameters={}".format(to_camelcase(tool_name)))
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            args = [
+                f".{os.path.sep}{self.exe_name}",
+                f"--toolparameters={to_camelcase(tool_name)}",
+            ]
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
@@ -820,27 +621,11 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--toolbox={}".format(to_camelcase(tool_name)))
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            args = [
+                f".{os.path.sep}{self.exe_name}",
+                f"--toolbox={to_camelcase(tool_name)}",
+            ]
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
@@ -854,65 +639,39 @@ class WhiteboxTools(object):
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--viewcode={}".format(to_camelcase(tool_name)))
-
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = ""
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    ret += line
-                else:
-                    break
-
-            return ret
+            args = [
+                f".{os.path.sep}{self.exe_name}",
+                f"--viewcode={to_camelcase(tool_name)}",
+            ]
+            return self._run_process_output(args)
         except (OSError, ValueError, CalledProcessError) as err:
             return err
         finally:
             os.chdir(work_dir)
 
-    def list_tools(self, keywords=[]):
+    def list_tools(self, keywords=None):
         """
         Lists all available tools in WhiteboxTools.
         """
+        if keywords is None:
+            keywords = []
         try:
             work_dir = os.getcwd()
             os.chdir(self.exe_path)
-            args = []
-            args.append("." + os.path.sep + self.exe_name)
-            args.append("--listtools")
-            if len(keywords) > 0:
-                for kw in keywords:
-                    args.append(kw)
+            args = [f".{os.path.sep}{self.exe_name}", "--listtools"]
+            args.extend(keywords)
 
-            proc = Popen(
-                args,
-                shell=False,
-                stdout=PIPE,
-                stderr=STDOUT,
-                bufsize=1,
-                universal_newlines=True,
-            )
-            ret = {}
-            line = proc.stdout.readline()  # skip number of available tools header
-            while True:
-                line = proc.stdout.readline()
-                if line != "":
-                    if line.strip() != "":
-                        name, descr = line.split(":")
-                        ret[to_snakecase(name.strip())] = descr.strip()
-                else:
-                    break
-
+            with Popen(args, **self._popen_kwargs()) as proc:
+                ret = {}
+                proc.stdout.readline()  # skip number of available tools header
+                while True:
+                    line = proc.stdout.readline()
+                    if line != "":
+                        if line.strip() != "":
+                            name, descr = line.split(":")
+                            ret[to_snakecase(name.strip())] = descr.strip()
+                    else:
+                        break
             return ret
         except (OSError, ValueError, CalledProcessError) as err:
             return err

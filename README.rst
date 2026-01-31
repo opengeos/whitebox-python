@@ -5,13 +5,13 @@ whitebox-python
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
         :target: https://colab.research.google.com/github/opengeos/whitebox-python/blob/master/examples/whitebox.ipynb
 
-.. image:: https://mybinder.org/badge_logo.svg 
-        :target: https://gishub.org/whitebox-cloud
+.. image:: https://mybinder.org/badge_logo.svg
+        :target: https://mybinder.org/v2/gh/opengeos/whitebox-python/HEAD?labpath=examples%2Fwhitebox.ipynb
 
 .. image:: https://img.shields.io/pypi/v/whitebox.svg
         :target: https://pypi.python.org/pypi/whitebox
 
-.. image:: https://pepy.tech/badge/whitebox
+.. image:: https://img.shields.io/pepy/dt/whitebox
         :target: https://pepy.tech/project/whitebox
 
 .. image:: https://anaconda.org/conda-forge/whitebox/badges/version.svg
@@ -44,7 +44,7 @@ This repository is related to the WhiteboxTools Python Frontend only. You can re
 * PyPI: https://pypi.org/project/whitebox/
 * conda-forge: https://anaconda.org/conda-forge/whitebox
 * Documentation: https://whitebox.readthedocs.io
-* Binder: https://gishub.org/whitebox-cloud
+* Binder: https://mybinder.org/v2/gh/opengeos/whitebox-python/HEAD?labpath=examples%2Fwhitebox.ipynb
 * Free software: `MIT license`_
 
 
@@ -112,8 +112,8 @@ whitebox Tutorials
 
 Launch the whitebox tutorial notebook directly with **mybinder.org** now:
 
-.. image:: https://mybinder.org/badge_logo.svg 
-        :target: https://gishub.org/whitebox-cloud
+.. image:: https://mybinder.org/badge_logo.svg
+        :target: https://mybinder.org/v2/gh/opengeos/whitebox-python/HEAD?labpath=examples%2Fwhitebox.ipynb
 
 Quick Example
 =============
@@ -145,11 +145,10 @@ A Jupyter Notebook Tutorial for whitebox
 
 This tutorial can be accessed in three ways:
 
-- HTML version: https://gishub.org/whitebox-html
-- Viewable Notebook: https://gishub.org/whitebox-notebook
-- Interactive Notebook: https://gishub.org/whitebox-cloud
+- Viewable Notebook: https://github.com/opengeos/whitebox-python/blob/master/examples/whitebox.ipynb
+- Interactive Notebook: https://mybinder.org/v2/gh/opengeos/whitebox-python/HEAD?labpath=examples%2Fwhitebox.ipynb
 
-Launch this tutorial as an interactive Jupyter Notebook on the cloud - https://gishub.org/whitebox-cloud.
+Launch this tutorial as an interactive Jupyter Notebook on the cloud - https://mybinder.org/v2/gh/opengeos/whitebox-python/HEAD?labpath=examples%2Fwhitebox.ipynb
 
 .. image:: https://i.imgur.com/LF4UE1j.gif
 
